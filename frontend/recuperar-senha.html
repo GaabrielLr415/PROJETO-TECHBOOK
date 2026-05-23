@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHBOOK | Recuperar senha</title>
+
+
+  <!-- LINKS DO SITE -->
+  <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body data-page="recover">
+
+  <!-- CABECALHO GERAL -->
+  <header class="login-header">
+    <a href="index.html">
+      <img src="img/LOGO TECHBOOK.svg" alt="TechBook" class="login-logo">
+    </a>
+  </header>
+
+  <!-- CORPO DO SITE -->
+  <main class="auth-shell recover-shell">
+
+    <!-- CARD DE RECUPERAR SENHA -->
+    <section class="auth-card recover-card">
+      <h1>Recuperar senha</h1>
+
+      <p class="recover-text">
+        Informe o e-mail cadastrado e cadastre uma nova senha para acessar sua conta.
+      </p>
+
+      <!-- FORMULARIO DE RECUPERACAO -->
+      <form id="recoverForm">
+
+        <div class="input-group">
+          <input type="email" id="recoverEmail" required>
+          <label for="recoverEmail">E-mail</label>
+        </div>
+
+        <div id="recoverPasswordFields" hidden>
+          <div class="input-group">
+            <input type="password" id="recoverNewPassword" minlength="6">
+            <label for="recoverNewPassword">Nova senha</label>
+          </div>
+
+          <div class="input-group">
+            <input type="password" id="recoverConfirmPassword" minlength="6">
+            <label for="recoverConfirmPassword">Confirmar nova senha</label>
+          </div>
+        </div>
+
+        <button class="button primary" id="recoverSubmitButton" type="submit">Continuar</button>
+
+        <p class="feedback" id="recoverFeedback"></p>
+      </form>
+
+      <a href="login.html" class="back-login-link">Voltar para o login</a>
+    </section>
+
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHBOOK | Dashboard ADM</title>
+  
+  <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/adm.css">
+</head>
+<body data-page="admin">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="img/LOGOMARCA.svg" alt="" class="admin-brand-logo">
+      </div>
+
+      <nav class="admin-nav">
+        <a class="active" href="adm.html">Visão Geral</a>
+        <a href="adm-reservas.html">Registrar Emprestimo</a>
+        <a href="adm-devolucao.html">Registrar devolução</a>
+        <a href="adm-atrasos.html">Verificar atrasos</a>
+        <a href="adm-livros.html">Consultar Livro</a>
+        <a href="adm-usuarios.html">Consultar Usuários</a>
+        <a href="adm-livros.html#gestao">Gerenciar Livro</a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div>
+          <strong>Administrador</strong>
+          <span>Controle de Acervo</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <section class="admin-screen dashboard-screen" id="dashboard">
+        <div class="screen-topbar">
+          <div class="screen-heading">
+            <p class="eyebrow">Dashboard</p>
+            <h1>Painel do Administrador</h1>
+          </div>
+          <div class="screen-actions">
+            <a class="button ghost" href="index.html">Voltar ao site</a>
+            <button class="button primary" id="refreshDashboard" type="button">Atualizar Painel</button>
+          </div>
+        </div>
+
+        <div class="hero-banner">
+          <h3>Gerencie livros, empréstimos, devoluções e usuários em um só lugar.</h3>
+          <p>Visualize empréstimos ativos, confirme retiradas, registre devoluções, acompanhe atrasos e controle a disponibilidade dos livros do acervo.</p>
+          <div class="quick-actions">
+            <a href="adm-livros.html" class="chip-button">Cadastrar livro</a>
+            <a href="adm-livros.html" class="chip-button">Atualizar livro</a>
+            <a href="adm-livros.html" class="chip-button">Remover livro</a>
+            <a href="adm-reservas.html" class="chip-button">Confirmar retirada</a>
+            <a href="adm-devolucao.html" class="chip-button">Registrar devolução</a>
+            <a href="adm-atrasos.html" class="chip-button">Verificar atrasos</a>
+          </div>
+        </div>
+
+        <div class="metric-grid dashboard-metrics">
+          <article class="metric-card metric-books">
+            <div class="metric-content">
+              <span class="metric-label">Total de livros</span>
+              <strong id="metricBooks">0</strong>
+              <small>Livros cadastrados no acervo</small>
+            </div>
+            <span class="metric-icon"><img src="img/biblioteca.svg" alt=""></span>
+          </article>
+          <article class="metric-card metric-loans">
+            <div class="metric-content">
+              <span class="metric-label">Empr&eacute;stimos ativos</span>
+              <strong id="metricLoans">0</strong>
+              <small>Retiradas em andamento</small>
+            </div>
+            <span class="metric-icon"><img src="img/reserva de livro.svg" alt=""></span>
+          </article>
+          <article class="metric-card metric-late">
+            <div class="metric-content">
+              <span class="metric-label">Atrasados</span>
+              <strong id="metricLate">0</strong>
+              <small>Devolu&ccedil;&otilde;es pendentes</small>
+            </div>
+            <span class="metric-icon"><img src="img/RELOGIO.svg" alt=""></span>
+          </article>
+          <article class="metric-card metric-users">
+            <div class="metric-content">
+              <span class="metric-label">Usu&aacute;rios</span>
+              <strong id="metricUsers">0</strong>
+              <small>Leitores cadastrados</small>
+            </div>
+            <span class="metric-icon"><img src="img/PERFIL.svg" alt=""></span>
+          </article>
+          <article class="metric-card mini hidden-metric">
+            <span class="metric-label">Reservas pendentes</span>
+            <strong id="metricReservations">0</strong>
+            <small>Aguardando retirada</small>
+          </article>
+          <article class="metric-card mini hidden-metric">
+            <span class="metric-label">Livros dispon&iacute;veis</span>
+            <strong id="metricAvailableBooks">0</strong>
+            <small>Prontos para reservar</small>
+          </article>
+          <article class="metric-card mini hidden-metric">
+            <span class="metric-label">Livros indispon&iacute;veis</span>
+            <strong id="metricUnavailableBooks">0</strong>
+            <small>Sem unidade livre</small>
+          </article>
+        </div>
+
+        <section class="dashboard-insights" aria-label="Indicadores inteligentes do acervo">
+          <article class="insight-panel">
+            <div class="insight-heading">
+              <span>Mais reservados</span>
+              <strong>Demanda dos leitores</strong>
+            </div>
+            <div class="rank-list" id="topReservedList">
+              <p class="empty-insight">Carregando dados...</p>
+            </div>
+          </article>
+
+          <article class="insight-panel">
+            <div class="insight-heading">
+              <span>Categorias do acervo</span>
+              <strong>Distribuição dos livros</strong>
+            </div>
+            <div class="category-list" id="categoryDashboardList">
+              <p class="empty-insight">Carregando dados...</p>
+            </div>
+          </article>
+
+          <article class="insight-panel action-panel">
+            <div class="insight-heading">
+              <span>Prioridades do dia</span>
+              <strong>Fila de trabalho</strong>
+            </div>
+            <div class="management-alerts" id="managementAlerts">
+              <p class="empty-insight">Carregando dados...</p>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/adm.js"></script>
+</body>
+</html>

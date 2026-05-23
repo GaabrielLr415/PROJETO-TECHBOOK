@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHBOOK | Login ADM</title>
+  
+  <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/adm.css">
+</head>
+<body data-page="admin-login">
+  <main class="admin-login-page">
+    <section class="admin-login-card">
+      <div class="screen-heading">
+        <p class="eyebrow">Acesso administrativo</p>
+        <h1>TECHBOOK ADM</h1>
+      </div>
+
+      <form id="adminLoginForm" class="admin-login-form">
+        <label class="field-block">
+          <span>E-mail do administrador</span>
+          <input type="email" id="adminLogin" value="admin@techbook.local" required>
+        </label>
+        <label class="field-block">
+          <span>Senha</span>
+          <input type="password" id="adminPassword" placeholder="Senha do administrador" required>
+        </label>
+        <button class="button primary" type="submit">Entrar</button>
+        <p class="admin-login-feedback" id="adminLoginFeedback"></p>
+      </form>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+  <script src="js/adm.js"></script>
+</body>
+</html>
