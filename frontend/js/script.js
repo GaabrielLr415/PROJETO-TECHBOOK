@@ -13,7 +13,7 @@
   renderAccountPage();
   renderFeaturedBooks();
 
-// Monta a area do cabecalho conforme o usuario esteja logado ou nao.
+// Monta a área do cabeçalho conforme o usuário esteja logado ou não.
 function renderAuthArea() {
   const container = document.getElementById("authArea");
   if (!container) return;
@@ -55,6 +55,16 @@ container.innerHTML = `
       <a href="minhas-reservas.html">
         <img src="img/reserva de livro.svg" alt="">
         <span>Minhas reservas</span>
+      </a>
+
+      <a href="meus-emprestimos.html">
+        <img src="img/emprestimo.svg" alt="">
+        <span>Meus empr&eacute;stimos</span>
+      </a>
+
+      <a href="meu-historico.html">
+        <img src="img/historico.svg" alt="">
+        <span>Meu hist&oacute;rico</span>
       </a>
 
       <button type="button" id="headerLogout">
@@ -295,7 +305,7 @@ document
           }
         });
 
-        feedback.textContent = "Senha redefinida com sucesso. Voce sera levado para o login.";
+        feedback.textContent = "Senha redefinida com sucesso. Você será levado para o login.";
         feedback.classList.add("success-feedback");
         submitButton.textContent = "Senha redefinida";
         submitButton.disabled = true;
@@ -327,6 +337,8 @@ async function renderAccountPage() {
       <aside class="profile-menu">
         <a class="active" href="minha-conta.html"><img src="img/PERFIL.svg" alt="">Seus dados</a>
         <a href="minhas-reservas.html"><img src="img/reserva de livro.svg" alt="">Minhas reservas</a>
+        <a href="meus-emprestimos.html"><img src="img/emprestimo.svg" alt="">Meus empr&eacute;stimos</a>
+        <a href="meu-historico.html"><img src="img/historico.svg" alt="">Meu hist&oacute;rico</a>
         <button type="button" id="profileLogoutButton"><img src="img/Sair.svg" alt="">Sair</button>
       </aside>
 
@@ -353,10 +365,6 @@ async function renderAccountPage() {
               <input type="email" id="profileEmail" placeholder="E-mail" required>
             </label>
             <label>
-              <span>Confirmar e-mail</span>
-              <input type="email" id="profileEmailConfirm" placeholder="Confirmar e-mail" required>
-            </label>
-            <label>
               <span>Telefone</span>
               <input type="text" id="profilePhone" placeholder="DDD e número de telefone" required>
             </label>
@@ -369,6 +377,8 @@ async function renderAccountPage() {
     </section>
   `;
 
+  root.insertAdjacentHTML("beforeend", `<div id="modalOverlay" class="modal-overlay hidden-action"></div>`);
+
   // Reorganiza os campos em dois grupos para refletir o layout definido no Figma.
   const form = document.getElementById("profileForm");
   const fields = form.querySelector(".account-fields");
@@ -380,12 +390,21 @@ async function renderAccountPage() {
   personalGroup.className = "account-group personal-group";
   personalGroup.innerHTML = "<h2>Dados pessoais</h2><div class=\"account-fields personal-fields\"></div>";
   accessGroup.className = "account-group access-group";
-  accessGroup.innerHTML = "<h2>Dados de acesso</h2><div class=\"account-fields access-fields\"></div>";
+  accessGroup.innerHTML = `
+    <h2>Dados de acesso</h2>
+    <div class="account-fields access-fields"></div>
+    <p class="access-helper hidden-action" id="accessActionNotice" role="status">
+      Para alterar e-mail ou senha, use os botões abaixo.
+    </p>
+  `;
 
-  [labels[0], labels[1], labels[4]].forEach((label) => personalGroup.querySelector(".personal-fields").appendChild(label));
+  [labels[0], labels[1], labels[3]].forEach((label) => {
+    personalGroup.querySelector(".personal-fields").appendChild(label);
+  });
+
   accessGroup.querySelector(".access-fields").appendChild(labels[2]);
-  labels[3].classList.add("hidden-confirm-email");
-  accessGroup.appendChild(labels[3]);
+  labels[2].classList.add("email-display-card");
+  labels[2].querySelector("input").readOnly = true;
 
   fields.replaceWith(personalGroup, accessGroup);
   actions.textContent = "Salvar";
@@ -400,20 +419,66 @@ async function renderAccountPage() {
       <button class="button primary" id="changeEmailButton" type="button">Alterar e-mail</button>
       <button class="button primary" id="changePasswordButton" type="button">Alterar senha</button>
     </div>
-    <form id="passwordChangeForm" class="password-change-form hidden-action">
+  `);
+  accessGroup.querySelector(".access-fields").insertAdjacentHTML("beforeend", `
+    <label class="account-field-card password-display-card">
+      <span>Senha</span>
+      <input type="text" id="profilePasswordDisplay" value="••••••••" readonly aria-label="Senha protegida">
+    </label>
+  `);
+
+  root.insertAdjacentHTML("beforeend", `
+    <form id="emailChangeForm" class="modal-form account-modal hidden-action">
+      <h3>Alterar e-mail</h3>
+
       <label>
+        <span>Novo e-mail</span>
+        <input type="email" id="newEmail" required>
+      </label>
+
+      <label>
+        <span>Confirmar novo e-mail</span>
+        <input type="email" id="confirmNewEmail" required>
+      </label>
+
+      <p class="modal-feedback" id="emailModalFeedback"></p>
+
+      <div class="modal-actions-row">
+        <button class="button primary" type="submit">Salvar e-mail</button>
+        <button class="button ghost" id="cancelEmailButton" type="button">Cancelar</button>
+      </div>
+    </form>
+
+    <form id="passwordChangeForm" class="modal-form account-modal hidden-action">
+      <h3>Alterar senha</h3>
+
+      <label class="modal-password-group password-group">
         <span>Senha atual</span>
         <input type="password" id="currentPassword" required>
+        <button type="button" class="modal-toggle-password" onclick="togglePassword(this)" aria-label="Mostrar senha atual">
+          <img src="img/olho-fechado.svg" alt="Mostrar senha">
+        </button>
       </label>
-      <label>
+
+      <label class="modal-password-group password-group">
         <span>Nova senha</span>
         <input type="password" id="newPassword" minlength="6" required>
+        <button type="button" class="modal-toggle-password" onclick="togglePassword(this)" aria-label="Mostrar nova senha">
+          <img src="img/olho-fechado.svg" alt="Mostrar senha">
+        </button>
       </label>
-      <label>
+
+      <label class="modal-password-group password-group">
         <span>Confirmar nova senha</span>
         <input type="password" id="confirmNewPassword" minlength="6" required>
+        <button type="button" class="modal-toggle-password" onclick="togglePassword(this)" aria-label="Mostrar confirmação de senha">
+          <img src="img/olho-fechado.svg" alt="Mostrar senha">
+        </button>
       </label>
-      <div class="password-actions-row">
+
+      <p class="modal-feedback" id="passwordModalFeedback"></p>
+
+      <div class="modal-actions-row">
         <button class="button primary" type="submit">Salvar senha</button>
         <button class="button ghost" id="cancelPasswordButton" type="button">Cancelar</button>
       </div>
@@ -433,7 +498,7 @@ async function renderAccountPage() {
     document.getElementById("profileName").value = client.nome || "";
     document.getElementById("profileCpf").value = formatCpf(client.cpf || "");
     document.getElementById("profileEmail").value = client.email || "";
-    document.getElementById("profileEmailConfirm").value = client.email || "";
+
     document.getElementById("profilePhone").value = formatPhone(client.telefone || "");
     originalProfileValues = {
       nome: client.nome || "",
@@ -445,7 +510,8 @@ async function renderAccountPage() {
     bindProfileForm(session.id);
     bindEditProfileAction();
     bindCancelProfileAction();
-    bindEmailAction();
+    bindAccessActionNotice();
+    bindEmailAction(session.id);
     bindPasswordAction(session.id);
   } catch (error) {
     document.getElementById("profileFeedback").textContent = error.message;
@@ -509,13 +575,7 @@ async function renderAccountPage() {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const email = document.getElementById("profileEmail").value.trim();
-      const emailConfirm = document.getElementById("profileEmailConfirm").value.trim();
       const feedback = document.getElementById("profileFeedback");
-
-      if (email !== emailConfirm) {
-        feedback.textContent = "Os e-mails precisam ser iguais.";
-        return;
-      }
 
       const payload = {
         nome: document.getElementById("profileName").value.trim(),
@@ -547,32 +607,34 @@ async function renderAccountPage() {
     const form = document.getElementById("passwordChangeForm");
     const cancelButton = document.getElementById("cancelPasswordButton");
     const feedback = document.getElementById("profileFeedback");
+    const modalFeedback = document.getElementById("passwordModalFeedback");
     if (!button || !form || !feedback) return;
 
     button.addEventListener("click", () => {
-      form.classList.remove("hidden-action");
-      button.classList.add("hidden-action");
+      document.getElementById("accessActionNotice")?.classList.add("hidden-action");
+      openAccountModal(form);
       document.getElementById("currentPassword").focus();
       feedback.textContent = "";
+      modalFeedback.textContent = "";
     });
 
     cancelButton.addEventListener("click", () => {
-      form.reset();
-      form.classList.add("hidden-action");
-      button.classList.remove("hidden-action");
+      closeAccountModal(form);
       feedback.textContent = "";
+      modalFeedback.textContent = "";
     });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       feedback.classList.remove("success-feedback");
+      modalFeedback.textContent = "";
 
       const senhaAtual = document.getElementById("currentPassword").value;
       const novaSenha = document.getElementById("newPassword").value;
       const confirmarNovaSenha = document.getElementById("confirmNewPassword").value;
 
       if (novaSenha !== confirmarNovaSenha) {
-        feedback.textContent = "A nova senha e a confirmação precisam ser iguais.";
+        modalFeedback.textContent = "A nova senha e a confirmação precisam ser iguais.";
         return;
       }
 
@@ -587,11 +649,9 @@ async function renderAccountPage() {
         });
         feedback.textContent = "Senha atualizada com sucesso.";
         feedback.classList.add("success-feedback");
-        form.reset();
-        form.classList.add("hidden-action");
-        button.classList.remove("hidden-action");
+        closeAccountModal(form);
       } catch (error) {
-        feedback.textContent = error.message;
+        modalFeedback.textContent = error.message;
       }
     });
   }
@@ -615,7 +675,7 @@ async function renderAccountPage() {
         document.getElementById("profileName").value = originalProfileValues.nome;
         document.getElementById("profileCpf").value = originalProfileValues.cpf;
         document.getElementById("profileEmail").value = originalProfileValues.email;
-        document.getElementById("profileEmailConfirm").value = originalProfileValues.email;
+
         document.getElementById("profilePhone").value = originalProfileValues.telefone;
       }
       if (feedback) {
@@ -626,13 +686,12 @@ async function renderAccountPage() {
   }
 
   function setProfileEditing(isEditing) {
-    const editableInputs = ["profileName", "profileCpf", "profileEmail", "profileEmailConfirm", "profilePhone"]
+    const editableInputs = ["profileName", "profileCpf", "profilePhone"]
       .map((id) => document.getElementById(id))
       .filter(Boolean);
     const saveButton = document.querySelector(".profile-actions-row .button.primary");
     const editButton = document.getElementById("editProfileButton");
     const cancelButton = document.getElementById("cancelProfileButton");
-    const confirmEmailField = document.getElementById("profileEmailConfirm")?.closest("label");
 
     editableInputs.forEach((input) => {
       input.readOnly = !isEditing;
@@ -647,24 +706,107 @@ async function renderAccountPage() {
     if (cancelButton) {
       cancelButton.classList.toggle("hidden-action", !isEditing);
     }
-    if (confirmEmailField) {
-      confirmEmailField.classList.toggle("hidden-confirm-email", !isEditing);
-    }
   }
 
-  function bindEmailAction() {
-    const button = document.getElementById("changeEmailButton");
-    const feedback = document.getElementById("profileFeedback");
-    if (!button || !feedback) return;
+  function bindAccessActionNotice() {
+    const protectedInputs = [
+      document.getElementById("profileEmail"),
+      document.getElementById("profilePasswordDisplay")
+    ].filter(Boolean);
+    const notice = document.getElementById("accessActionNotice");
+    if (!protectedInputs.length || !notice) return;
 
-    button.addEventListener("click", () => {
-      feedback.textContent = "";
-      setProfileEditing(true);
-      document.getElementById("profileEmail")?.focus();
+    const showNotice = () => {
+      notice.classList.remove("hidden-action");
+    };
+
+    protectedInputs.forEach((input) => {
+      input.addEventListener("focus", showNotice);
+      input.addEventListener("click", showNotice);
+      input.addEventListener("keydown", (event) => {
+        if (event.key.length === 1 || event.key === "Backspace" || event.key === "Delete") {
+          showNotice();
+        }
+      });
     });
   }
 
-})();
+  function bindEmailAction(clientId) {
+    const button = document.getElementById("changeEmailButton");
+    const form = document.getElementById("emailChangeForm");
+    const cancelButton = document.getElementById("cancelEmailButton");
+    const feedback = document.getElementById("profileFeedback");
+    const modalFeedback = document.getElementById("emailModalFeedback");
+
+    if (!button || !form || !cancelButton || !modalFeedback) return;
+
+    button.addEventListener("click", () => {
+      document.getElementById("accessActionNotice")?.classList.add("hidden-action");
+      openAccountModal(form);
+      document.getElementById("newEmail").value = document.getElementById("profileEmail").value;
+      document.getElementById("confirmNewEmail").value = "";
+      document.getElementById("newEmail").focus();
+      feedback.textContent = "";
+      modalFeedback.textContent = "";
+    });
+
+    cancelButton.addEventListener("click", () => {
+      closeAccountModal(form);
+      feedback.textContent = "";
+      modalFeedback.textContent = "";
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      modalFeedback.textContent = "";
+
+      const newEmail = document.getElementById("newEmail").value.trim();
+      const confirmNewEmail = document.getElementById("confirmNewEmail").value.trim();
+
+      if (newEmail !== confirmNewEmail) {
+        modalFeedback.textContent = "Os e-mails precisam ser iguais.";
+        return;
+      }
+
+      const payload = {
+        nome: document.getElementById("profileName").value.trim(),
+        cpf: digitsOnly(document.getElementById("profileCpf").value),
+        email: newEmail,
+        telefone: digitsOnly(document.getElementById("profilePhone").value)
+      };
+
+      try {
+        const client = await app.request(`/clientes/${clientId}`, { method: "PUT", body: payload });
+        app.setSession({ id: client.id, nome: client.nome, email: client.email });
+        document.getElementById("profileEmail").value = client.email || "";
+        feedback.textContent = "E-mail atualizado com sucesso.";
+        feedback.classList.add("success-feedback");
+        originalProfileValues = {
+          nome: client.nome || "",
+          cpf: formatCpf(client.cpf || ""),
+          email: client.email || "",
+          telefone: formatPhone(client.telefone || "")
+        };
+        closeAccountModal(form);
+      } catch (error) {
+        modalFeedback.textContent = error.message;
+      }
+    });
+  }
+
+  function openAccountModal(form) {
+    document.querySelectorAll(".account-modal").forEach((modal) => {
+      modal.classList.add("hidden-action");
+    });
+    document.getElementById("modalOverlay").classList.remove("hidden-action");
+    form.classList.remove("hidden-action");
+  }
+
+  function closeAccountModal(form) {
+    form.reset();
+    form.classList.add("hidden-action");
+    document.getElementById("modalOverlay").classList.add("hidden-action");
+  }
 
 // Mostra ou oculta a senha
 function togglePassword(button) {
@@ -738,3 +880,5 @@ applyMask("signupCpf", formatCpf);
 applyMask("signupPhone", formatPhone);
 applyMask("profileCpf", formatCpf);
 applyMask("profilePhone", formatPhone);
+window.togglePassword = togglePassword;
+})();

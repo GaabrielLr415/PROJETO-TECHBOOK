@@ -5,10 +5,12 @@ import com.techbook.dto.AdminLoginResponse;
 import com.techbook.dto.BookRequest;
 import com.techbook.dto.ClienteRequest;
 import com.techbook.dto.ConfirmarRetiradaRequest;
+import com.techbook.dto.ContatoPendenciaRequest;
 import com.techbook.dto.DashboardResponse;
 import com.techbook.dto.DevolucaoRequest;
 import com.techbook.dto.DevolucaoResponse;
 import com.techbook.dto.EmprestimoResponse;
+import com.techbook.dto.ExtravioRequest;
 import com.techbook.dto.LivroResponse;
 import com.techbook.dto.LoginRequest;
 import com.techbook.dto.RecuperarSenhaRequest;
@@ -152,6 +154,8 @@ public class TechbookService {
         usuario.setTelefone(request.telefone().trim());
         usuario.setCpf(request.cpf().trim());
         usuario.setSenhaHash(gerarHashSenha(textoObrigatorio(request.senha(), "senha")));
+        usuario.setBloqueado(false);
+        usuario.setMotivoBloqueio("");
         return toUsuarioResponse(usuarioRepository.save(usuario));
     }
 
@@ -266,12 +270,14 @@ public class TechbookService {
         Usuario cliente = garantirCliente(request.clienteId());
         Livro livro = buscarLivroEntidade(request.livroId());
 
+        garantirClienteSemPendencia(cliente);
+
         if (quantidadeReservavel(livro) <= 0) {
             throw new IllegalStateException("Livro indisponivel no momento.");
         }
 
-        long emprestimosAtivosDoCliente = contarEmprestimosNaoDevolvidos(cliente.getId());
-        if (emprestimosAtivosDoCliente >= LIMITE_EMPRESTIMOS_ATIVOS_POR_CLIENTE) {
+        long livrosEmUsoDoCliente = contarLivrosEmUsoDoCliente(cliente.getId());
+        if (livrosEmUsoDoCliente >= LIMITE_EMPRESTIMOS_ATIVOS_POR_CLIENTE) {
             throw new IllegalStateException("Limite de emprestimos atingido. Realize a devolucao para novos emprestimos.");
         }
 
@@ -340,6 +346,7 @@ public class TechbookService {
         if (livro.getQuantidadeDisponivel() <= 0) {
             throw new IllegalStateException("Nao ha estoque disponivel para concluir o emprestimo.");
         }
+        garantirClienteSemPendencia(reserva.getCliente());
         if (contarEmprestimosNaoDevolvidos(reserva.getCliente().getId()) >= LIMITE_EMPRESTIMOS_ATIVOS_POR_CLIENTE) {
             throw new IllegalStateException("Limite de emprestimos atingido. Realize a devolucao para novos emprestimos.");
         }
@@ -381,6 +388,51 @@ public class TechbookService {
         return toEmprestimoResponse(emprestimoRepository.save(emprestimo));
     }
 
+    public EmprestimoResponse registrarContatoPendencia(Long emprestimoId, ContatoPendenciaRequest request) {
+        Emprestimo emprestimo = buscarEmprestimo(emprestimoId);
+        String statusAtual = calcularStatusEmprestimo(emprestimo);
+        if (!"ATRASADO".equals(statusAtual) && !"EXTRAVIADO".equals(statusAtual)) {
+            throw new IllegalStateException("Contato de pendencia so pode ser registrado para emprestimos atrasados ou extraviados.");
+        }
+
+        String canal = textoOpcional(request == null ? null : request.canal(), "CONTATO");
+        String observacao = textoObrigatorio(request == null ? null : request.observacao(), "observacao do contato");
+        Long administradorId = request == null || request.administradorId() == null ? emprestimo.getAdministradorId() : request.administradorId();
+        String registro = LocalDate.now() + " - " + canal.trim().toUpperCase() + " - " + observacao;
+        String historicoAtual = textoOpcional(emprestimo.getHistoricoContato(), "");
+
+        emprestimo.setAdministradorId(administradorId);
+        emprestimo.setHistoricoContato(historicoAtual.isBlank() ? registro : historicoAtual + "\n" + registro);
+        bloquearCliente(emprestimo.getCliente(), "Pendencia de devolucao no emprestimo #" + emprestimo.getId() + ".");
+        return toEmprestimoResponse(emprestimoRepository.save(emprestimo));
+    }
+
+    public EmprestimoResponse marcarEmprestimoComoExtraviado(Long emprestimoId, ExtravioRequest request) {
+        Emprestimo emprestimo = buscarEmprestimo(emprestimoId);
+        String statusAtual = calcularStatusEmprestimo(emprestimo);
+        if ("DEVOLVIDO".equals(statusAtual)) {
+            throw new IllegalStateException("Emprestimo devolvido nao pode ser marcado como extraviado.");
+        }
+        if ("EXTRAVIADO".equals(statusAtual)) {
+            return toEmprestimoResponse(emprestimo);
+        }
+
+        Livro livro = emprestimo.getLivro();
+        livro.setQuantidadeTotal(Math.max(0, livro.getQuantidadeTotal() - 1));
+        livro.setQuantidadeDisponivel(Math.min(livro.getQuantidadeDisponivel(), livro.getQuantidadeTotal()));
+        livroRepository.save(livro);
+
+        Long administradorId = request == null || request.administradorId() == null ? emprestimo.getAdministradorId() : request.administradorId();
+        String observacao = textoOpcional(request == null ? null : request.observacao(), "Exemplar marcado como extraviado.");
+
+        emprestimo.setAdministradorId(administradorId);
+        emprestimo.setStatus("EXTRAVIADO");
+        emprestimo.setEstadoLivro("EXTRAVIADO");
+        emprestimo.setObservacaoDevolucao(observacao);
+        bloquearCliente(emprestimo.getCliente(), "Emprestimo #" + emprestimo.getId() + " marcado como extraviado.");
+        return toEmprestimoResponse(emprestimoRepository.save(emprestimo));
+    }
+
     public DevolucaoResponse registrarDevolucao(DevolucaoRequest request) {
         if (request == null || request.emprestimoId() == null) {
             throw new IllegalArgumentException("Informe o emprestimo para registrar a devolucao.");
@@ -397,6 +449,9 @@ public class TechbookService {
 
         Livro livro = emprestimo.getLivro();
         // A devolucao nunca pode ultrapassar o estoque fisico cadastrado do livro.
+        if ("EXTRAVIADO".equals(statusAtual)) {
+            livro.setQuantidadeTotal(livro.getQuantidadeTotal() + 1);
+        }
         livro.setQuantidadeDisponivel(Math.min(livro.getQuantidadeTotal(), livro.getQuantidadeDisponivel() + 1));
         livroRepository.save(livro);
 
@@ -405,6 +460,7 @@ public class TechbookService {
         emprestimo.setEstadoLivro(textoOpcional(request.estadoLivro(), "BOM"));
         emprestimo.setObservacaoDevolucao(textoOpcional(request.observacao(), ""));
         emprestimoRepository.save(emprestimo);
+        atualizarBloqueioClienteAposRegularizacao(emprestimo.getCliente());
 
         Devolucao devolucao = new Devolucao();
         devolucao.setEmprestimo(emprestimo);
@@ -452,7 +508,7 @@ public class TechbookService {
         String autor = textoObrigatorio(request.autor(), "autor");
         String categoria = textoObrigatorio(request.categoria(), "categoria");
         String descricao = textoObrigatorio(request.descricao(), "descricao");
-        Integer quantidadeTotal = inteiroMinimo(request.quantidadeTotal(), "quantidade total", 1);
+        Integer quantidadeTotal = inteiroMinimo(request.quantidadeTotal(), "quantidade total", 0);
         Integer quantidadeDisponivel = inteiroMinimo(request.quantidadeDisponivel(), "quantidade disponivel", 0);
 
         if (quantidadeDisponivel > quantidadeTotal) {
@@ -540,6 +596,9 @@ public class TechbookService {
         if ("DEVOLVIDO".equals(emprestimo.getStatus())) {
             return "DEVOLVIDO";
         }
+        if ("EXTRAVIADO".equals(emprestimo.getStatus())) {
+            return "EXTRAVIADO";
+        }
         if (emprestimo.getDataDevolucaoPrevista() != null && emprestimo.getDataDevolucaoPrevista().isBefore(LocalDate.now())) {
             return "ATRASADO";
         }
@@ -602,13 +661,55 @@ public class TechbookService {
             .count();
     }
 
+    private long contarLivrosEmUsoDoCliente(Long clienteId) {
+        long reservasPendentes = reservaRepository.countByClienteIdAndStatus(clienteId, "PENDENTE");
+        return contarEmprestimosNaoDevolvidos(clienteId) + reservasPendentes;
+    }
+
+    private boolean clienteTemPendenciaCritica(Long clienteId) {
+        return emprestimoRepository.findByClienteIdOrderByIdDesc(clienteId).stream()
+            .map(this::calcularStatusEmprestimo)
+            .anyMatch(status -> "ATRASADO".equals(status) || "EXTRAVIADO".equals(status));
+    }
+
+    private String motivoPendenciaCliente(Usuario usuario) {
+        if (Boolean.TRUE.equals(usuario.getBloqueado()) && usuario.getMotivoBloqueio() != null && !usuario.getMotivoBloqueio().isBlank()) {
+            return usuario.getMotivoBloqueio();
+        }
+        return "Cliente possui emprestimo atrasado ou extraviado pendente de regularizacao.";
+    }
+
+    private void garantirClienteSemPendencia(Usuario usuario) {
+        if (Boolean.TRUE.equals(usuario.getBloqueado()) || clienteTemPendenciaCritica(usuario.getId())) {
+            bloquearCliente(usuario, motivoPendenciaCliente(usuario));
+            throw new IllegalStateException("Cliente bloqueado por pendencia de devolucao. Regularize antes de novas reservas ou emprestimos.");
+        }
+    }
+
+    private void bloquearCliente(Usuario usuario, String motivo) {
+        usuario.setBloqueado(true);
+        usuario.setMotivoBloqueio(textoOpcional(motivo, "Cliente bloqueado por pendencia de devolucao."));
+        usuarioRepository.save(usuario);
+    }
+
+    private void atualizarBloqueioClienteAposRegularizacao(Usuario usuario) {
+        if (!clienteTemPendenciaCritica(usuario.getId())) {
+            usuario.setBloqueado(false);
+            usuario.setMotivoBloqueio("");
+            usuarioRepository.save(usuario);
+        }
+    }
+
     private UsuarioResponse toUsuarioResponse(Usuario usuario) {
+        boolean bloqueado = Boolean.TRUE.equals(usuario.getBloqueado()) || clienteTemPendenciaCritica(usuario.getId());
         return new UsuarioResponse(
             usuario.getId(),
             usuario.getNome(),
             usuario.getEmail(),
             usuario.getTelefone(),
-            usuario.getCpf()
+            usuario.getCpf(),
+            bloqueado,
+            bloqueado ? motivoPendenciaCliente(usuario) : ""
         );
     }
 
@@ -634,6 +735,7 @@ public class TechbookService {
             emprestimo.isRenovado(),
             emprestimo.getEstadoLivro(),
             emprestimo.getObservacaoDevolucao(),
+            emprestimo.getHistoricoContato(),
             toUsuarioResponse(emprestimo.getCliente()),
             toLivroResponse(emprestimo.getLivro())
         );

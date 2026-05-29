@@ -97,13 +97,14 @@
 }
 
 .support-hero h1 {
+  font-family: var(--font-display);
   margin: 0;
   text-align: center;
   color: #fff8dc;
   font-size: clamp(2.8rem, 6vw, 5rem);
   line-height: 1;
-  letter-spacing: 0.04em;
-  font-weight: 800;
+  letter-spacing: 0;
+  font-weight: 400;
 }
 
 .hero-books {
@@ -137,11 +138,13 @@
 }
 
 .section-heading-center h2 {
+  font-family: var(--font-display);
   margin: 0;
   color: #148de7;
   font-size: clamp(2.15rem, 4vw, 3.35rem);
   line-height: 1.05;
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 

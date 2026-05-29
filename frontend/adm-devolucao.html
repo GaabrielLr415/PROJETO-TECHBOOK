@@ -3,55 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHBOOK | Devolução ADM</title>
+  <title>TECHBOOK | Registrar Devolução ADM</title>
   
   <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/adm.css">
+  <link rel="stylesheet" href="css/adm.css?v=return-meta-space-1">
 </head>
 <body data-page="admin">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="sidebar-brand"><img src="img/LOGOMARCA.svg" alt="" class="admin-brand-logo"></div>
       <nav class="admin-nav">
-        <a href="adm.html">Visão Geral</a>
-        <a href="adm-reservas.html">Registrar Emprestimo</a>
-        <a class="active" href="adm-devolucao.html">Registrar devolução</a>
-        <a href="adm-atrasos.html">Verificar atrasos</a>
-        <a href="adm-livros.html">Consultar Livro</a>
-        <a href="adm-usuarios.html">Consultar Usuários</a>
-        <a href="adm-livros.html#gestao">Gerenciar Livro</a>
+        <a href="adm.html">Visão geral</a>
+        <a href="adm-reservas.html">Confirmar retirada</a>
+        <a href="adm-emprestimo.html">Empréstimos ativos</a>
+        <a href="adm-devolucao.html">Registrar devolução</a>
+        <a href="adm-atrasos.html">Empréstimos atrasados</a>
+        <a href="adm-livros.html">Livros e estoque</a>
+        <a href="adm-usuarios.html">Clientes</a>
+        <a href="adm-livros.html#gestao">Cadastrar livro</a>
       </nav>
       <div class="sidebar-user"><div><strong>Administrador</strong><span>Controle de Acervo</span></div></div>
     </aside>
     <main class="admin-main">
       <section class="admin-screen form-screen" id="devolucoes">
         <div class="screen-topbar">
-          <div class="screen-heading"><h2>Registro de Devolução</h2></div>
-          <a class="button ghost" href="adm.html">Voltar ao Menu</a>
+          <div class="screen-heading">
+            <h2>Registrar devolução</h2>
+            <p>Selecione um empréstimo ativo e registre a devolução com o estado físico do livro.</p>
+          </div>
+          <a class="button ghost" href="adm.html">Voltar ao painel</a>
         </div>
-        <form id="returnForm" class="admin-form-grid two-cols">
-          <label class="field-block"><span>Cliente</span><input type="text" placeholder="Ex: Nome do cliente" disabled></label>
-          <label class="field-block"><span>Id. do administrador</span><input type="number" id="returnAdminId" placeholder="Ex: 1" value="1" required></label>
-          <label class="field-block"><span>Livro</span><input type="text" placeholder="Ex: Título do livro" disabled></label>
-          <label class="field-block"><span>Id. do empréstimo</span><input type="number" id="returnLoanId" placeholder="Ex: Código do empréstimo" required></label>
-          <label class="field-block"><span>Data de Empréstimo</span><input type="text" value="Informada pelo sistema" disabled></label>
-          <label class="field-block"><span>Estado do livro</span><select id="returnBookState"><option value="BOM">Livro em bom estado</option><option value="AVARIADO">Livro com avaria</option></select></label>
-          <label class="field-block full"><span>Observação da devolução</span><textarea id="returnObservation" placeholder="Ex: Sem avarias ou descreva o problema encontrado"></textarea></label>
-          <div class="form-submit-row full center"><button class="button primary large" type="submit">Registrar Devolução</button></div>
-        </form>
+        <div class="return-workflow">
+          <div class="history-panel return-picker-panel">
+            <div class="return-panel-heading">
+              <span class="step-pill">1</span>
+              <div>
+                <h3>Escolha o empréstimo</h3>
+                <p>Localize pelo nome, livro ou número do empréstimo.</p>
+              </div>
+            </div>
+            <div class="summary-strip" id="returnPickerSummary"></div>
+            <div class="filter-bar compact-filter return-filter">
+              <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="returnLoanSearchInput" placeholder="Buscar por cliente, livro ou ID do empréstimo"></div>
+              <select id="returnLoanStatusFilter" aria-label="Filtrar empréstimos para devolução">
+                <option value="">Todos os status</option>
+                <option value="ATIVO">Ativos</option>
+                <option value="ATRASADO">Atrasados</option>
+                <option value="EXTRAVIADO">Extraviados</option>
+              </select>
+            </div>
+            <div id="returnLoanList" class="return-loan-picker"></div>
+          </div>
+          <aside class="return-register-panel">
+            <div class="return-panel-heading">
+              <span class="step-pill">2</span>
+              <div>
+                <h3>Registre a devolução</h3>
+                <p>Confira o resumo e informe o estado do livro.</p>
+              </div>
+            </div>
+            <div id="selectedReturnCard" class="selection-card return-selection-card empty">
+              <span class="selection-kicker">Aguardando seleção</span>
+              <strong>Nenhum empréstimo selecionado</strong>
+              <p>Escolha um item da lista ao lado para preencher esta etapa.</p>
+            </div>
+            <form id="returnForm" class="admin-form-grid return-form-grid">
+              <input type="hidden" id="returnClientName">
+              <input type="hidden" id="returnBookTitle">
+              <input type="hidden" id="returnStartDate" value="Selecione um empréstimo">
+              <input type="hidden" id="returnAdminId" value="1">
+              <input type="hidden" id="returnLoanId" required>
+              <label class="field-block"><span>Estado do livro</span><select id="returnBookState"><option value="BOM">Livro em bom estado</option><option value="AVARIADO">Livro com avaria</option></select></label>
+              <label class="field-block"><span>Observação da devolução</span><textarea id="returnObservation" placeholder="Ex: Sem avarias ou descreva o problema encontrado"></textarea></label>
+              <div class="helper-text" id="returnHelperText">Selecione um empréstimo ativo para liberar o registro.</div>
+              <div class="form-submit-row"><button class="button primary large" id="returnSubmitButton" type="submit" disabled>Registrar Devolução</button></div>
+            </form>
+          </aside>
+        </div>
         <div class="history-panel">
           <h3>Histórico de devoluções</h3>
+          <div class="summary-strip" id="returnHistorySummary"></div>
+          <div class="filter-bar compact-filter return-history-filter">
+            <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="returnSearchInput" placeholder="Buscar por cliente, livro ou observação"></div>
+            <select id="returnHistoryStateFilter" aria-label="Filtrar histórico por estado do livro">
+              <option value="">Todos os estados</option>
+              <option value="BOM">Bom estado</option>
+              <option value="AVARIADO">Com avaria</option>
+            </select>
+            <select id="returnHistoryMonthFilter" aria-label="Filtrar histórico por mês">
+              <option value="">Todos os meses</option>
+            </select>
+            <select id="returnHistoryYearFilter" aria-label="Filtrar histórico por ano">
+              <option value="">Todos os anos</option>
+            </select>
+            <select id="returnHistoryPageSize" aria-label="Itens por página">
+              <option value="5">5 por página</option>
+              <option value="10">10 por página</option>
+              <option value="20">20 por página</option>
+            </select>
+            <button class="button primary search-button" id="returnSearchButton" type="button">Buscar</button>
+          </div>
           <div id="returnHistory" class="status-list"></div>
+          <div id="returnHistoryPagination" class="pagination-bar"></div>
         </div>
       </section>
     </main>
   </div>
-  <script src="js/app.js"></script>
-  <script src="js/adm.js"></script>
+  <script src="js/app.js?v=anti-trava-1"></script>
+  <script src="js/adm.js?v=admin-performance-1"></script>
 </body>
 </html>
-
-

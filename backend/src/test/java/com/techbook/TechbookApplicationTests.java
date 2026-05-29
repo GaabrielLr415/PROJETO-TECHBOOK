@@ -124,6 +124,41 @@ class TechbookApplicationTests {
     }
 
     @Test
+    void bloqueiaClienteComEmprestimosAtivosEReservasPendentesNoLimite() {
+        Usuario cliente = buscarUsuario(criarCliente().id());
+        for (int i = 0; i < 2; i++) {
+            Livro livro = buscarLivro(criarLivro("Emprestimo Ocupado " + i, 1).id());
+            Emprestimo emprestimo = new Emprestimo();
+            emprestimo.setCliente(cliente);
+            emprestimo.setLivro(livro);
+            emprestimo.setAdministradorId(1L);
+            emprestimo.setDataEmprestimo(LocalDate.now());
+            emprestimo.setDataDevolucaoPrevista(LocalDate.now().plusDays(14));
+            emprestimo.setStatus("ATIVO");
+            emprestimo.setEstadoLivro("EMPRESTADO");
+            emprestimoRepository.save(emprestimo);
+        }
+
+        Livro livroReservado = buscarLivro(criarLivro("Reserva Ocupada", 1).id());
+        Reserva reserva = new Reserva();
+        reserva.setCliente(cliente);
+        reserva.setLivro(livroReservado);
+        reserva.setDataReserva(LocalDate.now());
+        reserva.setPrazoRetirada(LocalDate.now().plusDays(1));
+        reserva.setStatus("PENDENTE");
+        reservaRepository.save(reserva);
+
+        LivroResponse novoLivro = criarLivro("Quarto Item Bloqueado", 1);
+
+        IllegalStateException error = assertThrows(
+            IllegalStateException.class,
+            () -> service.criarReserva(new ReservaRequest(cliente.getId(), novoLivro.id()))
+        );
+
+        assertEquals("Limite de emprestimos atingido. Realize a devolucao para novos emprestimos.", error.getMessage());
+    }
+
+    @Test
     void registraDevolucaoEAtualizaLivroComoDisponivel() {
         var reserva = criarReservaPendente("Livro Devolucao", 1);
         var emprestimo = service.confirmarRetirada(new ConfirmarRetiradaRequest(reserva.id(), 1L));

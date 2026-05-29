@@ -127,10 +127,12 @@
 
 .about-copy h2,
 .build-heading h2 {
+  font-family: var(--font-display);
   margin: 0 0 36px;
   font-size: clamp(2.8rem, 5vw, 4.4rem);
   line-height: 1;
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
   text-transform: uppercase;
   text-align: center;
 
@@ -283,17 +285,22 @@
 
 .about-cta {
   margin: 80px auto 0; /* afasta dos cards azuis */
-  padding: 40px 60px; /* antes 26px */
+  padding: 42px 64px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 32px;
 
   background: #1490e8;
   border-radius: 22px;
   color: #ffffff;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+}
+
+.about-cta-copy {
+  display: grid;
+  gap: 10px;
 }
 
 .about-cta-chip,
@@ -302,38 +309,46 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 56px;
-  padding: 0 32px;
+  min-height: 54px;
+  padding: 0 34px;
 
   border-radius: 999px; /* deixa arredondado tipo pílula */
 
-  background-image: url("../img/botao-vidro.svg");
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-
   border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
 
   color: #ffffff;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
+  letter-spacing: 0;
+  text-decoration: none;
 
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 8px 18px rgba(0, 0, 0, 0.18);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    0 10px 20px rgba(17, 82, 150, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.about-cta-chip {
+  width: fit-content;
 }
 
 .about-cta-chip:hover,
 .about-cta-button:hover {
   transform: translateY(-3px) scale(1.02);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 14px 26px rgba(17, 82, 150, 0.28);
 }
 
 .about-cta-copy h2 {
-  margin: 40px 0 6px;
+  font-family: var(--font-display);
+  margin: 26px 0 0;
   font-size: clamp(1.8rem, 2.8vw, 2.4rem);
   line-height: 1.05;
-  
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .about-cta-copy p {
@@ -343,7 +358,8 @@
 }
 
 .about-cta-button {
-  min-width: 146px;
+  min-width: 176px;
+  flex: 0 0 auto;
 }
 
 /* =========================

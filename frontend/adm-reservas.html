@@ -1,28 +1,29 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHBOOK | Retiradas por Reserva ADM</title>
+  <title>TECHBOOK | Confirmar Retirada ADM</title>
   
   <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/adm.css">
+  <link rel="stylesheet" href="css/adm.css?v=return-meta-space-1">
 </head>
 <body data-page="admin">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="sidebar-brand"><img src="img/LOGOMARCA.svg" alt="" class="admin-brand-logo"></div>
       <nav class="admin-nav">
-        <a href="adm.html">Visão Geral</a>
-        <a class="active" href="adm-reservas.html">Registrar Emprestimo</a>
+        <a href="adm.html">Visão geral</a>
+        <a href="adm-reservas.html">Confirmar retirada</a>
+        <a href="adm-emprestimo.html">Empréstimos ativos</a>
         <a href="adm-devolucao.html">Registrar devolução</a>
-        <a href="adm-atrasos.html">Verificar atrasos</a>
-        <a href="adm-livros.html">Consultar Livro</a>
-        <a href="adm-usuarios.html">Consultar Usuários</a>
-        <a href="adm-livros.html#gestao">Gerenciar Livro</a>
+        <a href="adm-atrasos.html">Empréstimos atrasados</a>
+        <a href="adm-livros.html">Livros e estoque</a>
+        <a href="adm-usuarios.html">Clientes</a>
+        <a href="adm-livros.html#gestao">Cadastrar livro</a>
       </nav>
       <div class="sidebar-user"><div><strong>Administrador</strong><span>Controle de Acervo</span></div></div>
     </aside>
@@ -30,10 +31,15 @@
       <section class="admin-screen list-screen" id="reservas">
         <div class="screen-topbar">
           <div class="screen-heading">
-            <h2>Retiradas por Reserva</h2>
-            <p>Confirme a retirada dos livros que já possuem reserva pendente.</p>
+            <h2>Confirmar retirada</h2>
+            <p>Transforme uma reserva pendente em empréstimo quando o cliente retirar o livro.</p>
           </div>
-          <a class="button ghost" href="adm.html">Voltar ao Menu</a>
+          <a class="button ghost" href="adm.html">Voltar ao painel</a>
+        </div>
+        <div class="summary-strip" id="reservationSummary"></div>
+        <div class="filter-bar compact-filter">
+          <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="reservationSearchInput" placeholder="Buscar por cliente, livro ou ID da reserva"></div>
+          <button class="button primary search-button" id="reservationSearchButton" type="button">Buscar</button>
         </div>
         <div class="table-shell data-table-shell">
           <table>
@@ -51,29 +57,36 @@
             <tbody id="reservationTable"></tbody>
           </table>
         </div>
-        <div class="helper-text">Clique em "Usar na retirada" para preencher automaticamente o formulário abaixo e confirmar a entrega do livro reservado.</div>
-        <section class="admin-screen form-screen" id="emprestimos">
-          <div class="screen-topbar">
-            <div class="screen-heading"><h2>Confirmar Retirada</h2><p>Preencha com a reserva selecionada para converter a reserva em empréstimo ativo</p></div>
-          </div>
-          <form id="loanForm" class="admin-form-grid two-cols">
-            <label class="field-block full"><span>Cliente</span><input type="text" id="loanClientName" placeholder="Selecione uma reserva pendente" disabled></label>
-            <label class="field-block"><span>Id. da reserva</span><input type="number" id="loanReservationId" placeholder="Ex: Código da reserva" required></label>
-            <label class="field-block"><span>Id. do administrador</span><input type="number" id="loanAdminId" placeholder="Ex: 1" value="1" required></label>
-            <label class="field-block"><span>Livro</span><input type="text" id="loanBookTitle" placeholder="Título preenchido pela reserva" disabled></label>
-            <label class="field-block"><span>Categoria</span><input type="text" id="loanBookCategory" placeholder="Categoria preenchida pela reserva" disabled></label>
-            <label class="field-block"><span>Data de Empréstimo</span><input type="text" id="loanStartDate" value="Automática na confirmação" disabled></label>
-            <label class="field-block"><span>Data de Devolução</span><input type="text" id="loanDueDate" value="Prazo padrão de 14 dias" disabled></label>
-            <div class="helper-text full" id="loanHelperText">Selecione uma reserva pendente acima para registrar a retirada.</div>
-            <div class="form-submit-row full center"><button class="button primary large" type="submit">Confirmar Retirada</button></div>
-          </form>
-        </section>
+        <div class="helper-text">Use apenas reservas pendentes. Clique em "Selecionar reserva" para revisar os dados e confirmar a entrega do livro.</div>
       </section>
     </main>
   </div>
-  <script src="js/app.js"></script>
-  <script src="js/adm.js"></script>
+  <div class="admin-modal-backdrop" id="loanModal" hidden>
+    <section class="admin-modal loan-confirm-modal" aria-labelledby="loanModalTitle">
+      <button class="modal-close" id="closeLoanModalButton" type="button" aria-label="Fechar">×</button>
+      <div class="modal-header">
+        <span class="modal-kicker">Retirada</span>
+        <h3 id="loanModalTitle">Registrar empréstimo</h3>
+        <p>Confira os dados da reserva antes de entregar o livro ao cliente.</p>
+      </div>
+      <div id="selectedReservationCard" class="selection-card" hidden></div>
+      <form id="loanForm" class="admin-form-grid two-cols">
+        <label class="field-block full"><span>Cliente</span><input type="text" id="loanClientName" placeholder="Selecione uma reserva pendente" disabled></label>
+        <label class="field-block"><span>Id. da reserva</span><input type="number" id="loanReservationId" placeholder="Selecione acima" required readonly></label>
+        <label class="field-block"><span>Id. do administrador</span><input type="number" id="loanAdminId" placeholder="Ex: 1" value="1" required></label>
+        <label class="field-block"><span>Livro</span><input type="text" id="loanBookTitle" placeholder="Título preenchido pela reserva" disabled></label>
+        <label class="field-block"><span>Categoria</span><input type="text" id="loanBookCategory" placeholder="Categoria preenchida pela reserva" disabled></label>
+        <label class="field-block"><span>Data de Empréstimo</span><input type="text" id="loanStartDate" value="Automática na confirmação" disabled></label>
+        <label class="field-block"><span>Data de Devolução</span><input type="text" id="loanDueDate" value="Prazo padrão de 14 dias" disabled></label>
+        <div class="helper-text full" id="loanHelperText">Selecione uma reserva pendente acima para registrar a retirada.</div>
+        <div class="form-submit-row full center">
+          <button class="button primary large" id="loanSubmitButton" type="submit" disabled>Confirmar Retirada</button>
+          <button class="button ghost large" id="cancelLoanModalButton" type="button">Cancelar</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <script src="js/app.js?v=anti-trava-1"></script>
+  <script src="js/adm.js?v=admin-performance-1"></script>
 </body>
 </html>
-
-

@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHBOOK | Minhas Reservas</title>
-
+  <title>TECHBOOK | Meu Histórico</title>
 
   <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,8 +12,7 @@
   <link rel="stylesheet" href="css/global.css?v=fredoka-titulos-1">
   <link rel="stylesheet" href="css/catalogo.css?v=fredoka-titulos-1">
 </head>
-<body data-page="reservations">
-  <!-- Cabecalho padrao da area logada -->
+<body data-page="history">
   <div class="app-header-wrap">
     <header class="site-header app-header">
       <a class="brand" href="index.html">
@@ -30,27 +28,28 @@
     </header>
   </div>
 
-  <!-- Conteudo principal da pagina -->
   <main class="reservation-layout">
     <aside class="profile-menu">
       <a href="minha-conta.html"><img src="img/PERFIL.svg" alt="">Seus dados</a>
-      <a class="active" href="minhas-reservas.html"><img src="img/reserva de livro.svg" alt="">Minhas reservas</a>
+      <a href="minhas-reservas.html"><img src="img/reserva de livro.svg" alt="">Minhas reservas</a>
       <a href="meus-emprestimos.html"><img src="img/emprestimo.svg" alt="">Meus empréstimos</a>
-      <a href="meu-historico.html"><img src="img/historico.svg" alt="">Meu histórico</a>
+      <a class="active" href="meu-historico.html"><img src="img/historico.svg" alt="">Meu histórico</a>
       <button type="button" id="logoutButton"><img src="img/Sair.svg" alt="">Sair</button>
     </aside>
+
     <section class="reservation-panel">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Área do cliente</p>
-          <h1>Minhas reservas</h1>
+          <h1>Meu histórico</h1>
         </div>
       </div>
-      <div id="reservationList" class="stack-list"></div>
+      <div id="historySummary" class="history-summary"></div>
+      <div id="historyList" class="stack-list"></div>
+      <div id="historyPagination" class="history-pagination"></div>
     </section>
   </main>
 
-  <!-- Rodape padrao usado nas demais paginas do site -->
   <footer class="about-footer">
     <div class="about-footer-inner">
       <div class="footer-brand-area">

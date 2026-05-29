@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap");
+
 :root {
   --blue-700: #168eea;
   --blue-800: #0f72da;
@@ -14,6 +16,7 @@
   --radius-xl: 28px;
   --radius-lg: 22px;
   --radius-md: 16px;
+  --font-display: "Fredoka One", "Montserrat", sans-serif;
 }
 
 * {
@@ -314,10 +317,12 @@ select {
 .section-heading h2,
 .headline-panel h1,
 .auth-card h1 {
+  font-family: var(--font-display);
   margin: 0;
   font-size: clamp(1.8rem, 3vw, 3rem);
   color: #148de7;
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .site-footer {
@@ -577,9 +582,9 @@ select {
 
 .profile-dropdown img {
 
-  width: 20px;
+  width: 24px;
 
-  height: 20px;
+  height: 24px;
 
   object-fit: contain;
 

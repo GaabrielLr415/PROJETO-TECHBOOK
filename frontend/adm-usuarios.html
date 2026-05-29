@@ -3,51 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHBOOK| Usuários ADM</title>
-  
+  <title>TECHBOOK | Clientes ADM</title>
+
   <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/adm.css">
+  <link rel="stylesheet" href="css/adm.css?v=return-meta-space-1">
 </head>
 <body data-page="admin">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="sidebar-brand"><img src="img/LOGOMARCA.svg" alt="" class="admin-brand-logo"></div>
       <nav class="admin-nav">
-        <a href="adm.html">Visão Geral</a>
-        <a href="adm-reservas.html">Registrar Emprestimo</a>
-        <a href="adm-devolucao.html">Registrar devolução</a>
-        <a href="adm-atrasos.html">Verificar atrasos</a>
-        <a href="adm-livros.html">Consultar Livro</a>
-        <a class="active" href="adm-usuarios.html">Consultar Usuários</a>
-        <a href="adm-livros.html#gestao">Gerenciar Livro</a>
+        <a href="adm.html">Vis&atilde;o geral</a>
+        <a href="adm-reservas.html">Confirmar retirada</a>
+        <a href="adm-emprestimo.html">Empr&eacute;stimos ativos</a>
+        <a href="adm-devolucao.html">Registrar devolu&ccedil;&atilde;o</a>
+        <a href="adm-atrasos.html">Empr&eacute;stimos atrasados</a>
+        <a href="adm-livros.html">Livros e estoque</a>
+        <a href="adm-usuarios.html">Clientes</a>
+        <a href="adm-livros.html#gestao">Cadastrar livro</a>
       </nav>
       <div class="sidebar-user"><div><strong>Administrador</strong><span>Controle de Acervo</span></div></div>
     </aside>
     <main class="admin-main">
       <section class="admin-screen list-screen" id="usuarios">
         <div class="screen-topbar">
-          <div class="screen-heading"><h2>Clientes Cadastrados</h2><p>Cadastro dos clientes via Techbook</p></div>
-          <a class="button ghost" href="adm.html">Voltar ao Menu</a>
+          <div class="screen-heading"><h2>Clientes</h2><p>Consulte os usu&aacute;rios cadastrados pela &aacute;rea do cliente.</p></div>
+          <a class="button ghost" href="adm.html">Voltar ao painel</a>
         </div>
-        <div class="search-bar">
-          <div class="search-input"><span class="search-icon">⌕</span><input type="text" id="userSearchInput" placeholder="Procurar Cliente"></div>
+        <div class="filter-bar">
+          <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="userSearchInput" placeholder="Buscar por nome, CPF, e-mail ou telefone"></div>
+          <select id="userStatusFilter" aria-label="Filtrar por situa&ccedil;&atilde;o">
+            <option value="">Todos os clientes</option>
+            <option value="LIBERADO">Liberados</option>
+            <option value="BLOQUEADO">Bloqueados</option>
+          </select>
           <button class="button primary search-button" id="userSearchButton" type="button">Buscar</button>
         </div>
         <div class="table-shell data-table-shell">
           <table>
-            <thead><tr><th>Seleção</th><th>ID. USUÁRIO</th><th>NOME</th><th>CPF</th><th>E-MAIL</th><th>TELEFONE</th></tr></thead>
+            <thead><tr><th>ID. USU&Aacute;RIO</th><th>NOME</th><th>CPF</th><th>E-MAIL</th><th>TELEFONE</th><th>SITUA&Ccedil;&Atilde;O</th><th>HIST&Oacute;RICO</th></tr></thead>
             <tbody id="userTable"></tbody>
           </table>
         </div>
+        <div id="userPagination" class="pagination-bar"></div>
       </section>
     </main>
   </div>
-  <script src="js/app.js"></script>
-  <script src="js/adm.js"></script>
+  <div class="admin-modal-backdrop" id="userHistoryModal" hidden>
+    <section class="admin-modal user-history-modal" role="dialog" aria-modal="true" aria-labelledby="userHistoryTitle">
+      <button class="modal-close" id="closeUserHistoryButton" type="button" aria-label="Fechar">&times;</button>
+      <div class="screen-heading modal-heading">
+        <h2 id="userHistoryTitle">Hist&oacute;rico do cliente</h2>
+        <p id="userHistorySubtitle">Reservas, empr&eacute;stimos e devolu&ccedil;&otilde;es vinculados ao usu&aacute;rio.</p>
+      </div>
+      <div id="userHistoryContent" class="user-history-content"></div>
+    </section>
+  </div>
+  <script src="js/app.js?v=anti-trava-1"></script>
+  <script src="js/adm.js?v=admin-performance-1"></script>
 </body>
 </html>
-
-

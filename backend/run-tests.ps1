@@ -53,3 +53,4 @@ if (-not (Test-Path $mavenWrapper)) {
 
 Write-Host "Rodando testes com Java $javaMajorVersion..."
 & $mavenWrapper test
+exit $LASTEXITCODE

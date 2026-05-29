@@ -47,4 +47,7 @@ public class Emprestimo {
 
     @Column(length = 1000)
     private String observacaoDevolucao;
+
+    @Column(length = 2000)
+    private String historicoContato;
 }

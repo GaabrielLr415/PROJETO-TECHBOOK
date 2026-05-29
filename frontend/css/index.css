@@ -150,12 +150,13 @@
 }
 
 .hero-copy h1 {
+  font-family: var(--font-display);
   margin: 0;
   max-width: 840px;
   font-size: clamp(3rem, 5.25vw, 7.1rem);
   line-height: 0.9;
-  letter-spacing: 0.01em;
-  font-weight: 800;
+  letter-spacing: 0;
+  font-weight: 400;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
 }
 
@@ -266,6 +267,19 @@
 
 .auth-card {
   padding: 30px;
+}
+
+.auth-card h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.recover-card h1,
+.signup-card h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .auth-card h1 {
@@ -619,7 +633,8 @@
   margin-bottom: 18px;
   color: #148de7;
   font-size: 2.6rem;
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .recover-text {
@@ -676,7 +691,8 @@
   margin-bottom: 18px;
   color: #148de7;
   font-size: 2.6rem;
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .signup-text {

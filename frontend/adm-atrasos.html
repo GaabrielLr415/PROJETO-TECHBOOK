@@ -1,50 +1,116 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHBOOK | Atrasos ADM</title>
+  <title>TECHBOOK | Empréstimos Atrasados ADM</title>
   
   <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/adm.css">
+  <link rel="stylesheet" href="css/adm.css?v=return-meta-space-1">
 </head>
 <body data-page="admin">
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="sidebar-brand"><img src="img/LOGOMARCA.svg" alt="" class="admin-brand-logo"></div>
       <nav class="admin-nav">
-        <a href="adm.html">Visão Geral</a>
-        <a href="adm-reservas.html">Registrar Emprestimo</a>
+        <a href="adm.html">Visão geral</a>
+        <a href="adm-reservas.html">Confirmar retirada</a>
+        <a href="adm-emprestimo.html">Empréstimos ativos</a>
         <a href="adm-devolucao.html">Registrar devolução</a>
-        <a class="active" href="adm-atrasos.html">Verificar atrasos</a>
-        <a href="adm-livros.html">Consultar Livro</a>
-        <a href="adm-usuarios.html">Consultar Usuários</a>
-        <a href="adm-livros.html#gestao">Gerenciar Livro</a>
+        <a href="adm-atrasos.html">Empréstimos atrasados</a>
+        <a href="adm-livros.html">Livros e estoque</a>
+        <a href="adm-usuarios.html">Clientes</a>
+        <a href="adm-livros.html#gestao">Cadastrar livro</a>
       </nav>
       <div class="sidebar-user"><div><strong>Administrador</strong><span>Controle de Acervo</span></div></div>
     </aside>
     <main class="admin-main">
       <section class="admin-screen list-screen" id="atrasos">
         <div class="screen-topbar">
-          <div class="screen-heading"><h2>Verificar Atrasos</h2></div>
-          <a class="button ghost" href="adm.html">Voltar ao Menu</a>
+          <div class="screen-heading"><h2>Empréstimos atrasados</h2><p>Consulte empréstimos com prazo de devolução vencido.</p></div>
+          <a class="button ghost" href="adm.html">Voltar ao painel</a>
         </div>
-        <div class="search-bar">
-          <div class="search-input"><span class="search-icon">⌕</span><input type="text" id="lateSearchInput" placeholder="Procurar Id. reserva"></div>
+        <div class="filter-bar">
+          <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="lateSearchInput" placeholder="Buscar por cliente, livro ou ID"></div>
+          <select id="lateStatusFilter" aria-label="Filtrar por status">
+            <option value="">Todos os status</option>
+            <option value="ATRASADO">Atrasados</option>
+            <option value="EXTRAVIADO">Extraviados</option>
+          </select>
+          <select id="latePageSize" aria-label="Itens por página">
+            <option value="10">10 por página</option>
+            <option value="20">20 por página</option>
+            <option value="50">50 por página</option>
+          </select>
           <button class="button primary search-button" id="lateSearchButton" type="button">Buscar</button>
         </div>
         <div class="status-table-shell">
           <div id="lateList" class="status-table-list"></div>
         </div>
+        <div id="latePagination" class="pagination-bar"></div>
       </section>
     </main>
   </div>
-  <script src="js/app.js"></script>
-  <script src="js/adm.js"></script>
+  <div class="admin-modal-backdrop" id="contactModal" hidden>
+    <section class="admin-modal compact" aria-labelledby="contactModalTitle">
+      <button class="modal-close" id="closeContactModalButton" type="button" aria-label="Fechar">×</button>
+      <div class="modal-header">
+        <span class="modal-kicker">Pendência</span>
+        <h3 id="contactModalTitle">Registrar contato</h3>
+        <p id="contactModalLoan"></p>
+        <strong id="contactModalBook"></strong>
+      </div>
+      <div class="contact-history-box">
+        <span>Histórico de contatos</span>
+        <ul id="contactHistory"></ul>
+      </div>
+      <form id="contactModalForm" class="modal-form">
+        <label>Canal utilizado
+          <select id="contactChannel" required>
+            <option value="telefone">Telefone</option>
+            <option value="e-mail">E-mail</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="presencial">Presencial</option>
+          </select>
+        </label>
+        <label>Registro do contato
+          <textarea id="contactNote" rows="4" placeholder="Ex.: Ligação feita, sem retorno. E-mail enviado para o cliente." required></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="button primary" type="submit">Salvar contato</button>
+          <button class="button ghost" id="cancelContactModalButton" type="button">Cancelar</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <div class="admin-modal-backdrop" id="lostModal" hidden>
+    <section class="admin-modal compact" aria-labelledby="lostModalTitle">
+      <button class="modal-close" id="closeLostModalButton" type="button" aria-label="Fechar">×</button>
+      <div class="modal-header">
+        <span class="modal-kicker danger">Extravio</span>
+        <h3 id="lostModalTitle">Marcar exemplar como extraviado</h3>
+        <p id="lostModalLoan"></p>
+        <strong id="lostModalBook"></strong>
+      </div>
+      <div class="stock-impact">
+        <span id="lostCurrentTotal"></span>
+        <span id="lostNextTotal"></span>
+      </div>
+      <form id="lostModalForm" class="modal-form">
+        <label>Observação institucional
+          <textarea id="lostNote" rows="4" placeholder="Ex.: Sem retorno após tentativas de contato." required>Sem retorno após tentativas de contato.</textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="button danger" type="submit">Confirmar extravio</button>
+          <button class="button ghost" id="cancelLostModalButton" type="button">Cancelar</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <script src="js/app.js?v=anti-trava-1"></script>
+  <script src="js/adm.js?v=admin-performance-1"></script>
 </body>
 </html>
-
-
