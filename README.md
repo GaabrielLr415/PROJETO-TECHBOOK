@@ -2,6 +2,8 @@
 
 Sistema de biblioteca para consulta, reserva, empréstimo, renovação, devolução e controle de pendências de livros.
 
+Versão final atualizada em: 07/06/2026.
+
 ## Como Rodar
 
 O passo a passo completo está no arquivo `GUIA-INSTALACAO-E-CONEXAO.md`.
