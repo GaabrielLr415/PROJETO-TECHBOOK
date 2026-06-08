@@ -1,9 +1,12 @@
 (function () {
-  const app = window.TechBookApp;
+  /* JAVASCRIPT: ADM */
+
+const app = window.TechBookApp;
   const PREFILL_RESERVATION_KEY = "techbook.admin.prefillReservationId";
   const PREFILL_RETURN_LOAN_KEY = "techbook.admin.prefillReturnLoanId";
   const EDIT_BOOK_KEY = "techbook.admin.editBookId";
   const ADMIN_AUTH_KEY = "techbook-admin-auth";
+  const ADMIN_FAILURES_KEY = "techbook-admin-failure-notifications";
   let selectedBookId = null;
   let pendingReservations = [];
   let cachedLoans = [];
@@ -29,22 +32,31 @@
   let pendingLateLoanAction = null;
   let selectedReservationId = null;
   let selectedReturnLoanId = null;
+  let selectedManagedUserId = null;
+  let pendingRenewalLoan = null;
   let loanPrefillApplied = false;
   let returnPrefillApplied = false;
   let bookPrefillApplied = false;
+  let adminFailureCount = 0;
+  let shortageRiskCount = 0;
 
+  // LOGIN ADMIN
   if (document.body.dataset.page === "admin-login") {
     bindAdminLoginForm();
     return;
   }
 
+  // PROTECAO DO PAINEL
   if (!ensureAdminAuth()) {
     return;
   }
 
+  // EVENTOS DO PAINEL
   renderAdminLogout();
   ensureAdminToast();
   normalizeAdminNavigation();
+  initializeAdminNotificationDrawer();
+  renderAdminFailureNotifications();
   bindIfPresent("refreshDashboard", "click", loadDashboard);
   bindIfPresent("loanForm", "submit", submitLoanForm);
   bindIfPresent("returnForm", "submit", submitReturnForm);
@@ -57,6 +69,9 @@
   bindIfPresent("closeBookModalButton", "click", closeBookModal);
   bindIfPresent("closeLoanModalButton", "click", closeLoanModal);
   bindIfPresent("cancelLoanModalButton", "click", closeLoanModal);
+  bindIfPresent("closeRenewLoanModalButton", "click", closeRenewLoanModal);
+  bindIfPresent("cancelRenewLoanModalButton", "click", closeRenewLoanModal);
+  bindIfPresent("confirmRenewLoanButton", "click", confirmRenewLoanRenewal);
   bindIfPresent("bookSearchButton", "click", filterBooks);
   bindIfPresent("bookSearchInput", "input", () => filterBooks(true));
   bindIfPresent("bookCategoryFilter", "change", () => filterBooks(true));
@@ -78,7 +93,13 @@
   bindIfPresent("cancelContactModalButton", "click", closeLateActionModals);
   bindIfPresent("closeLostModalButton", "click", closeLateActionModals);
   bindIfPresent("cancelLostModalButton", "click", closeLateActionModals);
+  bindIfPresent("closeLateReturnModalButton", "click", closeLateReturnModal);
+  bindIfPresent("cancelLateReturnModalButton", "click", closeLateReturnModal);
   bindIfPresent("closeUserHistoryButton", "click", closeUserHistoryModal);
+  bindIfPresent("closeUserManageButton", "click", closeUserManageModal);
+  bindIfPresent("cancelUserManageButton", "click", closeUserManageModal);
+  bindIfPresent("userManageBlockButton", "click", submitUserBlockFromModal);
+  bindIfPresent("userManageUnblockButton", "click", submitUserUnblockFromModal);
   bindIfPresent("returnSearchButton", "click", () => filterReturnHistory(true));
   bindIfPresent("returnSearchInput", "input", () => filterReturnHistory(true));
   bindIfPresent("returnHistoryStateFilter", "change", () => filterReturnHistory(true));
@@ -99,6 +120,11 @@
       closeLoanModal();
     }
   });
+  document.getElementById("renewLoanModal")?.addEventListener("click", (event) => {
+    if (event.target.id === "renewLoanModal") {
+      closeRenewLoanModal();
+    }
+  });
   document.getElementById("contactModal")?.addEventListener("click", (event) => {
     if (event.target.id === "contactModal") {
       closeLateActionModals();
@@ -109,9 +135,19 @@
       closeLateActionModals();
     }
   });
+  document.getElementById("lateReturnModal")?.addEventListener("click", (event) => {
+    if (event.target.id === "lateReturnModal") {
+      closeLateReturnModal();
+    }
+  });
   document.getElementById("userHistoryModal")?.addEventListener("click", (event) => {
     if (event.target.id === "userHistoryModal") {
       closeUserHistoryModal();
+    }
+  });
+  document.getElementById("userManageModal")?.addEventListener("click", (event) => {
+    if (event.target.id === "userManageModal") {
+      closeUserManageModal();
     }
   });
   document.addEventListener("keydown", (event) => {
@@ -121,11 +157,23 @@
     if (event.key === "Escape" && !document.getElementById("loanModal")?.hidden) {
       closeLoanModal();
     }
+    if (event.key === "Escape" && !document.getElementById("renewLoanModal")?.hidden) {
+      closeRenewLoanModal();
+    }
     if (event.key === "Escape" && (!document.getElementById("contactModal")?.hidden || !document.getElementById("lostModal")?.hidden)) {
       closeLateActionModals();
     }
+    if (event.key === "Escape" && !document.getElementById("lateReturnModal")?.hidden) {
+      closeLateReturnModal();
+    }
     if (event.key === "Escape" && !document.getElementById("userHistoryModal")?.hidden) {
       closeUserHistoryModal();
+    }
+    if (event.key === "Escape" && !document.getElementById("userManageModal")?.hidden) {
+      closeUserManageModal();
+    }
+    if (event.key === "Escape" && !document.getElementById("adminNotificationDrawer")?.hidden) {
+      closeAdminNotifications();
     }
   });
   window.addEventListener("hashchange", maybeOpenBookModalFromHash);
@@ -229,9 +277,11 @@
     if (!container) return;
 
     const risks = calculateShortageRisk(books, reservations, loans).slice(0, 4);
+    shortageRiskCount = risks.length;
 
     if (!risks.length) {
       container.innerHTML = '<p class="empty-insight">Nenhum livro em risco de falta agora.</p>';
+      updateAdminNotificationBadge();
       return;
     }
 
@@ -243,6 +293,7 @@
         <small>${item.demand} movimentaç${item.demand === 1 ? "ão" : "ões"} recentes</small>
       </div>
     `).join("");
+    updateAdminNotificationBadge();
   }
 
   function renderCategoryDashboard(books, reservations = [], loans = []) {
@@ -339,7 +390,7 @@
     if (overdueLoans) {
       alerts.push({
         title: "Empréstimos atrasados",
-        detail: `${overdueLoans} devolução${overdueLoans === 1 ? "" : "ões"} pendente${overdueLoans === 1 ? "" : "s"}.`,
+        detail: `${overdueLoans} ${overdueLoans === 1 ? "devolução pendente" : "devoluções pendentes"}.`,
         type: "warning",
         href: "adm-atrasos.html"
       });
@@ -502,6 +553,7 @@
     return Math.round((confirmedReservationIds.size / reservations.length) * 100);
   }
 
+  // DASHBOARD
   async function loadDashboard() {
     const needsDashboard = Boolean(document.getElementById("metricBooks") || document.getElementById("topReservedList"));
     const needsReservations = needsDashboard || Boolean(document.getElementById("reservationTable") || document.getElementById("userTable"));
@@ -615,10 +667,14 @@
     document.body.insertAdjacentHTML("beforeend", '<div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>');
   }
 
-  function notify(message, type = "success") {
+  function notify(message, type = "success", options = {}) {
     const toast = document.getElementById("adminToast");
     if (!toast) {
       return;
+    }
+
+    if (type === "error") {
+      recordAdminFailure(options.adminMessage || message, options);
     }
 
     toast.textContent = message;
@@ -627,6 +683,160 @@
     notify.timer = setTimeout(() => {
       toast.classList.remove("visible");
     }, 3600);
+  }
+
+  function recordAdminFailure(message, options = {}) {
+    const failures = readAdminFailures();
+    failures.unshift({
+      message,
+      context: options.context || "",
+      details: options.details || "",
+      page: document.title.replace("TECHBOOK |", "").trim() || "Painel administrativo",
+      timestamp: new Date().toISOString()
+    });
+    localStorage.setItem(ADMIN_FAILURES_KEY, JSON.stringify(failures.slice(0, 6)));
+    renderAdminFailureNotifications();
+  }
+
+  function readAdminFailures() {
+    try {
+      return JSON.parse(localStorage.getItem(ADMIN_FAILURES_KEY) || "[]");
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function renderAdminFailureNotifications() {
+    const container = document.getElementById("adminFailureNotifications");
+    if (!container) {
+      return;
+    }
+
+    const failures = readAdminFailures();
+    adminFailureCount = failures.length;
+    updateAdminNotificationBadge();
+
+    if (!failures.length) {
+      container.innerHTML = '<p class="empty-insight">Nenhuma falha administrativa registrada nesta estação.</p>';
+      return;
+    }
+
+    container.innerHTML = failures.map((failure) => `
+      <div class="admin-failure-item">
+        <strong>${app.escapeHtml(failure.message)}</strong>
+        <span>${app.escapeHtml(failure.context || failure.page)} · ${formatAdminFailureTime(failure.timestamp)}</span>
+        ${failure.details ? `<small>${app.escapeHtml(failure.details)}</small>` : ""}
+      </div>
+    `).join("");
+  }
+
+  function formatAdminFailureTime(timestamp) {
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) {
+      return "agora";
+    }
+    return date.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  // GAVETA DE NOTIFICACOES DO ADM
+  function initializeAdminNotificationDrawer() {
+    const screen = document.getElementById("dashboard");
+    if (!screen || document.getElementById("adminNotificationDrawer")) {
+      return;
+    }
+
+    const failurePanel = document.getElementById("adminFailureNotifications")?.closest(".insight-panel");
+    const shortagePanel = document.getElementById("shortageRiskList")?.closest(".insight-panel");
+    if (!failurePanel && !shortagePanel) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.className = "admin-notification-button";
+    button.id = "openAdminNotifications";
+    button.type = "button";
+    button.setAttribute("aria-controls", "adminNotificationDrawer");
+    button.setAttribute("aria-expanded", "false");
+    button.innerHTML = '<span>Notifica\u00e7\u00f5es</span><strong id="adminNotificationCount">0</strong>';
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "admin-notification-backdrop";
+    backdrop.id = "adminNotificationBackdrop";
+    backdrop.hidden = true;
+
+    const drawer = document.createElement("aside");
+    drawer.className = "admin-notification-drawer";
+    drawer.id = "adminNotificationDrawer";
+    drawer.setAttribute("aria-label", "Notifica\u00e7\u00f5es administrativas");
+    drawer.hidden = true;
+    drawer.innerHTML = `
+      <div class="notification-drawer-header">
+        <div>
+          <span>Painel do ADM</span>
+          <strong>Notifica\u00e7\u00f5es</strong>
+        </div>
+        <button class="notification-close-button" id="closeAdminNotifications" type="button" aria-label="Fechar notifica\u00e7\u00f5es">X</button>
+      </div>
+      <div class="notification-drawer-content"></div>
+    `;
+
+    const drawerContent = drawer.querySelector(".notification-drawer-content");
+    [failurePanel, shortagePanel].filter(Boolean).forEach((panel) => {
+      panel.classList.add("notification-drawer-section");
+      drawerContent.appendChild(panel);
+    });
+
+    screen.append(button, backdrop, drawer);
+    button.addEventListener("click", openAdminNotifications);
+    backdrop.addEventListener("click", closeAdminNotifications);
+    drawer.querySelector("#closeAdminNotifications")?.addEventListener("click", closeAdminNotifications);
+    updateAdminNotificationBadge();
+  }
+
+  function openAdminNotifications() {
+    const drawer = document.getElementById("adminNotificationDrawer");
+    const backdrop = document.getElementById("adminNotificationBackdrop");
+    const button = document.getElementById("openAdminNotifications");
+    if (!drawer || !backdrop) {
+      return;
+    }
+
+    drawer.hidden = false;
+    backdrop.hidden = false;
+    button?.setAttribute("aria-expanded", "true");
+    document.body.classList.add("notification-drawer-open");
+  }
+
+  function closeAdminNotifications() {
+    const drawer = document.getElementById("adminNotificationDrawer");
+    const backdrop = document.getElementById("adminNotificationBackdrop");
+    const button = document.getElementById("openAdminNotifications");
+    if (!drawer || !backdrop) {
+      return;
+    }
+
+    drawer.hidden = true;
+    backdrop.hidden = true;
+    button?.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("notification-drawer-open");
+  }
+
+  function updateAdminNotificationBadge() {
+    const count = adminFailureCount + shortageRiskCount;
+    const badge = document.getElementById("adminNotificationCount");
+    const button = document.getElementById("openAdminNotifications");
+    if (!badge || !button) {
+      return;
+    }
+
+    badge.textContent = String(count);
+    badge.hidden = count === 0;
+    button.classList.toggle("has-alerts", count > 0);
   }
 
   function statusBadge(status) {
@@ -658,6 +868,7 @@
     return `<span class="status-badge ${tone}">${app.escapeHtml(labels[normalized] || normalized || "-")}</span>`;
   }
 
+  // TABELA DE RESERVAS
   function renderReservationTable(reservations) {
     const pending = reservations
       .filter((reservation) => reservation.status === "PENDENTE")
@@ -810,6 +1021,7 @@
     document.body.classList.remove("modal-open");
   }
 
+  // TABELA DE EMPRESTIMOS
   function renderLoanTable(loans) {
     const activeLoans = loans
       .filter((loan) => loan.status !== "DEVOLVIDO")
@@ -846,14 +1058,7 @@
     });
 
     document.querySelectorAll("[data-renew-loan]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        try {
-          await app.request(`/emprestimos/${button.dataset.renewLoan}/renovar`, { method: "PATCH" });
-          loadDashboard();
-        } catch (error) {
-          notify(error.message, "error");
-        }
-      });
+      button.addEventListener("click", () => openRenewLoanModal(Number(button.dataset.renewLoan)));
     });
     document.querySelectorAll("[data-return-loan]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -896,6 +1101,70 @@
         <button class="button primary small" type="button" data-return-loan="${loan.id}">Registrar devolução</button>
       </div>
     `;
+  }
+
+  function openRenewLoanModal(loanId) {
+    const loan = cachedLoans.find((item) => item.id === loanId);
+    const modal = document.getElementById("renewLoanModal");
+    if (!loan || !modal) {
+      notify("Empréstimo não encontrado para renovação.", "error");
+      return;
+    }
+
+    if (loan.status !== "ATIVO" || loan.renovado) {
+      notify("Este empréstimo não está disponível para renovação.", "error");
+      return;
+    }
+
+    pendingRenewalLoan = loan;
+    const currentDueDate = parseLocalDate(loan.dataDevolucaoPrevista);
+    const newDueDate = currentDueDate ? new Date(currentDueDate) : null;
+    if (newDueDate) {
+      newDueDate.setDate(newDueDate.getDate() + 7);
+    }
+
+    setTextIfPresent("renewLoanClient", loan.cliente?.nome || "Cliente não informado");
+    setTextIfPresent("renewLoanBook", loan.livro?.titulo || "Livro não informado");
+    setTextIfPresent("renewLoanCurrentDate", app.formatDate(loan.dataDevolucaoPrevista));
+    setTextIfPresent("renewLoanNewDate", newDueDate ? app.formatDate(toDateInputValue(newDueDate)) : "-");
+
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    setTimeout(() => document.getElementById("confirmRenewLoanButton")?.focus(), 0);
+  }
+
+  function closeRenewLoanModal() {
+    const modal = document.getElementById("renewLoanModal");
+    if (!modal) return;
+
+    pendingRenewalLoan = null;
+    modal.hidden = true;
+    document.body.classList.remove("modal-open");
+  }
+
+  async function confirmRenewLoanRenewal() {
+    if (!pendingRenewalLoan) {
+      notify("Selecione um empréstimo para renovar.", "error");
+      return;
+    }
+
+    const button = document.getElementById("confirmRenewLoanButton");
+    if (button) {
+      button.disabled = true;
+    }
+
+    try {
+      await app.request(`/emprestimos/${pendingRenewalLoan.id}/renovar`, { method: "PATCH" });
+      closeRenewLoanModal();
+      notify("Renovação realizada com sucesso. A nova data de devolução foi atualizada.");
+      await loadDashboard();
+    } catch (error) {
+      notify(error.message, "error");
+    } finally {
+      if (button) {
+        button.disabled = false;
+      }
+    }
   }
 
   function filterReturnLoanPicker() {
@@ -1138,6 +1407,14 @@
     return Number.isNaN(date.getTime()) ? null : date;
   }
 
+  function toDateInputValue(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  // ATRASOS
   function renderLateList(loans) {
     const container = document.getElementById("lateList");
     filteredLateLoans = Array.isArray(loans) ? loans : [];
@@ -1179,10 +1456,9 @@
             <small>Prazo vencido em ${app.formatDate(loan.dataDevolucaoPrevista)}</small>
           </div>
           <div class="late-card-actions">
-            <button class="button ghost small" type="button" data-contact-loan="${loan.id}">Registrar contato</button>
+            <button class="button ghost small" type="button" data-contact-loan="${loan.id}">Contato</button>
             <button class="button primary small" type="button" data-return-loan="${loan.id}">Devolução</button>
             <button class="button danger small" type="button" data-lost-loan="${loan.id}" ${loan.status === "EXTRAVIADO" ? "disabled" : ""}>Extraviado</button>
-            <button class="button secondary small" type="button" data-history-loan="${loan.id}" ${loan.historicoContato ? "" : "disabled"}>Histórico</button>
           </div>
         </div>
       `;
@@ -1199,23 +1475,43 @@
       button.addEventListener("click", () => openContactModal(Number(button.dataset.contactLoan)));
     });
 
-    document.querySelectorAll("[data-history-loan]").forEach((button) => {
-      button.addEventListener("click", () => openContactModal(Number(button.dataset.historyLoan), true));
-    });
-
     document.querySelectorAll("[data-lost-loan]").forEach((button) => {
       button.addEventListener("click", () => openLostModal(Number(button.dataset.lostLoan)));
     });
 
     document.querySelectorAll("#lateList [data-return-loan]").forEach((button) => {
-      button.addEventListener("click", () => {
-        sessionStorage.setItem(PREFILL_RETURN_LOAN_KEY, button.dataset.returnLoan);
-        window.location.href = "adm-devolucao.html";
-      });
+      button.addEventListener("click", () => openLateReturnModal(Number(button.dataset.returnLoan)));
     });
   }
 
-  function openContactModal(loanId, historyOnly = false) {
+  function openLateReturnModal(loanId) {
+    const loan = cachedLateLoans.find((item) => item.id === loanId);
+    const modal = document.getElementById("lateReturnModal");
+    if (!loan || !modal) {
+      notify("Empréstimo atrasado não encontrado para devolução.", "error");
+      return;
+    }
+
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    fillReturnFormFromLoan(loan);
+  }
+
+  function closeLateReturnModal() {
+    const modal = document.getElementById("lateReturnModal");
+    if (!modal) return;
+
+    modal.hidden = true;
+    document.body.classList.remove("modal-open");
+    selectedReturnLoanId = null;
+    document.getElementById("returnForm")?.reset();
+    if (document.getElementById("returnSubmitButton")) {
+      document.getElementById("returnSubmitButton").disabled = true;
+    }
+    renderEmptySelectedReturnCard("Selecione um atraso na lista para registrar a devolução.");
+  }
+
+  function openContactModal(loanId) {
     const loan = cachedLateLoans.find((item) => item.id === loanId);
     const modal = document.getElementById("contactModal");
     if (!loan || !modal) return;
@@ -1232,14 +1528,11 @@
     }
     const form = document.getElementById("contactModalForm");
     if (form) {
-      form.hidden = historyOnly;
       form.reset();
     }
     modal.hidden = false;
     document.body.classList.add("modal-open");
-    if (!historyOnly) {
-      setTimeout(() => document.getElementById("contactNote")?.focus(), 0);
-    }
+    setTimeout(() => document.getElementById("contactNote")?.focus(), 0);
   }
 
   function openLostModal(loanId) {
@@ -1250,20 +1543,30 @@
     pendingLateLoanAction = loan;
     setTextIfPresent("lostModalLoan", `#${loan.id} - ${loan.cliente.nome}`);
     setTextIfPresent("lostModalBook", loan.livro.titulo);
+    const currentStock = Number(loan.livro.quantidadeTotal || 0);
+    const currentAvailable = Number(loan.livro.quantidadeDisponivel || 0);
+    const nextStock = Math.max(0, currentStock - 1);
+    const nextAvailable = Math.min(currentAvailable, nextStock);
     const currentTotal = document.getElementById("lostCurrentTotal");
     if (currentTotal) {
-      currentTotal.textContent = `${loan.livro.quantidadeTotal} no acervo`;
+      currentTotal.innerHTML = `<strong>${currentStock}</strong><small>exemplares no acervo hoje</small>`;
     }
     const nextTotal = document.getElementById("lostNextTotal");
     if (nextTotal) {
-      nextTotal.textContent = `${Math.max(0, Number(loan.livro.quantidadeTotal || 0) - 1)} após extravio`;
+      nextTotal.innerHTML = `<strong>${nextStock}</strong><small>exemplares após confirmar o extravio</small>`;
+    }
+    const availableTotal = document.getElementById("lostAvailableTotal");
+    if (availableTotal) {
+      const availableDetail = currentAvailable === nextAvailable
+        ? "dispon\u00edveis agora; sem altera\u00e7\u00e3o ap\u00f3s o extravio"
+        : `dispon\u00edveis agora; ficar\u00e3o ${nextAvailable} ap\u00f3s o extravio`;
+      availableTotal.innerHTML = `<strong>${currentAvailable}</strong><small>${availableDetail}</small>`;
     }
     document.getElementById("lostModalForm")?.reset();
     modal.hidden = false;
     document.body.classList.add("modal-open");
     setTimeout(() => document.getElementById("lostNote")?.focus(), 0);
   }
-
   function closeLateActionModals() {
     pendingLateLoanAction = null;
     ["contactModal", "lostModal"].forEach((id) => {
@@ -1322,6 +1625,7 @@
     }
   }
 
+  // CLIENTES
   function renderUsers(users) {
     filteredUsers = Array.isArray(users) ? users : [];
     const totalPages = Math.max(1, Math.ceil(filteredUsers.length / userPageSize));
@@ -1346,9 +1650,13 @@
         <td>${app.escapeHtml(formatPhoneNumber(user.telefone))}</td>
         <td>
           ${statusBadge(user.bloqueado ? "BLOQUEADO" : "LIBERADO")}
-          ${user.bloqueado && user.motivoBloqueio ? `<small class="user-block-reason">${app.escapeHtml(user.motivoBloqueio)}</small>` : ""}
         </td>
-        <td><button class="button secondary small table-row-action" type="button" data-user-history="${user.id}">Ver</button></td>
+        <td>
+          <div class="table-row-actions">
+            <button class="button secondary small table-row-action" type="button" data-user-history="${user.id}">Hist&oacute;rico</button>
+            <button class="button ghost small table-row-action" type="button" data-user-manage="${user.id}">Gerenciar</button>
+          </div>
+        </td>
       </tr>
     `).join("");
     document.querySelectorAll("[data-user-history]").forEach((button) => {
@@ -1356,10 +1664,122 @@
         openUserHistory(Number(button.dataset.userHistory));
       });
     });
+    document.querySelectorAll("[data-user-manage]").forEach((button) => {
+      button.addEventListener("click", () => {
+        openUserManageModal(Number(button.dataset.userManage));
+      });
+    });
     renderSimplePagination("userPagination", filteredUsers.length, userCurrentPage, totalPages, (page) => {
       userCurrentPage = page;
       renderUsers(filteredUsers);
     });
+  }
+
+  function openUserManageModal(userId) {
+    const user = cachedUsers.find((item) => item.id === userId);
+    const modal = document.getElementById("userManageModal");
+    const title = document.getElementById("userManageTitle");
+    const subtitle = document.getElementById("userManageSubtitle");
+    const status = document.getElementById("userManageStatus");
+    const reason = document.getElementById("userManageReason");
+    const blockButton = document.getElementById("userManageBlockButton");
+    const unblockButton = document.getElementById("userManageUnblockButton");
+
+    if (!user || !modal || !title || !subtitle || !status || !reason || !blockButton || !unblockButton) {
+      notify("Cliente nao encontrado.", "error");
+      return;
+    }
+
+    selectedManagedUserId = userId;
+    title.textContent = user.nome;
+    subtitle.textContent = `${formatCpf(user.cpf)} - ${formatPhoneNumber(user.telefone)} - ${user.email}`;
+    status.innerHTML = `
+      ${statusBadge(user.bloqueado ? "BLOQUEADO" : "LIBERADO")}
+      <p>${app.escapeHtml(user.bloqueado ? (user.motivoBloqueio || "Cliente bloqueado.") : "Cliente liberado para reservas e retiradas.")}</p>
+    `;
+    reason.value = user.bloqueado ? (user.motivoBloqueio || "") : "Cliente desativado pelo administrador.";
+    reason.disabled = Boolean(user.bloqueado);
+    blockButton.hidden = Boolean(user.bloqueado);
+    unblockButton.hidden = !user.bloqueado;
+
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    if (!user.bloqueado) {
+      setTimeout(() => reason.focus(), 0);
+    }
+  }
+
+  function closeUserManageModal() {
+    const modal = document.getElementById("userManageModal");
+    if (!modal) return;
+
+    modal.hidden = true;
+    selectedManagedUserId = null;
+    document.body.classList.remove("modal-open");
+  }
+
+  function submitUserBlockFromModal() {
+    if (!selectedManagedUserId) {
+      notify("Selecione um cliente.", "error");
+      return;
+    }
+
+    blockUser(selectedManagedUserId, document.getElementById("userManageReason")?.value || "");
+  }
+
+  function submitUserUnblockFromModal() {
+    if (!selectedManagedUserId) {
+      notify("Selecione um cliente.", "error");
+      return;
+    }
+
+    unblockUser(selectedManagedUserId);
+  }
+
+  async function blockUser(userId, reasonValue = "") {
+    const user = cachedUsers.find((item) => item.id === userId);
+    if (!user) {
+      notify("Cliente nao encontrado.", "error");
+      return;
+    }
+
+    try {
+      await app.request(`/clientes/${userId}/bloqueio`, {
+        method: "PATCH",
+        body: {
+          bloqueado: true,
+          motivo: reasonValue.trim() || "Cliente desativado pelo administrador."
+        }
+      });
+      notify("Cliente bloqueado/desativado com sucesso.");
+      closeUserManageModal();
+      loadDashboard();
+    } catch (error) {
+      notify(error.message, "error");
+    }
+  }
+
+  async function unblockUser(userId) {
+    const user = cachedUsers.find((item) => item.id === userId);
+    if (!user) {
+      notify("Cliente nao encontrado.", "error");
+      return;
+    }
+
+    try {
+      await app.request(`/clientes/${userId}/bloqueio`, {
+        method: "PATCH",
+        body: {
+          bloqueado: false,
+          motivo: ""
+        }
+      });
+      notify("Cliente desbloqueado com sucesso.");
+      closeUserManageModal();
+      loadDashboard();
+    } catch (error) {
+      notify(error.message, "error");
+    }
   }
 
   function formatCpf(value) {
@@ -1456,6 +1876,7 @@
     return value ? app.formatDate(value) : "-";
   }
 
+  // LIVROS E ESTOQUE
   function renderBooks(books) {
     const table = document.getElementById("bookTable");
     if (!table) return;
@@ -1939,12 +2360,21 @@
       notify("Retirada confirmada com sucesso.");
       loadDashboard();
     } catch (error) {
-      notify(error.message, "error");
+      const reservaId = document.getElementById("loanReservationId")?.value || "não informado";
+      const administradorId = document.getElementById("loanAdminId")?.value || "não informado";
+      notify("Falha ao confirmar retirada. O aviso foi registrado para o ADM.", "error", {
+        adminMessage: `Falha ao confirmar retirada: ${error.message}`,
+        context: "Empréstimo / retirada",
+        details: `Reserva: ${reservaId} | Administrador: ${administradorId}`
+      });
     }
   }
 
   async function submitReturnForm(event) {
     event.preventDefault();
+    const lateReturnModal = document.getElementById("lateReturnModal");
+    const wasLateReturnModalOpen = lateReturnModal && !lateReturnModal.hidden;
+
     try {
       await app.request("/emprestimos/devolucoes", {
         method: "POST",
@@ -1978,15 +2408,25 @@
       if (document.getElementById("selectedReturnCard")) {
         document.getElementById("selectedReturnCard").hidden = true;
         document.getElementById("selectedReturnCard").innerHTML = "";
+        if (wasLateReturnModalOpen) {
+          closeLateReturnModal();
+        }
         renderEmptySelectedReturnCard("Devolução registrada. Selecione outro empréstimo para continuar.");
       }
       notify("Devolução registrada com sucesso.");
       loadDashboard();
     } catch (error) {
-      notify(error.message, "error");
+      const emprestimoId = document.getElementById("returnLoanId")?.value || "não informado";
+      const administradorId = document.getElementById("returnAdminId")?.value || "não informado";
+      notify("Falha ao registrar devolução. O aviso foi registrado para o ADM.", "error", {
+        adminMessage: `Falha ao registrar devolução: ${error.message}`,
+        context: "Devolução",
+        details: `Empréstimo: ${emprestimoId} | Administrador: ${administradorId}`
+      });
     }
   }
 
+  // SALVAR LIVRO
   async function submitBookForm(event) {
     event.preventDefault();
     const total = Number(document.getElementById("bookTotal").value);
@@ -2084,6 +2524,20 @@
   function bindAdminLoginForm() {
     const form = document.getElementById("adminLoginForm");
     if (!form) return;
+
+    const passwordInput = document.getElementById("adminPassword");
+    const passwordToggle = document.getElementById("adminPasswordToggle");
+    const passwordToggleIcon = passwordToggle?.querySelector("img");
+
+    if (passwordInput && passwordToggle && passwordToggleIcon) {
+      passwordToggle.addEventListener("click", () => {
+        const shouldShowPassword = passwordInput.type === "password";
+        passwordInput.type = shouldShowPassword ? "text" : "password";
+        passwordToggle.setAttribute("aria-pressed", String(shouldShowPassword));
+        passwordToggle.setAttribute("aria-label", shouldShowPassword ? "Ocultar senha" : "Mostrar senha");
+        passwordToggleIcon.src = shouldShowPassword ? "img/olho-aberto.svg" : "img/olho-fechado.svg";
+      });
+    }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();

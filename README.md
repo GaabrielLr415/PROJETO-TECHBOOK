@@ -8,6 +8,16 @@ O passo a passo completo está no arquivo `GUIA-INSTALACAO-E-CONEXAO.md`.
 
 Resumo rápido:
 
+Opção mais simples:
+
+```text
+PREPARAR-E-ABRIR-TECHBOOK.bat
+```
+
+Esse arquivo tenta importar o banco `techbook` usando `database/techbook.sql`, iniciar o backend e abrir o frontend. Antes de usar, ligue o MySQL no XAMPP.
+
+Opção manual:
+
 1. Ligue o MySQL no XAMPP.
 2. Crie/importe o banco `techbook` usando `database/techbook.sql`.
 3. Abra a pasta `backend` no PowerShell.
@@ -74,6 +84,16 @@ Nesta versão do projeto, o administrador é uma credencial fixa validada pelo b
 - Bloqueio de cliente com empréstimo atrasado ou extraviado.
 - Histórico de contato para pendências.
 - Controle de exemplar extraviado e estoque igual a zero.
+
+## Atualizacoes Pos-Aprovacao
+
+A documentacao aprovada foi mantida. As melhorias criadas depois da aprovacao estao registradas em:
+
+```text
+docs/ATUALIZACOES-POS-APROVACAO.md
+```
+
+Esse arquivo explica o que foi adicionado, por que foi feito e onde aparece no sistema.
 
 ## Melhorias Futuras
 

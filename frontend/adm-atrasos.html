@@ -1,20 +1,27 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TECHBOOK | Empréstimos Atrasados ADM</title>
   
+  <!-- LINKS DO SITE -->
   <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/adm.css?v=return-meta-space-1">
+
 </head>
+
 <body data-page="admin">
+  <!-- IDENTIFICACAO DA PAGINA -->
   <div class="admin-layout">
+    <!-- MENU LATERAL -->
     <aside class="admin-sidebar">
+      <!-- LOGO DO PAINEL -->
       <div class="sidebar-brand"><img src="img/LOGOMARCA.svg" alt="" class="admin-brand-logo"></div>
+      <!-- MENU ADMIN -->
       <nav class="admin-nav">
         <a href="adm.html">Visão geral</a>
         <a href="adm-reservas.html">Confirmar retirada</a>
@@ -27,12 +34,18 @@
       </nav>
       <div class="sidebar-user"><div><strong>Administrador</strong><span>Controle de Acervo</span></div></div>
     </aside>
+
+  <!-- CONTEUDO PRINCIPAL -->
     <main class="admin-main">
+
+      <!-- ATRASOS -->
       <section class="admin-screen list-screen" id="atrasos">
         <div class="screen-topbar">
           <div class="screen-heading"><h2>Empréstimos atrasados</h2><p>Consulte empréstimos com prazo de devolução vencido.</p></div>
           <a class="button ghost" href="adm.html">Voltar ao painel</a>
         </div>
+
+        <!-- FILTROS -->
         <div class="filter-bar">
           <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="lateSearchInput" placeholder="Buscar por cliente, livro ou ID"></div>
           <select id="lateStatusFilter" aria-label="Filtrar por status">
@@ -47,19 +60,25 @@
           </select>
           <button class="button primary search-button" id="lateSearchButton" type="button">Buscar</button>
         </div>
+
+        <!-- LISTA DE ATRASOS -->
         <div class="status-table-shell">
           <div id="lateList" class="status-table-list"></div>
         </div>
+
+        <!-- PAGINACAO -->
         <div id="latePagination" class="pagination-bar"></div>
       </section>
     </main>
   </div>
   <div class="admin-modal-backdrop" id="contactModal" hidden>
+
+    <!-- MODAL DE CONTATO -->
     <section class="admin-modal compact" aria-labelledby="contactModalTitle">
       <button class="modal-close" id="closeContactModalButton" type="button" aria-label="Fechar">×</button>
       <div class="modal-header">
         <span class="modal-kicker">Pendência</span>
-        <h3 id="contactModalTitle">Registrar contato</h3>
+        <h3 id="contactModalTitle">Contato da pendência</h3>
         <p id="contactModalLoan"></p>
         <strong id="contactModalBook"></strong>
       </div>
@@ -67,6 +86,8 @@
         <span>Histórico de contatos</span>
         <ul id="contactHistory"></ul>
       </div>
+      
+      <!-- FORMULARIO -->
       <form id="contactModalForm" class="modal-form">
         <label>Canal utilizado
           <select id="contactChannel" required>
@@ -87,6 +108,8 @@
     </section>
   </div>
   <div class="admin-modal-backdrop" id="lostModal" hidden>
+
+    <!-- MODAL DE EXTRAVIO -->
     <section class="admin-modal compact" aria-labelledby="lostModalTitle">
       <button class="modal-close" id="closeLostModalButton" type="button" aria-label="Fechar">×</button>
       <div class="modal-header">
@@ -95,10 +118,14 @@
         <p id="lostModalLoan"></p>
         <strong id="lostModalBook"></strong>
       </div>
+      <p class="modal-explainer">Use esta ação quando o livro não foi devolvido após as tentativas de contato. O sistema registra a ocorrência e atualiza o estoque automaticamente.</p>
       <div class="stock-impact">
         <span id="lostCurrentTotal"></span>
         <span id="lostNextTotal"></span>
+        <span id="lostAvailableTotal"></span>
       </div>
+
+      <!-- FORMULARIO -->
       <form id="lostModalForm" class="modal-form">
         <label>Observação institucional
           <textarea id="lostNote" rows="4" placeholder="Ex.: Sem retorno após tentativas de contato." required>Sem retorno após tentativas de contato.</textarea>
@@ -110,6 +137,41 @@
       </form>
     </section>
   </div>
+  <div class="admin-modal-backdrop" id="lateReturnModal" hidden>
+
+    <!-- MODAL DE DEVOLUCAO DO ATRASO -->
+    <section class="admin-modal compact late-return-modal" aria-labelledby="lateReturnModalTitle">
+      <button class="modal-close" id="closeLateReturnModalButton" type="button" aria-label="Fechar">×</button>
+      <div class="modal-header">
+        <span class="modal-kicker">Devolução</span>
+        <h3 id="lateReturnModalTitle">Registrar devolução</h3>
+        <p>Confira o empréstimo atrasado antes de finalizar a devolução.</p>
+      </div>
+
+      <div id="selectedReturnCard" class="selection-card return-selection-card empty">
+        <span class="selection-kicker">Aguardando seleção</span>
+        <strong>Nenhum empréstimo selecionado</strong>
+        <p>Selecione um atraso na lista para registrar a devolução.</p>
+      </div>
+
+      <form id="returnForm" class="admin-form-grid return-form-grid">
+        <input type="hidden" id="returnClientName">
+        <input type="hidden" id="returnBookTitle">
+        <input type="hidden" id="returnStartDate">
+        <input type="hidden" id="returnAdminId" value="1">
+        <input type="hidden" id="returnLoanId" required>
+        <label class="field-block"><span>Estado do livro</span><select id="returnBookState"><option value="BOM">Livro em bom estado</option><option value="AVARIADO">Livro com avaria</option></select></label>
+        <label class="field-block"><span>Observação da devolução</span><textarea id="returnObservation" placeholder="Ex: Sem avarias ou descreva o problema encontrado"></textarea></label>
+        <div class="helper-text" id="returnHelperText">Confira o empréstimo selecionado antes de registrar.</div>
+        <div class="form-submit-row">
+          <button class="button primary large" id="returnSubmitButton" type="submit" disabled>Registrar Devolução</button>
+          <button class="button ghost large" id="cancelLateReturnModalButton" type="button">Cancelar</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  
+  <!-- JAVASCRIPT DA PAGINA -->
   <script src="js/app.js?v=anti-trava-1"></script>
   <script src="js/adm.js?v=admin-performance-1"></script>
 </body>

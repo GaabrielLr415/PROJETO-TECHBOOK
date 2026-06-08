@@ -207,6 +207,25 @@ class TechbookApplicationTests {
         assertFalse(atrasado.renovado());
     }
 
+    @Test
+    void listaLivrosMaisProcuradosPorReservasEEmprestimos() {
+        LivroResponse popular = criarLivro("Mais Procurado", 12);
+        LivroResponse menosProcurado = criarLivro("Menos Procurado", 4);
+
+        for (int i = 0; i < 10; i++) {
+            UsuarioResponse cliente = criarCliente();
+            service.criarReserva(new ReservaRequest(cliente.id(), popular.id()));
+        }
+
+        UsuarioResponse cliente = criarCliente();
+        service.criarReserva(new ReservaRequest(cliente.id(), menosProcurado.id()));
+
+        var maisProcurados = service.listarLivrosMaisProcurados();
+
+        assertFalse(maisProcurados.isEmpty());
+        assertEquals(popular.id(), maisProcurados.get(0).id());
+    }
+
     private UsuarioResponse criarCliente() {
         int id = SEQUENCE.incrementAndGet();
         return service.criarCliente(new ClienteRequest(

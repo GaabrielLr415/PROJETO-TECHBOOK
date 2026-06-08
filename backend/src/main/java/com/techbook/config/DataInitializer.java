@@ -2,8 +2,10 @@ package com.techbook.config;
 
 import com.techbook.model.Emprestimo;
 import com.techbook.model.Livro;
+import com.techbook.model.Administrador;
 import com.techbook.model.Reserva;
 import com.techbook.model.Usuario;
+import com.techbook.repository.AdministradorRepository;
 import com.techbook.repository.EmprestimoRepository;
 import com.techbook.repository.LivroRepository;
 import com.techbook.repository.ReservaRepository;
@@ -22,9 +24,22 @@ public class DataInitializer {
         LivroRepository livroRepository,
         UsuarioRepository usuarioRepository,
         ReservaRepository reservaRepository,
-        EmprestimoRepository emprestimoRepository
+        EmprestimoRepository emprestimoRepository,
+        AdministradorRepository administradorRepository
     ) {
         return args -> {
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+            administradorRepository.findByEmailIgnoreCase("admin@techbook.local")
+                .orElseGet(() -> {
+                    Administrador administrador = new Administrador();
+                    administrador.setNome("Administrador");
+                    administrador.setEmail("admin@techbook.local");
+                    administrador.setSenhaHash(passwordEncoder.encode("123456"));
+                    administrador.setAtivo(true);
+                    return administradorRepository.save(administrador);
+                });
+
             // Evita recriar dados de exemplo quando o banco ja foi populado manualmente.
             if (livroRepository.count() > 0 || usuarioRepository.count() > 0) {
                 return;
@@ -69,7 +84,7 @@ public class DataInitializer {
             usuario.setEmail("edino@techbook.local");
             usuario.setTelefone("(11) 99999-6969");
             usuario.setCpf("11122233344");
-            usuario.setSenhaHash(new BCryptPasswordEncoder().encode("123456"));
+            usuario.setSenhaHash(passwordEncoder.encode("123456"));
             usuario = usuarioRepository.save(usuario);
 
             Reserva reserva = new Reserva();

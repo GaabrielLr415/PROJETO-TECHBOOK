@@ -15,19 +15,25 @@
 </head>
 
 <body data-page="signup">
+  <!-- IDENTIFICACAO DA PAGINA -->
 
+  <!-- CABECALHO -->
   <header class="login-header">
     <a href="login.html" class="login-back-button" aria-label="Voltar para o login">
       <img src="img/VOLTAR BRANCO.svg" alt="">
     </a>
 
     <a href="index.html">
+     
+      <!-- LOGO DO SITE -->
       <img src="img/LOGO TECHBOOK.svg" alt="TechBook" class="login-logo">
     </a>
   </header>
-
+  
+  <!-- CONTEUDO PRINCIPAL -->
   <main class="auth-shell signup-shell">
 
+    <!-- FORMULARIO DE CADASTRO -->
     <form id="signupForm" class="auth-card signup-card">
       <h1>CRIAR MINHA CONTA</h1>
 
@@ -65,7 +71,7 @@
         <div class="signup-line"></div>
 
         <div class="input-group password-group">
-          <input type="password" id="signupPassword" required>
+          <input type="password" id="signupPassword" minlength="6" required>
           <label for="signupPassword">* Senha</label>
 
           <button type="button" class="toggle-password" onclick="togglePassword(this)">
@@ -74,7 +80,7 @@
         </div>
 
         <div class="input-group password-group">
-          <input type="password" id="signupPasswordConfirm" required>
+          <input type="password" id="signupPasswordConfirm" minlength="6" required>
           <label for="signupPasswordConfirm">* Confirmar senha</label>
 
           <button type="button" class="toggle-password" onclick="togglePassword(this)">
@@ -96,7 +102,8 @@
     </div>
 
   </main>
-
+  
+  <!-- JAVASCRIPT DA PAGINA -->
   <script src="js/app.js?v=anti-trava-1"></script>
   <script src="js/script.js"></script>
 </body>

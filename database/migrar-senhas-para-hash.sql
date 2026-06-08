@@ -6,8 +6,14 @@ ALTER TABLE usuarios
   ADD COLUMN senha_hash varchar(255) DEFAULT NULL;
 
 UPDATE usuarios
-SET senha_hash = '$2a$10$97UerRhTrUprEhgqk.xIJu3UnJuHt.ivYEEZZIFEMdENw.cXCk7om'
-WHERE senha_hash IS NULL OR senha_hash = '';
+SET senha_hash = '$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG'
+WHERE senha_hash IS NULL
+  OR senha_hash = ''
+  OR (
+    senha_hash NOT LIKE '$2a$%'
+    AND senha_hash NOT LIKE '$2b$%'
+    AND senha_hash NOT LIKE '$2y$%'
+  );
 
 ALTER TABLE usuarios
   DROP COLUMN senha;

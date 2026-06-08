@@ -1,6 +1,7 @@
 (function () {
+  /* JAVASCRIPT: APP */
 
-  // ==========================================
+// ==========================================
   // CHAVES DE ARMAZENAMENTO
   // ==========================================
 
@@ -17,6 +18,7 @@
   // FUNÇÃO PRINCIPAL DE REQUISIÇÃO
   // ==========================================
 
+  // CHAMA API
   async function request(path, options = {}) {
     const method = options.method || "GET";
     const controller = new AbortController();
@@ -134,11 +136,12 @@
   // NORMALIZA RESPOSTAS DA API
   // ==========================================
 
+  // NORMALIZA RESPOSTAS
   function normalizeResponse(path, payload) {
     const cleanPath = path.split("?")[0];
 
     // Cada rota é convertida para um formato único consumido pelas telas.
-    if (cleanPath === "/livros") {
+    if (cleanPath === "/livros" || cleanPath === "/livros/mais-procurados") {
       return Array.isArray(payload) ? payload.map(normalizeBook) : normalizeBook(payload);
     }
     if (cleanPath.startsWith("/livros/")) {
@@ -150,7 +153,7 @@
     if (cleanPath === "/clientes/recuperar-senha") {
       return normalizeClient(payload);
     }
-    if (/^\/clientes\/\d+$/.test(cleanPath)) {
+    if (/^\/clientes\/\d+(\/bloqueio)?$/.test(cleanPath)) {
       return normalizeClient(payload);
     }
     if (cleanPath.endsWith("/reservas") || cleanPath === "/reservas") {
@@ -173,6 +176,7 @@
   // NORMALIZA LIVRO
   // ==========================================
 
+  // NORMALIZA LIVRO
   function normalizeBook(book = {}) {
     return {
       id: Number(book.id) || 0,
@@ -204,6 +208,7 @@
     };
   }
 
+  // NORMALIZA RESERVA
   function normalizeReservation(reservation = {}) {
     return {
       id: Number(reservation.id) || 0,
@@ -218,6 +223,7 @@
     };
   }
 
+  // NORMALIZA EMPRESTIMO
   function normalizeLoan(loan = {}) {
     return {
       id: Number(loan.id) || 0,

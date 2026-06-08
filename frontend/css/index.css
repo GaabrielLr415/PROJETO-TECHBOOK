@@ -1,3 +1,5 @@
+/* CSS: INDEX */
+
 /* Fundo geral da página */
 
 .home-page {
@@ -647,6 +649,22 @@
   min-width: 160px;
   height: 50px;
   border-radius: 999px;
+}
+
+.recover-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.recover-card .button.ghost {
+  min-width: 160px;
+  height: 50px;
+  border: 1px solid #148de7;
+  border-radius: 999px;
+  color: #148de7;
+  background: #fff;
 }
 
 .recover-card .feedback {

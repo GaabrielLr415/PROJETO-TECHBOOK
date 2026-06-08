@@ -4,6 +4,7 @@ import com.techbook.dto.AlterarSenhaRequest;
 import com.techbook.dto.AdminLoginResponse;
 import com.techbook.dto.BookRequest;
 import com.techbook.dto.ClienteRequest;
+import com.techbook.dto.ClienteBloqueioRequest;
 import com.techbook.dto.ConfirmarRetiradaRequest;
 import com.techbook.dto.ContatoPendenciaRequest;
 import com.techbook.dto.DashboardResponse;
@@ -13,23 +14,37 @@ import com.techbook.dto.EmprestimoResponse;
 import com.techbook.dto.ExtravioRequest;
 import com.techbook.dto.LivroResponse;
 import com.techbook.dto.LoginRequest;
+import com.techbook.dto.RecuperarSenhaCodigoRequest;
+import com.techbook.dto.RecuperarSenhaCodigoResponse;
 import com.techbook.dto.RecuperarSenhaRequest;
 import com.techbook.dto.ReservaRequest;
 import com.techbook.dto.ReservaResponse;
 import com.techbook.dto.UsuarioResponse;
+import com.techbook.dto.VerificarCodigoRecuperacaoRequest;
 import com.techbook.model.Devolucao;
 import com.techbook.model.Emprestimo;
 import com.techbook.model.Livro;
+import com.techbook.model.RecuperacaoSenha;
 import com.techbook.model.Reserva;
 import com.techbook.model.Usuario;
+import com.techbook.model.Administrador;
+import com.techbook.repository.AdministradorRepository;
 import com.techbook.repository.DevolucaoRepository;
 import com.techbook.repository.EmprestimoRepository;
 import com.techbook.repository.LivroRepository;
+import com.techbook.repository.RecuperacaoSenhaRepository;
 import com.techbook.repository.ReservaRepository;
 import com.techbook.repository.UsuarioRepository;
+import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,36 +55,55 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TechbookService {
 
+    /*
+     * Servico central do TechBook.
+     *
+     * A equipe deve comecar por este arquivo quando precisar entender ou alterar
+     * regras de negocio. Os controllers apenas recebem as chamadas da API; aqui
+     * ficam as decisoes sobre reserva, emprestimo, devolucao, estoque, bloqueio,
+     * dashboard, login e listagens especiais do catalogo.
+     */
+
     // Centraliza os prazos usados no fluxo de reserva/emprestimo para manter a regra consistente.
     private static final int PRAZO_RETIRADA_DIAS = 1;
     private static final int PRAZO_EMPRESTIMO_DIAS = 14;
     private static final int PRAZO_RENOVACAO_DIAS = 7;
     private static final int LIMITE_EMPRESTIMOS_ATIVOS_POR_CLIENTE = 3;
-    private static final String ADMIN_EMAIL = "admin@techbook.local";
-    private static final String ADMIN_SENHA = "123456";
-    private static final String ADMIN_SENHA_HASH = "$2a$10$97UerRhTrUprEhgqk.xIJu3UnJuHt.ivYEEZZIFEMdENw.cXCk7om";
-    private static final String ADMIN_TOKEN = "techbook-admin-local";
     private static final String IMAGEM_PADRAO = "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80";
+    private static final int CODIGO_RECUPERACAO_MINUTOS = 10;
+    private static final int LIMITE_TENTATIVAS_CODIGO = 5;
+    private static final String MENSAGEM_CODIGO_RECUPERACAO = "Se existir uma conta associada a este e-mail, enviaremos as instrucoes de recuperacao.";
+    private static final Logger LOGGER = LoggerFactory.getLogger(TechbookService.class);
 
     private final LivroRepository livroRepository;
     private final UsuarioRepository usuarioRepository;
     private final ReservaRepository reservaRepository;
     private final EmprestimoRepository emprestimoRepository;
     private final DevolucaoRepository devolucaoRepository;
+    private final RecuperacaoSenhaRepository recuperacaoSenhaRepository;
+    private final AdministradorRepository administradorRepository;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public TechbookService(
         LivroRepository livroRepository,
         UsuarioRepository usuarioRepository,
         ReservaRepository reservaRepository,
         EmprestimoRepository emprestimoRepository,
-        DevolucaoRepository devolucaoRepository
+        DevolucaoRepository devolucaoRepository,
+        RecuperacaoSenhaRepository recuperacaoSenhaRepository,
+        AdministradorRepository administradorRepository,
+        EmailService emailService
     ) {
         this.livroRepository = livroRepository;
         this.usuarioRepository = usuarioRepository;
         this.reservaRepository = reservaRepository;
         this.emprestimoRepository = emprestimoRepository;
         this.devolucaoRepository = devolucaoRepository;
+        this.recuperacaoSenhaRepository = recuperacaoSenhaRepository;
+        this.administradorRepository = administradorRepository;
+        this.emailService = emailService;
     }
 
     public AdminLoginResponse loginAdministrador(LoginRequest request) {
@@ -80,15 +114,21 @@ public class TechbookService {
         String email = textoObrigatorio(request.email(), "email").toLowerCase();
         String senha = textoObrigatorio(request.senha(), "senha");
 
-        if (!ADMIN_EMAIL.equals(email) || (!ADMIN_SENHA.equals(senha) && !passwordEncoder.matches(senha, ADMIN_SENHA_HASH))) {
+        Administrador administrador = administradorRepository.findByEmailIgnoreCase(email)
+            .filter(item -> Boolean.TRUE.equals(item.getAtivo()))
+            .orElseThrow(() -> new IllegalArgumentException("Login ou senha do administrador incorretos."));
+
+        if (!passwordEncoder.matches(senha, administrador.getSenhaHash())) {
             throw new IllegalArgumentException("Login ou senha do administrador incorretos.");
         }
 
-        return new AdminLoginResponse("Administrador", ADMIN_EMAIL, ADMIN_TOKEN);
+        administrador.setTokenSessao("techbook-admin-" + UUID.randomUUID());
+        administradorRepository.save(administrador);
+        return new AdminLoginResponse(administrador.getNome(), administrador.getEmail(), administrador.getTokenSessao());
     }
 
     public void validarTokenAdministrador(String token) {
-        if (!ADMIN_TOKEN.equals(token)) {
+        if (token == null || token.isBlank() || administradorRepository.findByTokenSessaoAndAtivoTrue(token).isEmpty()) {
             throw new IllegalArgumentException("Acesso administrativo nao autorizado.");
         }
     }
@@ -104,6 +144,27 @@ public class TechbookService {
     public LivroResponse buscarLivro(Long id) {
         expirarReservasVencidas();
         return toLivroResponse(buscarLivroEntidade(id));
+    }
+
+    public List<LivroResponse> listarLivrosMaisProcurados() {
+        expirarReservasVencidas();
+
+        Map<Long, Long> procurasPorLivro = new HashMap<>();
+        reservaRepository.findAll().forEach(reserva ->
+            procurasPorLivro.merge(reserva.getLivro().getId(), 1L, Long::sum)
+        );
+        emprestimoRepository.findAll().forEach(emprestimo ->
+            procurasPorLivro.merge(emprestimo.getLivro().getId(), 1L, Long::sum)
+        );
+
+        return livroRepository.findAll().stream()
+            .filter(livro -> procurasPorLivro.getOrDefault(livro.getId(), 0L) > 0)
+            .sorted(Comparator
+                .comparing((Livro livro) -> procurasPorLivro.getOrDefault(livro.getId(), 0L)).reversed()
+                .thenComparing(Livro::getTitulo, String.CASE_INSENSITIVE_ORDER))
+            .limit(6)
+            .map(this::toLivroResponse)
+            .toList();
     }
 
     public LivroResponse criarLivro(BookRequest request) {
@@ -199,14 +260,86 @@ public class TechbookService {
         return toUsuarioResponse(usuarioRepository.save(usuario));
     }
 
+    public UsuarioResponse alterarBloqueioCliente(Long clienteId, ClienteBloqueioRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Dados de bloqueio nao informados.");
+        }
+
+        Usuario usuario = garantirCliente(clienteId);
+
+        if (request.bloqueado()) {
+            usuario.setBloqueado(true);
+            usuario.setMotivoBloqueio(textoOpcional(request.motivo(), "Cliente desativado pelo administrador."));
+            return toUsuarioResponse(usuarioRepository.save(usuario));
+        }
+
+        if (clienteTemPendenciaCritica(clienteId)) {
+            bloquearCliente(usuario, motivoPendenciaCliente(usuario));
+            throw new IllegalStateException("Nao e possivel desbloquear: o cliente possui pendencia ativa.");
+        }
+
+        usuario.setBloqueado(false);
+        usuario.setMotivoBloqueio("");
+        return toUsuarioResponse(usuarioRepository.save(usuario));
+    }
+
+    public RecuperarSenhaCodigoResponse solicitarCodigoRecuperacao(RecuperarSenhaCodigoRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Dados de recuperacao nao informados.");
+        }
+
+        String email = textoObrigatorio(request.email(), "email").toLowerCase();
+
+        usuarioRepository.findByEmailIgnoreCase(email).ifPresent(usuario -> {
+            invalidarCodigosRecuperacao(usuario);
+            String codigo = gerarCodigoRecuperacao();
+
+            RecuperacaoSenha recuperacao = new RecuperacaoSenha();
+            recuperacao.setUsuario(usuario);
+            recuperacao.setCodigo(codigo);
+            recuperacao.setExpiracao(LocalDateTime.now().plusMinutes(CODIGO_RECUPERACAO_MINUTOS));
+            recuperacao.setUtilizado(false);
+            recuperacao.setTentativas(0);
+            recuperacaoSenhaRepository.save(recuperacao);
+            try {
+                emailService.enviarCodigoRecuperacao(email, codigo, CODIGO_RECUPERACAO_MINUTOS);
+            } catch (IllegalStateException exception) {
+                recuperacao.setUtilizado(true);
+                recuperacaoSenhaRepository.save(recuperacao);
+                LOGGER.warn("Falha ao enviar codigo de recuperacao para {}.", email, exception);
+            }
+        });
+
+        return new RecuperarSenhaCodigoResponse(MENSAGEM_CODIGO_RECUPERACAO);
+    }
+
+    public RecuperarSenhaCodigoResponse verificarCodigoRecuperacao(VerificarCodigoRecuperacaoRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Dados de recuperacao nao informados.");
+        }
+
+        String email = textoObrigatorio(request.email(), "email").toLowerCase();
+        String codigo = textoObrigatorio(request.codigo(), "codigo");
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
+            .orElseThrow(() -> new IllegalArgumentException("Codigo invalido ou expirado."));
+
+        validarCodigoRecuperacao(usuario, codigo);
+        return new RecuperarSenhaCodigoResponse("Codigo validado. Informe sua nova senha.");
+    }
+
     public UsuarioResponse recuperarSenha(RecuperarSenhaRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Dados de recuperacao nao informados.");
         }
 
         String email = textoObrigatorio(request.email(), "email").toLowerCase();
+        String codigo = textoObrigatorio(request.codigo(), "codigo");
         String novaSenha = textoObrigatorio(request.novaSenha(), "nova senha");
         String confirmarNovaSenha = textoObrigatorio(request.confirmarNovaSenha(), "confirmacao da nova senha");
+
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
+            .orElseThrow(() -> new IllegalArgumentException("Codigo invalido ou expirado."));
+        RecuperacaoSenha recuperacao = validarCodigoRecuperacao(usuario, codigo);
 
         if (!novaSenha.equals(confirmarNovaSenha)) {
             throw new IllegalArgumentException("A nova senha e a confirmacao precisam ser iguais.");
@@ -215,10 +348,9 @@ public class TechbookService {
             throw new IllegalArgumentException("A nova senha deve ter pelo menos 6 caracteres.");
         }
 
-        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado para este e-mail."));
-
         usuario.setSenhaHash(gerarHashSenha(novaSenha));
+        recuperacao.setUtilizado(true);
+        recuperacaoSenhaRepository.save(recuperacao);
         return toUsuarioResponse(usuarioRepository.save(usuario));
     }
 
@@ -229,16 +361,17 @@ public class TechbookService {
         }
 
         String email = textoObrigatorio(request.email(), "email").toLowerCase();
-        String senha = textoObrigatorio(request.senha(), "senha");
+        String senhaDigitada = textoObrigatorio(request.senha(), "senha");
 
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
             .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado."));
 
-        if (usuario.getSenhaHash() == null || usuario.getSenhaHash().isBlank()) {
+        String senhaSalva = senhaSalva(usuario);
+        if (senhaSalva == null || senhaSalva.isBlank()) {
             throw new IllegalStateException("Esta conta foi criada sem senha. Crie uma nova conta ou atualize a senha no banco.");
         }
 
-        if (!senhaConfere(senha, usuario.getSenhaHash())) {
+        if (!senhaConfere(senhaDigitada, senhaSalva)) {
             throw new IllegalArgumentException("Senha incorreta.");
         }
 
@@ -637,6 +770,51 @@ public class TechbookService {
             return passwordEncoder.matches(senhaDigitada, senhaSalva);
         }
         return senhaDigitada.equals(senhaSalva);
+    }
+
+    private String gerarCodigoRecuperacao() {
+        return String.format("%06d", secureRandom.nextInt(1_000_000));
+    }
+
+    private void invalidarCodigosRecuperacao(Usuario usuario) {
+        List<RecuperacaoSenha> codigosAtivos = recuperacaoSenhaRepository.findByUsuarioAndUtilizadoFalse(usuario);
+        codigosAtivos.forEach(codigo -> codigo.setUtilizado(true));
+        recuperacaoSenhaRepository.saveAll(codigosAtivos);
+    }
+
+    private RecuperacaoSenha validarCodigoRecuperacao(Usuario usuario, String codigoDigitado) {
+        RecuperacaoSenha recuperacao = recuperacaoSenhaRepository.findTopByUsuarioAndUtilizadoFalseOrderByIdDesc(usuario)
+            .orElseThrow(() -> new IllegalArgumentException("Codigo invalido ou expirado."));
+
+        if (Boolean.TRUE.equals(recuperacao.getUtilizado()) || recuperacao.getExpiracao().isBefore(LocalDateTime.now())) {
+            recuperacao.setUtilizado(true);
+            recuperacaoSenhaRepository.save(recuperacao);
+            throw new IllegalArgumentException("Codigo invalido ou expirado.");
+        }
+
+        if (recuperacao.getTentativas() >= LIMITE_TENTATIVAS_CODIGO) {
+            recuperacao.setUtilizado(true);
+            recuperacaoSenhaRepository.save(recuperacao);
+            throw new IllegalArgumentException("Limite de tentativas excedido. Solicite um novo codigo.");
+        }
+
+        if (!recuperacao.getCodigo().equals(codigoDigitado)) {
+            recuperacao.setTentativas(recuperacao.getTentativas() + 1);
+            if (recuperacao.getTentativas() >= LIMITE_TENTATIVAS_CODIGO) {
+                recuperacao.setUtilizado(true);
+            }
+            recuperacaoSenhaRepository.save(recuperacao);
+            throw new IllegalArgumentException("Codigo invalido ou expirado.");
+        }
+
+        return recuperacao;
+    }
+
+    private String senhaSalva(Usuario usuario) {
+        if (usuario.getSenhaHash() != null && !usuario.getSenhaHash().isBlank()) {
+            return usuario.getSenhaHash();
+        }
+        return usuario.getSenha();
     }
 
     @Scheduled(fixedDelay = 3600000)

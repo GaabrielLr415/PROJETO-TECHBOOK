@@ -1,3 +1,5 @@
+/* CSS: CATALOGO */
+
 body {
   margin: 0;
 }
@@ -194,14 +196,206 @@ body {
 ========================= */
 
 .catalog-results {
-  width: min(880px, calc(100% - 40px));
+  width: min(1120px, calc(100% - 40px));
   margin: 30px auto 0;
+}
+
+/* MAIS RESERVADOS */
+.popular-books {
+  width: min(1120px, calc(100% - 40px));
+  margin: 34px auto 0;
+}
+
+.popular-books[hidden] {
+  display: none;
+}
+
+.popular-books-header {
+  margin-bottom: 24px;
+}
+
+.popular-books-header h2 {
+  margin: 0;
+  color: #666666;
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.popular-carousel {
+  position: relative;
+}
+
+/* MAIS RESERVADOS */
+.popular-book-list {
+  display: grid;
+  grid-auto-columns: calc((100% - 96px) / 5);
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  padding: 0;
+  scroll-padding-left: 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.popular-book-list::-webkit-scrollbar {
+  display: none;
+}
+
+.popular-book-list.dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.popular-book-card {
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+  padding: 14px 14px 18px;
+  border: 1px solid #eeeeee;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #111827;
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.popular-book-card:hover {
+  transform: translateY(-2px);
+  border-color: #d7eaff;
+  box-shadow: 0 16px 34px rgba(2, 147, 241, 0.12);
+}
+
+.popular-book-card img {
+  width: 100%;
+  height: 260px;
+  margin: 0 0 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  object-fit: contain;
+  object-position: center;
+}
+
+.popular-book-info {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popular-book-card strong {
+  display: -webkit-box;
+  min-height: 42px;
+  overflow: hidden;
+  color: #5f5f5f;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.18;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.popular-book-card small,
+.popular-book-card span {
+  overflow: hidden;
+  color: #5c5c5c;
+  font-size: 0.9rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popular-book-card em {
+  margin-top: auto;
+  color: #1f2f2f;
+  font-size: 0.83rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.popular-carousel-button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1f7bf2;
+  font-size: 2.2rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  transform: translateY(-50%);
+}
+
+.popular-carousel-button.prev {
+  left: -58px;
+}
+
+.popular-carousel-button.next {
+  right: -58px;
+}
+
+.popular-carousel-button:disabled {
+  cursor: default;
+  opacity: 0.2;
+}
+
+.popular-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  min-height: 14px;
+  margin-top: 16px;
+}
+
+.popular-carousel-dots button {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #cfcfcf;
+  cursor: pointer;
+  padding: 0;
+}
+
+.popular-carousel-dots button.active {
+  background: #3b8ff2;
 }
 
 .catalog-meta {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
   margin-bottom: 12px;
+}
+
+.catalog-invite {
+  margin: 0;
+  color: #666666;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .catalog-count {
@@ -210,10 +404,11 @@ body {
   font-weight: 600;
 }
 
+/* GRADE DO CATALOGO */
 .catalog-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 42px 30px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 42px 24px;
 }
 
 .catalog-grid .book-card {
@@ -233,7 +428,8 @@ body {
   width: 100%;
   height: 260px;
 
-  object-fit: cover;
+  background: #ffffff;
+  object-fit: contain;
   object-position: center;
 
   overflow: hidden;
@@ -298,6 +494,7 @@ body {
   padding-top: 16px;
 }
 
+/* DETALHE DO LIVRO */
 .book-panel {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -311,7 +508,9 @@ body {
 
   height: 520px;
 
-  object-fit: cover;
+  background: #ffffff;
+
+  object-fit: contain;
 
   object-position: center;
 
@@ -627,7 +826,8 @@ body[data-page="account"] .reservation-layout {
 .reservation-card img {
   width: 100%;
   border-radius: 14px;
-  object-fit: cover;
+  background: #ffffff;
+  object-fit: contain;
 }
 
 .reservation-card h3 {
@@ -1333,10 +1533,18 @@ body[data-page="account"] .reservation-layout {
   letter-spacing: 0;
 }
 
+/* SUGESTOES SEMELHANTES */
 .similar-books {
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid #e5e7eb;
+}
+
+.similar-books.unavailable-suggestions {
+  padding: 18px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #f8fbff;
 }
 
 .similar-kicker {
@@ -1359,6 +1567,7 @@ body[data-page="account"] .reservation-layout {
 }
 
 .similar-book-list {
+  /* CARDS DOS LIVROS SEMELHANTES */
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -1378,7 +1587,8 @@ body[data-page="account"] .reservation-layout {
 .similar-book-card img {
   width: 100%;
   aspect-ratio: 3 / 4;
-  object-fit: cover;
+  background: #ffffff;
+  object-fit: contain;
   border-radius: 10px;
 }
 
@@ -1523,6 +1733,22 @@ body[data-page="account"] .reservation-layout {
     grid-template-columns: 1fr 1fr;
   }
 
+  .popular-books {
+    width: min(1120px, calc(100% - 40px));
+  }
+
+  .popular-book-list {
+    grid-auto-columns: calc((100% - 48px) / 3);
+  }
+
+  .popular-carousel-button.prev {
+    left: -18px;
+  }
+
+  .popular-carousel-button.next {
+    right: -18px;
+  }
+
   .catalog-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1554,6 +1780,58 @@ body[data-page="account"] .reservation-layout {
   .about-footer-inner {
     grid-template-columns: 1fr;
     width: min(100%, calc(100% - 32px));
+  }
+
+  .popular-books {
+    width: min(100%, calc(100% - 32px));
+    margin-top: 28px;
+  }
+
+  .popular-books-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .popular-book-list {
+    grid-auto-columns: calc((100% - 16px) / 2);
+    gap: 16px;
+  }
+
+  .popular-carousel-button {
+    width: 38px;
+    height: 38px;
+    font-size: 1.8rem;
+  }
+
+  .popular-carousel-button.prev {
+    left: -6px;
+  }
+
+  .popular-carousel-button.next {
+    right: -6px;
+  }
+
+  .popular-book-card {
+    min-height: 410px;
+    padding: 14px 14px 16px;
+  }
+
+  .popular-book-card img {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 14px;
+  }
+
+  .popular-book-card strong {
+    font-size: 0.88rem;
+  }
+
+  .catalog-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-invite {
+    font-size: 1.15rem;
   }
 
   .footer-logo {

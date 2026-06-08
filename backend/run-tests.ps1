@@ -21,8 +21,27 @@ $javaCommand = Get-Command java -ErrorAction SilentlyContinue
 $javaExe = if ($javaCommand) { $javaCommand.Source } else { $null }
 $javaMajorVersion = if ($javaExe) { Get-JavaMajorVersion $javaExe } else { 0 }
 
+if ($javaExe -like "*\Common Files\Oracle\Java\javapath\*") {
+  $javaMajorVersion = 0
+}
+
+if ($javaMajorVersion -lt 17) {
+  $candidateJavaExecutables = @(
+    "C:\Program Files\Java\jdk-17\bin\java.exe",
+    "C:\Program Files\Java\latest\bin\java.exe"
+  )
+
+  $javaExe = $candidateJavaExecutables |
+    Where-Object { Test-Path $_ } |
+    Where-Object { (Get-JavaMajorVersion $_) -ge 17 } |
+    Select-Object -First 1
+
+  $javaMajorVersion = if ($javaExe) { Get-JavaMajorVersion $javaExe } else { 0 }
+}
+
 if ($javaMajorVersion -lt 17) {
   $candidateRoots = @(
+    (Join-Path $PSScriptRoot "..\tools"),
     "C:\Program Files\Java",
     "C:\Program Files\Eclipse Adoptium",
     "$env:USERPROFILE\.vscode\extensions",

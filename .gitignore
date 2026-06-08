@@ -21,6 +21,7 @@ application-local.properties
 *.log
 
 # Arquivos temporarios locais
+tools/
 _codex_push_tmp/
 _codex_push_final/
 docs/_manual_*/

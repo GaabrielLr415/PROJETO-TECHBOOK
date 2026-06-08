@@ -23,6 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/emprestimos")
 public class EmprestimoController {
 
+    /*
+     * Rotas de emprestimo e devolucao.
+     * Aqui entram os fluxos administrativos depois da reserva: confirmar
+     * retirada, renovar, registrar contato de atraso, marcar extravio e devolver.
+     */
+
     private final TechbookService service;
 
     public EmprestimoController(TechbookService service) {

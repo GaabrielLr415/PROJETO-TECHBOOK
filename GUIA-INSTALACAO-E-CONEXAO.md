@@ -35,6 +35,29 @@ Depois disso, compacte a pasta em `.zip` e envie o arquivo para o Google Drive.
 
 ## 4. Como preparar em outro computador
 
+### Opção automática
+
+1. Baixe o `.zip` pelo Google Drive.
+2. Extraia a pasta em um local simples, por exemplo:
+
+```text
+C:\TechBook
+```
+
+3. Abra o XAMPP.
+4. Clique em `Start` no MySQL.
+5. Dê dois cliques em:
+
+```text
+PREPARAR-E-ABRIR-TECHBOOK.bat
+```
+
+Esse arquivo importa `database/techbook.sql`, inicia o backend e abre o catálogo.
+
+Se der erro, use a opção manual abaixo.
+
+### Opção manual
+
 1. Baixe o `.zip` pelo Google Drive.
 2. Extraia a pasta em um local simples, por exemplo:
 

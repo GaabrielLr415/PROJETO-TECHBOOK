@@ -1,5 +1,7 @@
 (function () {
-  const app = window.TechBookApp;
+  /* JAVASCRIPT: SCRIPT */
+
+const app = window.TechBookApp;
   const page = document.body.dataset.page;
   let originalProfileValues = null;
 
@@ -13,7 +15,8 @@
   renderAccountPage();
   renderFeaturedBooks();
 
-// Monta a área do cabeçalho conforme o usuário esteja logado ou não.
+  // Monta a área do cabeçalho conforme o usuário esteja logado ou não.
+  // CABECALHO
 function renderAuthArea() {
   const container = document.getElementById("authArea");
   if (!container) return;
@@ -116,6 +119,7 @@ document
     });
   }
 
+  // LIVROS DA HOME
   async function renderFeaturedBooks() {
     if (page !== "home") return;
     const grid = document.getElementById("featuredGrid");
@@ -145,7 +149,7 @@ document
   }
 
 // ==========================================
-// FORMULÁRIO DE SUPORTE (EMAILJS)
+  // FORMULÁRIO DE SUPORTE (EMAILJS)
 // ==========================================
 
   function bindSupportForm() {
@@ -215,6 +219,7 @@ document
     });
   }
 
+  // LOGIN
   function bindLoginForm() {
     const form = document.getElementById("loginForm");
     if (!form) return;
@@ -224,9 +229,16 @@ document
       const email = document.getElementById("loginEmail").value.trim().toLowerCase();
       const password = document.getElementById("loginPassword").value.trim();
       const feedback = document.getElementById("loginFeedback");
+      const setLoginFeedback = (message, type = "info") => {
+        feedback.textContent = message;
+        feedback.classList.remove("info-feedback", "success-feedback", "error-feedback");
+        feedback.classList.add(`${type}-feedback`);
+      };
+
+      setLoginFeedback("");
 
       if (!password) {
-        feedback.textContent = "Informe a senha.";
+        setLoginFeedback("Informe a senha.", "info");
         return;
       }
 
@@ -239,14 +251,23 @@ document
           }
         });
         if (!client) {
-          feedback.textContent = "Cliente não encontrado. Use um e-mail já cadastrado ou crie uma conta.";
+          setLoginFeedback("Cliente não encontrado. Use um e-mail já cadastrado ou crie uma conta.", "error");
           return;
         }
 
         app.setSession({ id: client.id, nome: client.nome, email: client.email });
         window.location.href = "minhas-reservas.html";
       } catch (error) {
-        feedback.textContent = error.message;
+        const message = error.message || "";
+        if (/senha/i.test(message)) {
+          setLoginFeedback("Senha incorreta.", "error");
+          return;
+        }
+        if (/cliente/i.test(message)) {
+          setLoginFeedback("Cliente não encontrado. Use um e-mail já cadastrado ou crie uma conta.", "error");
+          return;
+        }
+        setLoginFeedback(message, "error");
       }
     });
   }
@@ -256,15 +277,52 @@ document
     if (!form) return;
 
     const emailInput = document.getElementById("recoverEmail");
+    const codeFields = document.getElementById("recoverCodeFields");
+    const codeInput = document.getElementById("recoverCode");
     const fields = document.getElementById("recoverPasswordFields");
     const newPasswordInput = document.getElementById("recoverNewPassword");
     const confirmPasswordInput = document.getElementById("recoverConfirmPassword");
     const submitButton = document.getElementById("recoverSubmitButton");
+    const resendButton = document.getElementById("recoverResendButton");
     const feedback = document.getElementById("recoverFeedback");
+    const stepText = document.getElementById("recoverStepText");
+
+    async function sendRecoverCode(email) {
+      return app.request("/clientes/recuperar-senha/codigo", {
+        method: "POST",
+        body: { email }
+      });
+    }
+
+    if (resendButton) {
+      resendButton.addEventListener("click", async () => {
+        const email = emailInput.value.trim().toLowerCase();
+        feedback.textContent = "";
+        feedback.classList.remove("info-feedback", "success-feedback", "error-feedback");
+
+        try {
+          const response = await sendRecoverCode(email);
+          codeInput.value = "";
+          fields.hidden = true;
+          newPasswordInput.required = false;
+          confirmPasswordInput.required = false;
+          submitButton.hidden = false;
+          submitButton.disabled = false;
+          submitButton.textContent = "Verificar código";
+          feedback.textContent = response.mensagem;
+          feedback.classList.add("info-feedback");
+          codeInput.focus();
+        } catch (error) {
+          feedback.textContent = error.message;
+          feedback.classList.add("error-feedback");
+        }
+      });
+    }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       feedback.textContent = "";
+      feedback.classList.remove("info-feedback");
       feedback.classList.remove("success-feedback");
       feedback.classList.remove("error-feedback");
 
@@ -276,21 +334,76 @@ document
         return;
       }
 
+      if (codeFields.hidden) {
+        try {
+          const response = await sendRecoverCode(email);
+
+          codeFields.hidden = false;
+          codeInput.required = true;
+          emailInput.readOnly = true;
+          submitButton.textContent = "Verificar código";
+          if (resendButton) {
+            resendButton.hidden = false;
+          }
+          if (stepText) {
+            stepText.textContent = "Informe o código recebido por e-mail.";
+          }
+          feedback.classList.add("info-feedback");
+          feedback.textContent = response.mensagem;
+          codeInput.focus();
+        } catch (error) {
+          feedback.textContent = error.message;
+          feedback.classList.add("error-feedback");
+        }
+        return;
+      }
+
       if (fields.hidden) {
-        fields.hidden = false;
-        newPasswordInput.required = true;
-        confirmPasswordInput.required = true;
-        submitButton.textContent = "Redefinir senha";
-        feedback.textContent = "Agora informe sua nova senha.";
-        newPasswordInput.focus();
+        const codigo = digitsOnly(codeInput.value);
+        codeInput.value = codigo;
+        if (codigo.length !== 6) {
+          feedback.textContent = "Informe o código de 6 dígitos.";
+          feedback.classList.add("error-feedback");
+          codeInput.focus();
+          return;
+        }
+
+        try {
+          const response = await app.request("/clientes/recuperar-senha/verificar", {
+            method: "POST",
+            body: { email, codigo }
+          });
+
+          fields.hidden = false;
+          newPasswordInput.required = true;
+          confirmPasswordInput.required = true;
+          submitButton.textContent = "Alterar senha";
+          if (stepText) {
+            stepText.textContent = "Crie uma nova senha para acessar sua conta.";
+          }
+          feedback.textContent = response.mensagem;
+          feedback.classList.add("info-feedback");
+          newPasswordInput.focus();
+        } catch (error) {
+          feedback.textContent = error.message;
+          feedback.classList.add("error-feedback");
+          codeInput.focus();
+        }
         return;
       }
 
       const novaSenha = newPasswordInput.value;
       const confirmarNovaSenha = confirmPasswordInput.value;
 
+      if (novaSenha.length < 6 || confirmarNovaSenha.length < 6) {
+        feedback.textContent = "A nova senha deve ter pelo menos 6 caracteres.";
+        feedback.classList.add("error-feedback");
+        newPasswordInput.focus();
+        return;
+      }
+
       if (novaSenha !== confirmarNovaSenha) {
-        feedback.textContent = "As senhas não conferem. Digite a mesma senha nos dois campos.";
+        feedback.innerHTML = "As senhas não conferem.<br>Digite a mesma senha nos dois campos.";
         feedback.classList.add("error-feedback");
         return;
       }
@@ -300,18 +413,23 @@ document
           method: "PUT",
           body: {
             email,
+            codigo: digitsOnly(codeInput.value),
             novaSenha,
             confirmarNovaSenha
           }
         });
 
-        feedback.textContent = "Senha redefinida com sucesso. Você será levado para o login.";
+        feedback.textContent = "Senha alterada com sucesso.";
         feedback.classList.add("success-feedback");
-        submitButton.textContent = "Senha redefinida";
+        submitButton.textContent = "Senha alterada";
         submitButton.disabled = true;
-        setTimeout(() => {
-          window.location.href = "login.html";
-        }, 1800);
+        submitButton.hidden = true;
+        if (resendButton) {
+          resendButton.hidden = true;
+        }
+        if (stepText) {
+          stepText.textContent = "Senha alterada com sucesso.";
+        }
       } catch (error) {
         feedback.textContent = error.message;
         feedback.classList.add("error-feedback");
@@ -319,6 +437,7 @@ document
     });
   }
 
+  // MINHA CONTA
 async function renderAccountPage() {
   if (page !== "account") return;
 
@@ -519,6 +638,7 @@ async function renderAccountPage() {
 }
 
 
+  // CADASTRO
   function bindSignupForm() {
     const form = document.getElementById("signupForm");
     if (!form) return;
@@ -534,18 +654,27 @@ async function renderAccountPage() {
       const email = document.getElementById("signupEmail").value.trim();
       const emailConfirm = document.getElementById("signupEmailConfirm").value.trim();
       const feedback = document.getElementById("signupFeedback");
+      feedback.textContent = "";
+      feedback.classList.remove("info-feedback", "success-feedback", "error-feedback");
 
       if (email !== emailConfirm) {
         feedback.textContent = "Os e-mails precisam ser iguais.";
+        feedback.classList.add("error-feedback");
         return;
       }
 
       const senha = document.getElementById("signupPassword").value;
       const confirmarSenha = document.getElementById("signupPasswordConfirm").value;
 
+      if (senha.length < 6 || confirmarSenha.length < 6) {
+        feedback.textContent = "A senha deve ter pelo menos 6 caracteres.";
+        feedback.classList.add("error-feedback");
+        return;
+      }
+
       if (senha !== confirmarSenha) {
-        feedback.textContent = "As senhas precisam ser iguais.";
-        feedback.style.color = "red";
+        feedback.innerHTML = "As senhas não conferem.<br>Digite a mesma senha nos dois campos.";
+        feedback.classList.add("error-feedback");
         return;
       }
 
@@ -564,6 +693,7 @@ async function renderAccountPage() {
         window.location.href = "minhas-reservas.html";
       } catch (error) {
         feedback.textContent = error.message;
+        feedback.classList.add("error-feedback");
       }
     });
   }
@@ -633,8 +763,13 @@ async function renderAccountPage() {
       const novaSenha = document.getElementById("newPassword").value;
       const confirmarNovaSenha = document.getElementById("confirmNewPassword").value;
 
+      if (novaSenha.length < 6 || confirmarNovaSenha.length < 6) {
+        modalFeedback.innerHTML = "A nova senha deve ter<br>pelo menos 6 caracteres.";
+        return;
+      }
+
       if (novaSenha !== confirmarNovaSenha) {
-        modalFeedback.textContent = "A nova senha e a confirmação precisam ser iguais.";
+        modalFeedback.innerHTML = "As senhas não conferem.<br>Digite a mesma senha nos dois campos.";
         return;
       }
 
@@ -808,7 +943,7 @@ async function renderAccountPage() {
     document.getElementById("modalOverlay").classList.add("hidden-action");
   }
 
-// Mostra ou oculta a senha
+  // Mostra ou oculta a senha
 function togglePassword(button) {
   const group = button.closest(".password-group");
   const input = group.querySelector("input");

@@ -19,6 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/reservas")
 public class ReservaController {
 
+    /*
+     * Rotas de reserva.
+     * O cliente cria/cancela reservas pelo catalogo e o administrador lista as
+     * reservas pendentes para confirmar a retirada no painel administrativo.
+     */
+
     private final TechbookService service;
 
     public ReservaController(TechbookService service) {

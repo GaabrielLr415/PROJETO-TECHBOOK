@@ -13,24 +13,63 @@
 </head>
 <body data-page="admin-login">
   <main class="admin-login-page">
-    <section class="admin-login-card">
-      <div class="screen-heading">
-        <p class="eyebrow">Acesso administrativo</p>
-        <h1>TECHBOOK ADM</h1>
+    <section class="admin-login-shell" aria-label="Acesso administrativo TECHBOOK">
+      <div class="admin-login-brand">
+        <span class="admin-login-pill">Painel Administrativo</span>
+        <div class="admin-login-heading">
+          <img src="img/LOGO TECHBOOK.svg" alt="TechBook" class="admin-login-logo">
+          <p>Gerencie o acervo e acompanhe as movimentacoes da biblioteca em um so lugar.</p>
+        </div>
+
+        <div class="admin-login-footer">
+          <p class="admin-login-status"><span aria-hidden="true"></span>Sistema online e pronto para atendimento</p>
+          <nav class="admin-login-socials" aria-label="Redes sociais da TECHBOOK">
+            <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">
+              <img src="img/twitter.svg" alt="">
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+              <img src="img/footer-facebook.svg" alt="">
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+              <img src="img/instagram.svg" alt="">
+            </a>
+          </nav>
+        </div>
       </div>
 
-      <form id="adminLoginForm" class="admin-login-form">
-        <label class="field-block">
-          <span>E-mail do administrador</span>
-          <input type="email" id="adminLogin" value="admin@techbook.local" required>
-        </label>
-        <label class="field-block">
-          <span>Senha</span>
-          <input type="password" id="adminPassword" placeholder="Senha do administrador" required>
-        </label>
-        <button class="button primary" type="submit">Entrar</button>
-        <p class="admin-login-feedback" id="adminLoginFeedback"></p>
-      </form>
+      <div class="admin-access-panel">
+        <a class="admin-login-back" href="index.html">
+          <img src="img/VOLTAR.svg" alt="">
+          <span>Voltar</span>
+        </a>
+        <div class="admin-access-title">
+          <span class="admin-access-icon" aria-hidden="true">
+            <img src="img/PERFIL.svg" alt="">
+          </span>
+          <div>
+            <h2>Administrador</h2>
+            <p>Acesso restrito ao painel de controle</p>
+          </div>
+        </div>
+
+        <form id="adminLoginForm" class="admin-login-form">
+          <label class="field-block">
+            <span>E-mail do administrador</span>
+            <input type="email" id="adminLogin" value="admin@techbook.local" autocomplete="username" required>
+          </label>
+          <label class="field-block">
+            <span>Senha</span>
+            <span class="password-field">
+              <input type="password" id="adminPassword" placeholder="Senha do administrador" autocomplete="current-password" required>
+              <button class="password-toggle" id="adminPasswordToggle" type="button" aria-label="Mostrar senha" aria-pressed="false">
+                <img src="img/olho-fechado.svg" alt="">
+              </button>
+            </span>
+          </label>
+          <button class="button primary" type="submit">Entrar</button>
+          <p class="admin-login-feedback" id="adminLoginFeedback" aria-live="polite"></p>
+        </form>
+      </div>
     </section>
   </main>
   <script src="js/app.js?v=anti-trava-1"></script>
