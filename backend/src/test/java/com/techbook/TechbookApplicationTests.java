@@ -3,6 +3,7 @@ package com.techbook;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -11,6 +12,7 @@ import com.techbook.dto.ClienteRequest;
 import com.techbook.dto.ConfirmarRetiradaRequest;
 import com.techbook.dto.DevolucaoRequest;
 import com.techbook.dto.LivroResponse;
+import com.techbook.dto.LoginRequest;
 import com.techbook.dto.ReservaRequest;
 import com.techbook.dto.UsuarioResponse;
 import com.techbook.model.Emprestimo;
@@ -170,6 +172,18 @@ class TechbookApplicationTests {
 
         assertEquals("ATRASADO", atrasado.status());
         assertFalse(atrasado.renovado());
+    }
+
+    @Test
+    void loginClienteGeraTokenDeSessaoEValidaAcesso() {
+        UsuarioResponse cliente = criarCliente();
+
+        UsuarioResponse login = service.loginCliente(new LoginRequest(cliente.email(), "123456"));
+
+        assertNotNull(login.token());
+        service.validarTokenCliente(login.id(), login.token());
+        assertThrows(IllegalArgumentException.class, () -> service.validarTokenCliente(login.id(), "token-invalido"));
+        assertNull(service.buscarCliente(login.id()).token());
     }
 
     private UsuarioResponse criarCliente() {

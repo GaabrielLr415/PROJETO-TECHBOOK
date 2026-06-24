@@ -10,20 +10,24 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/catalogo.css">
+  <link rel="stylesheet" href="css/global.css?v=fredoka-titulos-1">
+  <link rel="stylesheet" href="css/catalogo.css?v=capas-sem-corte-1">
 
 </head>
 <body data-page="catalog" class="catalog-view-page">
+ 
+  <!-- IDENTIFICACAO DA PAGINA -->
   <div class="catalog-top-wrap">
+  
+    <!-- CABECALHO -->
     <header class="site-header app-header catalog-header">
 
-      <!-- LOGO DA TECHBOOK -->
+      <!-- LOGO DO SITE -->
       <a class="brand catalog-brand" href="index.html">
         <img src="img/LOGO TECHBOOK.svg" alt="TechBook" class="brand-logo-icon">
       </a>
 
-      <!-- CABEÇALHO - MENU DO SITE -->
+      <!-- MENU DO SITE -->
       <nav class="site-nav catalog-nav">
         <a href="quemsomos.html">Quem somos</a>
         <a href="catalogo.html">Catálogo</a>
@@ -31,12 +35,15 @@
         <a href="suporte.html">Suporte</a>
       </nav>
 
+      <!-- LOGIN E PERFIL -->
       <div class="site-actions catalog-actions" id="authArea"></div>
 
     </header>
   </div>
+  <!-- CONTEUDO PRINCIPAL -->
 
   <main class="catalog-page">
+    <!-- FILTROS DO CATALOGO -->
     <section class="catalog-filter-band">
       <div class="catalog-toolbar">
 
@@ -92,8 +99,13 @@
       </div>
     </section>
 
+    <!-- MAIS RESERVADOS -->
+    <section class="popular-books" id="popularBooks"></section>
+
+    <!-- RESULTADO DO CATALOGO -->
     <section class="catalog-results">
       <div class="catalog-meta">
+        <p class="catalog-invite">Escolha uma nova leitura!</p>
 
         <span class="catalog-count" id="catalogCount">
 
@@ -109,9 +121,10 @@
         </span>
 
       </div>
+      <!-- CARDS DOS LIVROS -->
       <div class="book-grid catalog-grid" id="catalogGrid"></div>
 
-      <!-- PAGINAÇÃO -->
+      <!-- PAGINACAO -->
       <div class="pagination" id="pagination">
         <button class="active">1</button>
         <button>2</button>
@@ -122,12 +135,13 @@
 
   </main>
 
-<!-- FOOTER DA PAGINA -->
+<!-- RODAPE -->
 <footer class="about-footer">
   <div class="about-footer-inner">
 
-    <!-- LOGO E ENDEREÇO -->
+    <!-- LOGO E ENDERECO -->
     <div class="footer-brand-area">
+      <!-- LOGO DO SITE -->
       <a class="footer-brand-link" href="index.html">
         <img src="img/LOGO TECHBOOK.svg" alt="TechBook" class="footer-logo">
       </a>
@@ -180,7 +194,7 @@
       <ul>
         <li><a href="suporte.html">Suporte</a></li>
         <li>
-          <a href="docs/politica-privacidade.pdf" target="_blank">
+          <a href="docs/DOCUMENTAÇÃO/POLÍTICA DE PRIVACIDADE - TECHBOOK.pdf" target="_blank">
             Política de Privacidade
           </a>
         </li>
@@ -188,14 +202,14 @@
     </div>
 
   </div>
+  <!-- DIREITOS DO SITE -->
   <div class="footer-legal">
     Copyright © 2026 TECHBOOK - Todos os direitos reservados - Design e Desenvolvimento: TECHFORCE
   </div>
 </footer>
-
-  <!-- JAVA SCRIPT -->
-  <script src="js/app.js"></script>
+  <!-- JAVASCRIPT DA PAGINA -->
+  <script src="js/app.js?v=catalogo-15-por-pagina-1"></script>
   <script src="js/script.js"></script>
-  <script src="js/catalogo.js"></script>
+  <script src="js/catalogo.js?v=carrossel-clique-1"></script>
 </body>
 </html>

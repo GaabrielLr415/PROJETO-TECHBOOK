@@ -1,9 +1,11 @@
 package com.techbook.controller;
 
 import com.techbook.dto.ConfirmarRetiradaRequest;
+import com.techbook.dto.ContatoPendenciaRequest;
 import com.techbook.dto.DevolucaoRequest;
 import com.techbook.dto.DevolucaoResponse;
 import com.techbook.dto.EmprestimoResponse;
+import com.techbook.dto.ExtravioRequest;
 import com.techbook.service.TechbookService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/emprestimos")
 public class EmprestimoController {
+
+    /*
+     * Rotas de emprestimo e devolucao.
+     * Aqui entram os fluxos administrativos depois da reserva: confirmar
+     * retirada, renovar, registrar contato de atraso, marcar extravio e devolver.
+     */
 
     private final TechbookService service;
 
@@ -50,6 +58,26 @@ public class EmprestimoController {
     ) {
         service.validarTokenAdministrador(token);
         return service.renovarEmprestimo(id);
+    }
+
+    @PatchMapping("/{id}/contato")
+    public EmprestimoResponse registrarContato(
+        @RequestHeader(value = "X-Admin-Token", required = false) String token,
+        @PathVariable Long id,
+        @RequestBody ContatoPendenciaRequest request
+    ) {
+        service.validarTokenAdministrador(token);
+        return service.registrarContatoPendencia(id, request);
+    }
+
+    @PatchMapping("/{id}/extraviar")
+    public EmprestimoResponse marcarExtraviado(
+        @RequestHeader(value = "X-Admin-Token", required = false) String token,
+        @PathVariable Long id,
+        @RequestBody ExtravioRequest request
+    ) {
+        service.validarTokenAdministrador(token);
+        return service.marcarEmprestimoComoExtraviado(id, request);
     }
 
     @PostMapping("/devolucoes")

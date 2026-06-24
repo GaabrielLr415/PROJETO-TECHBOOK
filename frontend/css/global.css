@@ -1,3 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap");
+
+/* CSS: GLOBAL */
+
+/* VARIAVEIS */
 :root {
   --blue-700: #168eea;
   --blue-800: #0f72da;
@@ -14,8 +19,10 @@
   --radius-xl: 28px;
   --radius-lg: 22px;
   --radius-md: 16px;
+  --font-display: "Fredoka One", "Montserrat", sans-serif;
 }
 
+/* BASE DO SITE */
 * {
   box-sizing: border-box;
 }
@@ -42,6 +49,7 @@ select {
   font: inherit;
 }
 
+/* CONTAINERS PRINCIPAIS */
 .site-header,
 .site-footer,
 .content-page,
@@ -56,6 +64,7 @@ select {
   margin: 0 auto;
 }
 
+/* CABECALHO */
 .site-header {
   display: flex;
   align-items: center;
@@ -197,6 +206,7 @@ select {
   gap: 12px;
 }
 
+/* BOTOES */
 .button,
 .site-actions a,
 .site-actions button {
@@ -276,6 +286,7 @@ select {
   padding-top: 2px;
 }
 
+/* TITULOS E PAINEIS */
 .eyebrow {
   margin: 0 0 10px;
   text-transform: uppercase;
@@ -314,12 +325,15 @@ select {
 .section-heading h2,
 .headline-panel h1,
 .auth-card h1 {
+  font-family: var(--font-display);
   margin: 0;
   font-size: clamp(1.8rem, 3vw, 3rem);
   color: #148de7;
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
+/* RODAPE */
 .site-footer {
   margin-top: 48px;
   margin-bottom: 24px;
@@ -430,6 +444,7 @@ select {
   stroke: none;
 }
 
+/* CARDS DE LIVROS */
 .book-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -473,6 +488,7 @@ select {
   color: var(--blue-800);
 }
 
+/* MENSAGENS DE RETORNO */
 .feedback {
   min-height: 24px;
   margin: 10px 0 0;
@@ -480,7 +496,20 @@ select {
   font-weight: 600;
 }
 
+.feedback.info-feedback {
+  color: var(--blue-900);
+}
 
+.feedback.success-feedback {
+  color: var(--success);
+}
+
+.feedback.error-feedback {
+  color: var(--danger);
+}
+
+
+/* MENU DO PERFIL */
 .profile-menu-wrap {
   position: relative;
 }
@@ -577,9 +606,9 @@ select {
 
 .profile-dropdown img {
 
-  width: 20px;
+  width: 24px;
 
-  height: 20px;
+  height: 24px;
 
   object-fit: contain;
 
@@ -629,6 +658,7 @@ select {
   box-shadow: inset 0 -2px 0 rgba(17, 24, 39, 0.06);
 }
 
+/* RESPONSIVO */
 @media (max-width: 860px) {
   .site-header,
   .site-footer,

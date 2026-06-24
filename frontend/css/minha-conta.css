@@ -1,3 +1,6 @@
+/* CSS RESERVA */
+/* Este arquivo nao esta ligado nas paginas atuais. A tela Minha Conta usa catalogo.css. */
+
 .account-page {
   background: #f5f5f5;
 }
@@ -158,13 +161,15 @@
 }
 
 .section-heading h1 {
+  font-family: var(--font-display);
   margin: 0 0 8px;
 
   color: #148de7;
 
   font-size: clamp(2.5rem, 4vw, 3.4rem);
 
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .eyebrow {
@@ -185,13 +190,15 @@
 }
 
 .profile-card h2 {
+  font-family: var(--font-display);
   margin: 0 0 8px;
 
   color: #1c1c1c;
 
   font-size: 2rem;
 
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .profile-card p {

@@ -19,3 +19,11 @@ application-local.properties
 
 # Logs
 *.log
+
+# Arquivos temporarios locais
+tools/
+.agents/
+_codex_push_tmp/
+_codex_push_final/
+docs/_manual_*/
+.docx_media_preview/

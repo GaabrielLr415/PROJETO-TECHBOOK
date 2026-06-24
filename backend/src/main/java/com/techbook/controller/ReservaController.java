@@ -33,12 +33,23 @@ public class ReservaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservaResponse criar(@RequestBody ReservaRequest request) {
+    public ReservaResponse criar(
+        @RequestBody ReservaRequest request,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        if (request == null) {
+            throw new IllegalArgumentException("Dados da reserva nao informados.");
+        }
+        service.validarTokenCliente(request.clienteId(), token);
         return service.criarReserva(request);
     }
 
     @PatchMapping("/{id}/cancelar")
-    public ReservaResponse cancelar(@PathVariable Long id) {
+    public ReservaResponse cancelar(
+        @PathVariable Long id,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        service.validarTokenCliente(service.buscarDonoReserva(id), token);
         return service.cancelarReserva(id);
     }
 }

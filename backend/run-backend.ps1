@@ -17,12 +17,58 @@ function Get-JavaMajorVersion($javaExe) {
   return 0
 }
 
+function Test-PortOpen($port) {
+  $client = [System.Net.Sockets.TcpClient]::new()
+  try {
+    $connection = $client.BeginConnect("127.0.0.1", $port, $null, $null)
+    if (-not $connection.AsyncWaitHandle.WaitOne(1000)) {
+      return $false
+    }
+    $client.EndConnect($connection)
+    return $true
+  } catch {
+    return $false
+  } finally {
+    $client.Close()
+  }
+}
+
+function Open-XamppControl {
+  $xamppControl = "C:\xampp\xampp-control.exe"
+
+  if (Test-Path $xamppControl) {
+    Start-Process -FilePath $xamppControl -WorkingDirectory "C:\xampp"
+    return $true
+  }
+
+  return $false
+}
+
 $javaCommand = Get-Command java -ErrorAction SilentlyContinue
 $javaExe = if ($javaCommand) { $javaCommand.Source } else { $null }
 $javaMajorVersion = if ($javaExe) { Get-JavaMajorVersion $javaExe } else { 0 }
 
+if ($javaExe -like "*\Common Files\Oracle\Java\javapath\*") {
+  $javaMajorVersion = 0
+}
+
+if ($javaMajorVersion -lt 17) {
+  $candidateJavaExecutables = @(
+    "C:\Program Files\Java\jdk-17\bin\java.exe",
+    "C:\Program Files\Java\latest\bin\java.exe"
+  )
+
+  $javaExe = $candidateJavaExecutables |
+    Where-Object { Test-Path $_ } |
+    Where-Object { (Get-JavaMajorVersion $_) -ge 17 } |
+    Select-Object -First 1
+
+  $javaMajorVersion = if ($javaExe) { Get-JavaMajorVersion $javaExe } else { 0 }
+}
+
 if ($javaMajorVersion -lt 17) {
   $candidateRoots = @(
+    (Join-Path $PSScriptRoot "..\tools"),
     "C:\Program Files\Java",
     "C:\Program Files\Eclipse Adoptium",
     "$env:USERPROFILE\.vscode\extensions",
@@ -51,6 +97,12 @@ if (-not (Test-Path $mavenWrapper)) {
   exit 1
 }
 
+if (($env:SPRING_PROFILES_ACTIVE -notmatch "mamp") -and (-not (Test-PortOpen 3306))) {
+  Open-XamppControl | Out-Null
+  Write-Error "MySQL nao esta ligado. No XAMPP, clique em Start no MySQL e rode este arquivo novamente."
+  exit 1
+}
+
 $apiUrl = "http://localhost:8080/api/livros"
 try {
   $response = Invoke-WebRequest -Uri $apiUrl -UseBasicParsing -TimeoutSec 2
@@ -70,3 +122,4 @@ Write-Host "Iniciando backend TechBook..."
 Write-Host "API: http://localhost:8080/api"
 
 & $mavenWrapper "-Dmaven.test.skip=true" spring-boot:run
+exit $LASTEXITCODE

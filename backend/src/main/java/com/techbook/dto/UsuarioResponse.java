@@ -5,6 +5,9 @@ public record UsuarioResponse(
     String nome,
     String email,
     String telefone,
-    String cpf
+    String cpf,
+    boolean bloqueado,
+    String motivoBloqueio,
+    String token
 ) {
 }

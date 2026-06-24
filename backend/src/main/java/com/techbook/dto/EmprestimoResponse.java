@@ -12,6 +12,7 @@ public record EmprestimoResponse(
     boolean renovado,
     String estadoLivro,
     String observacaoDevolucao,
+    String historicoContato,
     UsuarioResponse cliente,
     LivroResponse livro
 ) {

@@ -1,16 +1,22 @@
 package com.techbook.controller;
 
 import com.techbook.dto.AlterarSenhaRequest;
+import com.techbook.dto.ClienteBloqueioRequest;
 import com.techbook.dto.ClienteRequest;
+import com.techbook.dto.DevolucaoResponse;
 import com.techbook.dto.EmprestimoResponse;
 import com.techbook.dto.LoginRequest;
+import com.techbook.dto.RecuperarSenhaCodigoRequest;
+import com.techbook.dto.RecuperarSenhaCodigoResponse;
 import com.techbook.dto.RecuperarSenhaRequest;
 import com.techbook.dto.ReservaResponse;
 import com.techbook.dto.UsuarioResponse;
+import com.techbook.dto.VerificarCodigoRecuperacaoRequest;
 import com.techbook.service.TechbookService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,7 +43,11 @@ public class UsuarioController {
     }
 
     @GetMapping("/{clienteId}")
-    public UsuarioResponse buscarPorId(@PathVariable Long clienteId) {
+    public UsuarioResponse buscarPorId(
+        @PathVariable Long clienteId,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        service.validarTokenCliente(clienteId, token);
         return service.buscarCliente(clienteId);
     }
 
@@ -52,28 +62,75 @@ public class UsuarioController {
         return service.loginCliente(request);
     }
 
+    @PostMapping("/recuperar-senha/codigo")
+    public RecuperarSenhaCodigoResponse solicitarCodigoRecuperacao(@RequestBody RecuperarSenhaCodigoRequest request) {
+        return service.solicitarCodigoRecuperacao(request);
+    }
+
+    @PostMapping("/recuperar-senha/verificar")
+    public RecuperarSenhaCodigoResponse verificarCodigoRecuperacao(@RequestBody VerificarCodigoRecuperacaoRequest request) {
+        return service.verificarCodigoRecuperacao(request);
+    }
+
     @PutMapping("/recuperar-senha")
     public UsuarioResponse recuperarSenha(@RequestBody RecuperarSenhaRequest request) {
         return service.recuperarSenha(request);
     }
 
     @PutMapping("/{clienteId}")
-    public UsuarioResponse atualizar(@PathVariable Long clienteId, @RequestBody ClienteRequest request) {
+    public UsuarioResponse atualizar(
+        @PathVariable Long clienteId,
+        @RequestBody ClienteRequest request,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        service.validarTokenCliente(clienteId, token);
         return service.atualizarCliente(clienteId, request);
     }
 
     @PutMapping("/{clienteId}/senha")
-    public UsuarioResponse alterarSenha(@PathVariable Long clienteId, @RequestBody AlterarSenhaRequest request) {
+    public UsuarioResponse alterarSenha(
+        @PathVariable Long clienteId,
+        @RequestBody AlterarSenhaRequest request,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        service.validarTokenCliente(clienteId, token);
         return service.alterarSenha(clienteId, request);
     }
 
+    @PatchMapping("/{clienteId}/bloqueio")
+    public UsuarioResponse alterarBloqueio(
+        @PathVariable Long clienteId,
+        @RequestBody ClienteBloqueioRequest request,
+        @RequestHeader(value = "X-Admin-Token", required = false) String token
+    ) {
+        service.validarTokenAdministrador(token);
+        return service.alterarBloqueioCliente(clienteId, request);
+    }
+
     @GetMapping("/{clienteId}/reservas")
-    public List<ReservaResponse> listarReservas(@PathVariable Long clienteId) {
+    public List<ReservaResponse> listarReservas(
+        @PathVariable Long clienteId,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        service.validarTokenCliente(clienteId, token);
         return service.listarReservasDoCliente(clienteId);
     }
 
     @GetMapping("/{clienteId}/emprestimos")
-    public List<EmprestimoResponse> listarEmprestimos(@PathVariable Long clienteId) {
+    public List<EmprestimoResponse> listarEmprestimos(
+        @PathVariable Long clienteId,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        service.validarTokenCliente(clienteId, token);
         return service.listarEmprestimosDoCliente(clienteId);
+    }
+
+    @GetMapping("/{clienteId}/devolucoes")
+    public List<DevolucaoResponse> listarDevolucoes(
+        @PathVariable Long clienteId,
+        @RequestHeader(value = "X-Client-Token", required = false) String token
+    ) {
+        service.validarTokenCliente(clienteId, token);
+        return service.listarDevolucoesDoCliente(clienteId);
     }
 }

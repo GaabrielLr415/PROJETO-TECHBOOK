@@ -20,6 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/livros")
 public class LivroController {
 
+    /*
+     * Rotas do catalogo e do cadastro de livros.
+     * O frontend usa estas URLs para listar livros, abrir detalhes, mostrar
+     * "Mais reservados" e permitir que o administrador cadastre/edite/exclua.
+     */
+
     private final TechbookService service;
 
     public LivroController(TechbookService service) {
@@ -29,6 +35,11 @@ public class LivroController {
     @GetMapping
     public List<LivroResponse> listarTodos() {
         return service.listarLivros();
+    }
+
+    @GetMapping("/mais-procurados")
+    public List<LivroResponse> listarMaisProcurados() {
+        return service.listarLivrosMaisProcurados();
     }
 
     @GetMapping("/{id}")

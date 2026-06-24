@@ -1,31 +1,36 @@
 (function () {
+  /* JAVASCRIPT: APP GLOBAL */
 
-  // ==========================================
-  // CHAVES DE ARMAZENAMENTO
-  // ==========================================
-
+  // CHAVES DE SESSAO E API
   const SESSION_KEY = "techbook-session";
   const FLASH_KEY = "techbook-flash";
   const LEGACY_STORAGE_KEY = "techbook-mock-db";
   const ADMIN_AUTH_KEY = "techbook-admin-auth";
   const API_BASE = "http://localhost:8080/api";
+  const REQUEST_TIMEOUT_MS = 8000;
 
   localStorage.removeItem(LEGACY_STORAGE_KEY);
 
-  // ==========================================
-  // FUNÇÃO PRINCIPAL DE REQUISIÇÃO
-  // ==========================================
-
+  // REQUISICOES PARA API
+  // Centraliza headers, token do cliente, token do admin e tratamento de erro.
   async function request(path, options = {}) {
     const method = options.method || "GET";
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     const fetchOptions = {
       method,
-      headers: { "Content-Type": "application/json", ...(options.headers || {}) }
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      signal: controller.signal
     };
     const adminSession = getAdminSession();
+    const clientSession = getSession();
 
     if (adminSession?.token) {
       fetchOptions.headers["X-Admin-Token"] = adminSession.token;
+    }
+
+    if (clientSession?.token) {
+      fetchOptions.headers["X-Client-Token"] = clientSession.token;
     }
 
     if (options.body !== undefined) {
@@ -42,20 +47,21 @@
         return null;
       }
       const payload = await response.json();
-      // A camada de normalizacao protege o frontend de pequenas variacoes de nome vindas da API.
       return normalizeResponse(path, payload);
     } catch (error) {
+      if (error?.name === "AbortError") {
+        throw new Error("A conexão com o backend demorou para responder. Confira se a API está ligada e tente novamente.");
+      }
       if (error instanceof Error && !/Failed to fetch|NetworkError|Load failed/i.test(error.message)) {
         throw error;
       }
       throw new Error("Não foi possível conectar ao backend em http://localhost:8080/api. Inicie a API para concluir a integração.");
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
-  // ==========================================
-  // SESSÃO DO USUÁRIO
-  // ==========================================
-
+  // SESSAO DO CLIENTE
   function getSession() {
     return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
   }
@@ -68,6 +74,7 @@
     localStorage.removeItem(SESSION_KEY);
   }
 
+  // SESSAO DO ADMINISTRADOR
   function getAdminSession() {
     try {
       return JSON.parse(sessionStorage.getItem(ADMIN_AUTH_KEY) || "null");
@@ -76,10 +83,7 @@
     }
   }
 
-  // ==========================================
-  // FLASH MESSAGES
-  // ==========================================
-
+  // MENSAGENS ENTRE PAGINAS
   function setFlashMessage(message, type = "success") {
     sessionStorage.setItem(FLASH_KEY, JSON.stringify({ message, type }));
   }
@@ -98,21 +102,12 @@
       return null;
     }
   }
-  
-  // ==========================================
-  // FORMATAÇÃO DE DATA
-  // ==========================================
 
+  // FORMATACAO E SEGURANCA VISUAL
   function formatDate(value) {
     if (!value) return "-";
     return new Date(`${value}T00:00:00`).toLocaleDateString("pt-BR");
   }
-
-  // ==========================================
-  // SEGURANÇA HTML
-  // Evita injeção HTML
-  // ==========================================
-
 
   function escapeHtml(value) {
     return String(value || "")
@@ -121,15 +116,12 @@
       .replaceAll(">", "&gt;");
   }
 
-  // ==========================================
-  // NORMALIZA RESPOSTAS DA API
-  // ==========================================
-
+  // NORMALIZACAO DAS RESPOSTAS
+  // Mantem o frontend independente do formato exato retornado pelo backend.
   function normalizeResponse(path, payload) {
     const cleanPath = path.split("?")[0];
 
-    // Cada rota e convertida para um formato unico consumido pelas telas.
-    if (cleanPath === "/livros") {
+    if (cleanPath === "/livros" || cleanPath === "/livros/mais-procurados") {
       return Array.isArray(payload) ? payload.map(normalizeBook) : normalizeBook(payload);
     }
     if (cleanPath.startsWith("/livros/")) {
@@ -141,7 +133,7 @@
     if (cleanPath === "/clientes/recuperar-senha") {
       return normalizeClient(payload);
     }
-    if (/^\/clientes\/\d+$/.test(cleanPath)) {
+    if (/^\/clientes\/\d+(\/bloqueio|\/senha)?$/.test(cleanPath)) {
       return normalizeClient(payload);
     }
     if (cleanPath.endsWith("/reservas") || cleanPath === "/reservas") {
@@ -150,7 +142,7 @@
     if (cleanPath.endsWith("/emprestimos") || cleanPath === "/emprestimos") {
       return Array.isArray(payload) ? payload.map(normalizeLoan) : normalizeLoan(payload);
     }
-    if (cleanPath === "/emprestimos/devolucoes") {
+    if (cleanPath.endsWith("/devolucoes") || cleanPath === "/emprestimos/devolucoes") {
       return Array.isArray(payload) ? payload.map(normalizeReturn) : normalizeReturn(payload);
     }
     if (cleanPath === "/administracao/dashboard") {
@@ -159,11 +151,7 @@
     return payload;
   }
 
-
-  // ==========================================
-  // NORMALIZA LIVRO
-  // ==========================================
-
+  // NORMALIZACAO DE LIVRO
   function normalizeBook(book = {}) {
     return {
       id: Number(book.id) || 0,
@@ -171,7 +159,7 @@
       autor: book.autor || "",
       categoria: book.categoria || "",
       descricao: book.descricao || "",
-      imagemUrl: book.imagemUrl || book.imagem_url || "img/livros.svg",
+      imagemUrl: book.imagemUrl || book.imagem_url || "img/livros.png",
       quantidadeTotal: Number(book.quantidadeTotal ?? book.quantidade_total) || 0,
       quantidadeDisponivel: Number(book.quantidadeDisponivel ?? book.quantidade_disponivel) || 0,
       quantidadeReservavel: Number(book.quantidadeReservavel ?? book.quantidade_reservavel ?? book.quantidadeDisponivel ?? book.quantidade_disponivel) || 0,
@@ -179,20 +167,21 @@
     };
   }
 
-  // ==========================================
-  // NORMALIZA CLIENTE
-  // ==========================================
-
+  // NORMALIZACAO DE CLIENTE
   function normalizeClient(client = {}) {
     return {
       id: Number(client.id ?? client.usuarioId ?? client.usuario_id) || 0,
       nome: client.nome || "",
       cpf: client.cpf || "",
       email: client.email || "",
-      telefone: client.telefone || ""
+      telefone: client.telefone || "",
+      token: client.token || "",
+      bloqueado: Boolean(client.bloqueado),
+      motivoBloqueio: client.motivoBloqueio || client.motivo_bloqueio || ""
     };
   }
 
+  // NORMALIZACAO DE RESERVA
   function normalizeReservation(reservation = {}) {
     return {
       id: Number(reservation.id) || 0,
@@ -201,12 +190,12 @@
       dataReserva: reservation.dataReserva || reservation.data_reserva || "",
       prazoRetirada: reservation.prazoRetirada || reservation.prazo_retirada || "",
       status: reservation.status || "",
-      // Alguns endpoints podem devolver objetos aninhados; aqui tudo vira uma estrutura previsivel.
       cliente: normalizeClient(reservation.cliente || {}),
       livro: normalizeBook(reservation.livro || {})
     };
   }
 
+  // NORMALIZACAO DE EMPRESTIMO
   function normalizeLoan(loan = {}) {
     return {
       id: Number(loan.id) || 0,
@@ -220,11 +209,13 @@
       renovado: Boolean(loan.renovado),
       estadoLivro: loan.estadoLivro || loan.estado_livro || "",
       observacaoDevolucao: loan.observacaoDevolucao || loan.observacao_devolucao || "",
+      historicoContato: loan.historicoContato || loan.historico_contato || "",
       cliente: normalizeClient(loan.cliente || {}),
       livro: normalizeBook(loan.livro || {})
     };
   }
 
+  // NORMALIZACAO DE DEVOLUCAO
   function normalizeReturn(returnItem = {}) {
     return {
       id: Number(returnItem.id) || 0,
@@ -239,6 +230,7 @@
     };
   }
 
+  // NORMALIZACAO DO DASHBOARD
   function normalizeDashboard(dashboard = {}) {
     return {
       totalLivros: Number(dashboard.totalLivros) || 0,
@@ -251,10 +243,7 @@
     };
   }
 
-  // ==========================================
-  // EXPORTA FUNÇÕES GLOBAIS
-  // ==========================================
-
+  // API GLOBAL USADA PELAS PAGINAS
   window.TechBookApp = {
     request,
     getSession,

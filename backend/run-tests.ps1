@@ -1,6 +1,7 @@
 $ErrorActionPreference = "Stop"
 
-$mavenWrapper = Join-Path $PSScriptRoot "mvnw.cmd"
+$backendPath = (Resolve-Path $PSScriptRoot).Path
+$mavenWrapper = Join-Path $backendPath "mvnw.cmd"
 
 function Get-JavaMajorVersion($javaExe) {
   try {
@@ -22,7 +23,22 @@ $javaExe = if ($javaCommand) { $javaCommand.Source } else { $null }
 $javaMajorVersion = if ($javaExe) { Get-JavaMajorVersion $javaExe } else { 0 }
 
 if ($javaMajorVersion -lt 17) {
+  $candidateJavaExecutables = @(
+    "C:\Program Files\Java\jdk-17\bin\java.exe",
+    "C:\Program Files\Java\latest\bin\java.exe"
+  )
+
+  $javaExe = $candidateJavaExecutables |
+    Where-Object { Test-Path $_ } |
+    Where-Object { (Get-JavaMajorVersion $_) -ge 17 } |
+    Select-Object -First 1
+
+  $javaMajorVersion = if ($javaExe) { Get-JavaMajorVersion $javaExe } else { 0 }
+}
+
+if ($javaMajorVersion -lt 17) {
   $candidateRoots = @(
+    (Join-Path $backendPath "..\tools"),
     "C:\Program Files\Java",
     "C:\Program Files\Eclipse Adoptium",
     "$env:USERPROFILE\.vscode\extensions",
@@ -51,5 +67,40 @@ if (-not (Test-Path $mavenWrapper)) {
   exit 1
 }
 
-Write-Host "Rodando testes com Java $javaMajorVersion..."
-& $mavenWrapper test
+function Invoke-MavenTests($pathToRun) {
+  Push-Location $pathToRun
+  try {
+    Write-Host "Rodando testes com Java $javaMajorVersion..."
+    & ".\mvnw.cmd" test
+    return $LASTEXITCODE
+  } finally {
+    Pop-Location
+  }
+}
+
+if ($backendPath -notmatch "\s") {
+  exit (Invoke-MavenTests $backendPath)
+}
+
+$driveLetter = "T"
+$substDrive = "$driveLetter`:"
+$mapped = $false
+
+foreach ($letter in "T","U","V","W","X","Y","Z") {
+  $candidate = "$letter`:"
+  $exists = (& subst) -match "^$([regex]::Escape($candidate))\\"
+  if (-not $exists -and -not (Test-Path "$candidate\")) {
+    $substDrive = $candidate
+    break
+  }
+}
+
+try {
+  & subst $substDrive $backendPath
+  $mapped = $true
+  exit (Invoke-MavenTests "$substDrive\")
+} finally {
+  if ($mapped) {
+    & subst $substDrive /D | Out-Null
+  }
+}

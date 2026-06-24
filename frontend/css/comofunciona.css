@@ -1,3 +1,5 @@
+/* CSS: COMOFUNCIONA */
+
 .how-page {
   background: #ffffff;
 }
@@ -107,13 +109,14 @@
 }
 
 .how-hero h1 {
+  font-family: var(--font-display);
   margin: 0;
   text-align: center;
   color: #fff8dc;
   font-size: clamp(2.8rem, 6vw, 5rem);
   line-height: 1;
-  letter-spacing: 0.04em;
-  font-weight: 800;
+  letter-spacing: 0;
+  font-weight: 400;
 }
 
 .hero-books {
@@ -147,11 +150,13 @@
 }
 
 .how-section-heading h2 {
+  font-family: var(--font-display);
   margin: 0 0 6px;
   color: #148de7;
   font-size: clamp(2.15rem, 4vw, 3.25rem);
   line-height: 1;
-  font-weight: 800;
+  font-weight: 400;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -348,13 +353,13 @@
 .cta-box {
   width: 100%;
   margin: 12px auto 68px;
-  padding: 40px 60px;
+  padding: 42px 64px;
   box-sizing: border-box;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 32px;
 
   background: #1490e8;
   border-radius: 22px;
@@ -364,51 +369,61 @@
               0 10px 16px rgba(0, 0, 0, 0.14);
 }
 
+.cta-copy {
+  display: grid;
+  gap: 10px;
+}
+
 .cta-chip,
 .cta-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  min-height: 56px;
-  padding: 0 32px;
+  min-height: 54px;
+  padding: 0 34px;
 
   border-radius: 999px;
 
-  background-image: url("../img/botao-vidro.svg");
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-
   border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
 
   color: #ffffff;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
+  letter-spacing: 0;
+  text-decoration: none;
 
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 8px 18px rgba(0, 0, 0, 0.18);
+    0 10px 20px rgba(17, 82, 150, 0.22);
 }
 
 /* EFEITO HOVER - BOTÕES CTA */
 .cta-button,
 .cta-chip {
-  margin-bottom: 12px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.cta-chip {
+  width: fit-content;
 }
 
 .cta-button:hover,
 .cta-chip:hover {
   transform: translateY(-2px); /* mais suave */
+  background: rgba(255, 255, 255, 0.2);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 10px 22px rgba(0, 0, 0, 0.22);
+    0 14px 26px rgba(17, 82, 150, 0.28);
 }
 
 .cta-copy h2 {
-  margin: 24px 0 8px; /* aumenta espaço acima */
+  font-family: var(--font-display);
+  margin: 26px 0 0;
   font-size: clamp(1.7rem, 3vw, 2.5rem);
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .cta-copy p {
@@ -418,8 +433,8 @@
 }
 
 .cta-button {
-  min-width: 144px;
-  letter-spacing: 0.02em;
+  min-width: 176px;
+  flex: 0 0 auto;
 }
 
 /* =========================

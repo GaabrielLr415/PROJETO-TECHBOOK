@@ -1,3 +1,5 @@
+/* CSS: CATALOGO */
+
 body {
   margin: 0;
 }
@@ -194,14 +196,206 @@ body {
 ========================= */
 
 .catalog-results {
-  width: min(880px, calc(100% - 40px));
+  width: min(1120px, calc(100% - 40px));
   margin: 30px auto 0;
+}
+
+/* MAIS RESERVADOS */
+.popular-books {
+  width: min(1120px, calc(100% - 40px));
+  margin: 34px auto 0;
+}
+
+.popular-books[hidden] {
+  display: none;
+}
+
+.popular-books-header {
+  margin-bottom: 24px;
+}
+
+.popular-books-header h2 {
+  margin: 0;
+  color: #666666;
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.popular-carousel {
+  position: relative;
+}
+
+/* MAIS RESERVADOS */
+.popular-book-list {
+  display: grid;
+  grid-auto-columns: calc((100% - 96px) / 5);
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  padding: 0;
+  scroll-padding-left: 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.popular-book-list::-webkit-scrollbar {
+  display: none;
+}
+
+.popular-book-list.dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.popular-book-card {
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+  padding: 14px 14px 18px;
+  border: 1px solid #eeeeee;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #111827;
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.popular-book-card:hover {
+  transform: translateY(-2px);
+  border-color: #d7eaff;
+  box-shadow: 0 16px 34px rgba(2, 147, 241, 0.12);
+}
+
+.popular-book-card img {
+  width: 100%;
+  height: 260px;
+  margin: 0 0 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  object-fit: contain;
+  object-position: center;
+}
+
+.popular-book-info {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popular-book-card strong {
+  display: -webkit-box;
+  min-height: 42px;
+  overflow: hidden;
+  color: #5f5f5f;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.18;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.popular-book-card small,
+.popular-book-card span {
+  overflow: hidden;
+  color: #5c5c5c;
+  font-size: 0.9rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popular-book-card em {
+  margin-top: auto;
+  color: #1f2f2f;
+  font-size: 0.83rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.popular-carousel-button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1f7bf2;
+  font-size: 2.2rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  transform: translateY(-50%);
+}
+
+.popular-carousel-button.prev {
+  left: -58px;
+}
+
+.popular-carousel-button.next {
+  right: -58px;
+}
+
+.popular-carousel-button:disabled {
+  cursor: default;
+  opacity: 0.2;
+}
+
+.popular-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  min-height: 14px;
+  margin-top: 16px;
+}
+
+.popular-carousel-dots button {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #cfcfcf;
+  cursor: pointer;
+  padding: 0;
+}
+
+.popular-carousel-dots button.active {
+  background: #3b8ff2;
 }
 
 .catalog-meta {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
   margin-bottom: 12px;
+}
+
+.catalog-invite {
+  margin: 0;
+  color: #666666;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .catalog-count {
@@ -210,10 +404,11 @@ body {
   font-weight: 600;
 }
 
+/* GRADE DO CATALOGO */
 .catalog-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 42px 30px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 42px 24px;
 }
 
 .catalog-grid .book-card {
@@ -233,7 +428,8 @@ body {
   width: 100%;
   height: 260px;
 
-  object-fit: cover;
+  background: #ffffff;
+  object-fit: contain;
   object-position: center;
 
   overflow: hidden;
@@ -298,6 +494,7 @@ body {
   padding-top: 16px;
 }
 
+/* DETALHE DO LIVRO */
 .book-panel {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -311,7 +508,9 @@ body {
 
   height: 520px;
 
-  object-fit: cover;
+  background: #ffffff;
+
+  object-fit: contain;
 
   object-position: center;
 
@@ -334,11 +533,14 @@ body {
 }
 
 .book-panel h1 {
+  font-family: var(--font-display);
   margin: 0 0 14px;
 
   font-size: clamp(1.8rem, 3vw, 2.8rem);
 
   line-height: 1.08;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .book-panel .book-actions {
@@ -396,13 +598,18 @@ body {
 ========================= */
 
 .reservation-layout {
-  width: min(1260px, calc(100% - 48px));
+  width: min(1400px, calc(100% - 48px));
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 260px minmax(0, 760px);
+  grid-template-columns: 260px minmax(0, 980px);
   justify-content: center;
   gap: 28px;
   padding-top: 28px;
+}
+
+body[data-page="account"] .reservation-layout {
+  width: min(1400px, calc(100% - 48px));
+  grid-template-columns: 260px minmax(0, 980px);
 }
 
 .profile-menu {
@@ -439,14 +646,22 @@ body {
 }
 
 .profile-menu img {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
+.profile-menu img[src$="emprestimo.svg"] {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  transform: none;
+}
+
+/* PAINEL DO CLIENTE */
 .reservation-panel {
-  padding: 22px 34px 28px;
-  border-radius: 12px;
+  padding: 30px 38px 34px;
+  border-radius: 18px;
 }
 
 .stack-list {
@@ -454,6 +669,145 @@ body {
   gap: 18px;
 }
 
+/* HISTORICO DO CLIENTE */
+.history-summary {
+  margin-bottom: 18px;
+}
+
+.history-summary span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.client-history-card {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(480px, auto);
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #f9fbfe;
+}
+
+.client-history-card h3 {
+  margin: 8px 0 6px;
+  color: var(--ink-900);
+  line-height: 1.2;
+}
+
+.client-history-card p {
+  margin: 0;
+}
+
+.client-history-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.client-history-meta > span:not(.status-chip) {
+  display: grid;
+  gap: 4px;
+  min-width: 132px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--ink-700);
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.client-history-meta strong {
+  color: var(--ink-500);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.history-pagination {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(17, 24, 39, 0.1);
+}
+
+.history-pagination > span {
+  color: var(--ink-500);
+  font-weight: 800;
+}
+
+.compact-pagination {
+  margin: 0;
+}
+
+.compact-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+/* RESERVAS ENCERRADAS */
+.closed-reservations {
+  display: grid;
+  gap: 14px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(17, 24, 39, 0.1);
+}
+
+.closed-reservations h2 {
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--ink-900);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.closed-reservations-note {
+  margin: 0;
+  color: var(--ink-500);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.closed-reservations .reservation-card {
+  background: #fffaf3;
+  border-color: rgba(217, 119, 6, 0.22);
+}
+
+.closed-reservations-more {
+  display: grid;
+  gap: 14px;
+}
+
+.closed-reservations-more summary {
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #eef6ff;
+  color: #2563eb;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.closed-reservations-more[open] summary {
+  margin-bottom: 14px;
+}
+
+/* CARD DE RESERVA E EMPRESTIMO */
 .reservation-card {
 
   display: grid;
@@ -476,7 +830,8 @@ body {
 .reservation-card img {
   width: 100%;
   border-radius: 14px;
-  object-fit: cover;
+  background: #ffffff;
+  object-fit: contain;
 }
 
 .reservation-card h3 {
@@ -501,27 +856,48 @@ body {
 }
 
 .account-overview {
-  grid-template-columns: 330px 280px;
-  justify-content: start;
-  column-gap: 18px;
-  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 24px;
+  align-items: stretch;
 }
 
 .account-group {
   display: grid;
-  gap: 14px;
+  align-content: start;
+  gap: 16px;
+  min-height: 100%;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 14px 36px rgba(17, 24, 39, 0.08);
 }
 
 .account-group h2 {
+  font-family: var(--font-display);
   margin: 0;
   color: var(--ink-900);
   font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .access-group {
-  min-height: 150px;
-  padding-left: 18px;
-  border-left: 2px solid rgba(17, 24, 39, 0.1);
+  min-height: 100%;
+}
+
+.access-helper {
+  max-width: 360px;
+  margin: -2px 0 0;
+  padding: 10px 12px;
+  color: #1e3a8a;
+  background: #eff6ff;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .account-overview > .button.primary {
@@ -535,7 +911,7 @@ body {
 .account-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
 }
 
 .account-overview .personal-fields,
@@ -563,20 +939,30 @@ body {
 
 .account-field-card {
   position: relative;
-  min-height: 72px;
+  min-height: 70px;
   min-width: 0;
   width: 100%;
-  padding: 10px 48px 10px 12px;
-  background: #ffffff;
-  box-shadow: 0 2px 5px rgba(17, 24, 39, 0.18);
+  padding: 13px 16px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(17, 24, 39, 0.08);
 }
 
-.account-overview .personal-fields .account-field-card {
-  width: 330px;
+.email-display-card,
+.password-display-card {
+  max-width: none;
 }
 
+.email-display-card input,
+.password-display-card input {
+  color: var(--ink-900);
+  cursor: not-allowed;
+}
+
+.account-overview .personal-fields .account-field-card,
 .account-overview .access-fields .account-field-card {
-  width: 280px;
+  width: 100%;
 }
 
 .account-field-card span {
@@ -598,7 +984,7 @@ body {
 
 .profile-actions-row {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
   flex-wrap: wrap;
 }
@@ -610,25 +996,25 @@ body {
 }
 
 .edit-profile-button {
-  justify-self: center;
+  justify-self: flex-start;
   min-height: 38px;
   border-radius: 10px;
 }
 
 .cancel-profile-button {
-  justify-self: center;
+  justify-self: flex-start;
   min-height: 38px;
   border-radius: 10px;
 }
 
 .hidden-action {
-  display: none;
+  display: none !important;
 }
 
 .access-actions-row {
   display: flex;
   gap: 10px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .access-actions-row .button {
@@ -639,42 +1025,13 @@ body {
   white-space: nowrap;
 }
 
-.password-change-form {
-  display: grid;
-  gap: 10px;
-}
-
-.password-change-form.hidden-action {
-  display: none;
-}
-
-.password-change-form label {
-  display: grid;
-  gap: 5px;
-  font-weight: 700;
-  color: var(--ink-700);
-}
-
-.password-change-form label span {
-  color: #2788e5;
-}
-
-.password-change-form input {
-  height: 42px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: #ffffff;
-  padding: 0 12px;
-  box-shadow: 0 2px 5px rgba(17, 24, 39, 0.12);
-}
-
-.password-actions-row {
+.modal-actions-row {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.password-actions-row .button {
+.modal-actions-row .button {
   min-height: 38px;
   border-radius: 10px;
   box-shadow: none;
@@ -722,6 +1079,21 @@ body {
 .status-chip.success {
   color: white;
   background: var(--success);
+}
+
+.status-chip.reserved {
+  color: white;
+  background: var(--success);
+}
+
+.status-chip.active {
+  color: white;
+  background: #2563eb;
+}
+
+.status-chip.progress {
+  color: #3f2f00;
+  background: #facc15;
 }
 
 .status-chip.neutral {
@@ -776,6 +1148,128 @@ body {
 .pagination button.active {
   background: #0293F1;
   color: #ffffff;
+}
+
+
+
+/* FUNDO ESCURO */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 17, 34, 0.48);
+  backdrop-filter: blur(2px);
+  z-index: 9998;
+}
+
+/* POPUP CENTRAL */
+.modal-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: min(430px, calc(100% - 32px));
+  padding: 30px 28px 26px;
+
+  background: #fff;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(8, 17, 34, 0.28);
+
+  z-index: 9999;
+  display: grid;
+  gap: 16px;
+}
+
+.modal-form h3 {
+  margin: 0 0 4px;
+  color: var(--ink-900);
+  font-size: 1.18rem;
+  font-weight: 800;
+}
+
+.modal-form label {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid rgba(37, 99, 235, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+  font-weight: 700;
+}
+
+.modal-form label span {
+  color: #2788e5;
+  font-size: 0.9rem;
+}
+
+.modal-form input {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 14px;
+  background: #f8fbff;
+  font: inherit;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.modal-form input:focus {
+  outline: none;
+  border-color: var(--blue-700);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(22, 142, 234, 0.12);
+}
+
+.modal-password-group input {
+  padding-right: 52px;
+}
+
+.modal-toggle-password {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.modal-toggle-password:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.modal-toggle-password img {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
+.modal-feedback {
+  min-height: 18px;
+  margin: -2px 0 0;
+  color: #b91c1c;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.modal-actions-row {
+  padding-top: 2px;
+}
+
+/* ESCONDE */
+.modal-form.hidden-action,
+.modal-overlay.hidden-action {
+  display: none !important;
 }
 
 /* =========================
@@ -1037,9 +1531,92 @@ body {
 }
 
 .description h2 {
+  font-family: var(--font-display);
   margin-bottom: 8px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
+/* SUGESTOES SEMELHANTES */
+.similar-books {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.similar-books.unavailable-suggestions {
+  padding: 18px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+
+.similar-kicker {
+  display: block;
+  margin-bottom: 5px;
+  color: #2f6fcf;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.similar-books h2 {
+  font-family: var(--font-display);
+  margin: 0 0 14px;
+  color: #111827;
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.similar-book-list {
+  /* CARDS DOS LIVROS SEMELHANTES */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.similar-book-card {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: #f8fbff;
+  color: #111827;
+  text-decoration: none;
+}
+
+.similar-book-card img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: #ffffff;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.similar-book-card span {
+  color: #2f6fcf;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.similar-book-card strong {
+  color: #111827;
+  font-size: 0.86rem;
+  line-height: 1.25;
+}
+
+.similar-book-card small {
+  color: #6b7280;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+/* CONTADOR DO CATALOGO */
 .catalog-count {
 
   display: inline-flex;
@@ -1056,6 +1633,7 @@ body {
   object-fit: contain;
 }
 
+/* SINOPSE DO LIVRO */
 .description-text {
   position: relative;
   max-width: 760px;
@@ -1098,6 +1676,7 @@ body {
   padding: 0;
 }
 
+/* INFORMACOES DE RETIRADA E DEVOLUCAO */
 .pickup-info {
   display: flex;
   align-items: center;
@@ -1110,6 +1689,11 @@ body {
   height: 28px;
   object-fit: contain;
   display: block;
+}
+
+.pickup-info img.date-icon {
+  width: 34px;
+  height: 34px;
 }
 
 .pickup-text {
@@ -1128,6 +1712,13 @@ body {
   color: #6b7280;
 }
 
+.pickup-text small {
+  color: #2f6fcf;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+/* EFEITO DOS CARDS DO CLIENTE */
 .reservation-card {
   transition:
     transform 0.2s ease,
@@ -1139,6 +1730,8 @@ body {
   box-shadow: 0 20px 40px rgba(0,0,0,0.10);
 }
 
+
+
 /* =========================
    RESPONSIVO
 ========================= */
@@ -1146,6 +1739,22 @@ body {
 @media (max-width: 980px) {
   .about-footer-inner {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .popular-books {
+    width: min(1120px, calc(100% - 40px));
+  }
+
+  .popular-book-list {
+    grid-auto-columns: calc((100% - 48px) / 3);
+  }
+
+  .popular-carousel-button.prev {
+    left: -18px;
+  }
+
+  .popular-carousel-button.next {
+    right: -18px;
   }
 
   .catalog-grid {
@@ -1156,16 +1765,22 @@ body {
   .book-panel,
   .reservation-layout,
   .reservation-card,
+  .client-history-card,
+  .similar-book-list,
   .account-fields,
   .account-overview {
     grid-template-columns: 1fr;
   }
 
+  .client-history-meta {
+    justify-content: flex-start;
+  }
+
   .access-group {
     padding-left: 0;
-    padding-top: 18px;
-    border-left: 0;
-    border-top: 1px solid var(--line);
+    padding-top: 22px;
+    border-left: 1px solid rgba(37, 99, 235, 0.1);
+    border-top: 0;
   }
 }
 
@@ -1173,6 +1788,58 @@ body {
   .about-footer-inner {
     grid-template-columns: 1fr;
     width: min(100%, calc(100% - 32px));
+  }
+
+  .popular-books {
+    width: min(100%, calc(100% - 32px));
+    margin-top: 28px;
+  }
+
+  .popular-books-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .popular-book-list {
+    grid-auto-columns: calc((100% - 16px) / 2);
+    gap: 16px;
+  }
+
+  .popular-carousel-button {
+    width: 38px;
+    height: 38px;
+    font-size: 1.8rem;
+  }
+
+  .popular-carousel-button.prev {
+    left: -6px;
+  }
+
+  .popular-carousel-button.next {
+    right: -6px;
+  }
+
+  .popular-book-card {
+    min-height: 410px;
+    padding: 14px 14px 16px;
+  }
+
+  .popular-book-card img {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 14px;
+  }
+
+  .popular-book-card strong {
+    font-size: 0.88rem;
+  }
+
+  .catalog-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-invite {
+    font-size: 1.15rem;
   }
 
   .footer-logo {

@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/administracao")
 public class AdministracaoController {
 
+    /*
+     * Rotas do painel administrativo.
+     * O login consulta a tabela de administradores e devolve um token local para
+     * liberar o dashboard e as telas protegidas.
+     */
+
     private final TechbookService service;
 
     public AdministracaoController(TechbookService service) {

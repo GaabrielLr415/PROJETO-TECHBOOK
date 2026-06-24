@@ -31,4 +31,12 @@ public class Usuario {
 
     @Column(name = "senha_hash")
     private String senhaHash;
+
+    @Column(name = "token_sessao", length = 100)
+    private String tokenSessao;
+
+    private Boolean bloqueado = false;
+
+    @Column(name = "motivo_bloqueio", length = 500)
+    private String motivoBloqueio = "";
 }

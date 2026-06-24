@@ -1,265 +1,296 @@
--- phpMyAdmin SQL Dump
--- version 5.2.3
--- https://www.phpmyadmin.net/
+﻿-- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
--- Host: localhost:8889
--- Tempo de geração: 08-Maio-2026 às 02:09
--- Versão do servidor: 8.0.44
--- versão do PHP: 8.3.30
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: techbook
+-- ------------------------------------------------------
+-- Server version	10.4.32-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Base de dados: `techbook`
+-- Current Database: `techbook`
 --
 
--- --------------------------------------------------------
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `techbook` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
+
+USE `techbook`;
 
 --
--- Estrutura da tabela `devolucoes`
+-- Table structure for table `administradores`
 --
 
+DROP TABLE IF EXISTS `administradores`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `administradores` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `senha_hash` varchar(255) NOT NULL,
+  `ativo` bit(1) NOT NULL DEFAULT b'1',
+  `token_sessao` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_administradores_email` (`email`),
+  KEY `idx_administradores_token` (`token_sessao`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `administradores`
+--
+
+LOCK TABLES `administradores` WRITE;
+/*!40000 ALTER TABLE `administradores` DISABLE KEYS */;
+INSERT INTO `administradores` VALUES (1,'Administrador','admin@techbook.local','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG','',NULL);
+/*!40000 ALTER TABLE `administradores` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `devolucoes`
+--
+
+DROP TABLE IF EXISTS `devolucoes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `devolucoes` (
-  `id` bigint NOT NULL,
-  `administrador_id` bigint DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `administrador_id` bigint(20) DEFAULT NULL,
   `data_devolucao` date DEFAULT NULL,
   `estado_livro` varchar(255) DEFAULT NULL,
   `observacao` varchar(1000) DEFAULT NULL,
   `status_devolucao` varchar(255) DEFAULT NULL,
-  `cliente_id` bigint NOT NULL,
-  `emprestimo_id` bigint NOT NULL,
-  `livro_id` bigint NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
+  `cliente_id` bigint(20) NOT NULL,
+  `emprestimo_id` bigint(20) NOT NULL,
+  `livro_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UKhdemlg7f4me6uh6p4pgfa0fhm` (`emprestimo_id`),
+  KEY `FK4tv1q1pgo03ikhk6v60mb4i0e` (`cliente_id`),
+  KEY `FKaa9y4bhdd45v3odjm77a8igie` (`livro_id`),
+  CONSTRAINT `FK4tv1q1pgo03ikhk6v60mb4i0e` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `FKaa9y4bhdd45v3odjm77a8igie` FOREIGN KEY (`livro_id`) REFERENCES `livros` (`id`),
+  CONSTRAINT `FKjfar6c3vd78cwrfdisnfoyv1h` FOREIGN KEY (`emprestimo_id`) REFERENCES `emprestimos` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Estrutura da tabela `emprestimos`
+-- Dumping data for table `devolucoes`
 --
 
+LOCK TABLES `devolucoes` WRITE;
+/*!40000 ALTER TABLE `devolucoes` DISABLE KEYS */;
+INSERT INTO `devolucoes` VALUES (2,1,'2026-05-24','BOM','','REGISTRADA',7,6,3),(3,1,'2026-05-24','BOM','Em ótimo estado.','REGISTRADA',7,5,5),(6,1,'2026-05-26','AVARIADO','','REGISTRADA',11,7,3);
+/*!40000 ALTER TABLE `devolucoes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `emprestimos`
+--
+
+DROP TABLE IF EXISTS `emprestimos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `emprestimos` (
-  `id` bigint NOT NULL,
-  `administrador_id` bigint DEFAULT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `administrador_id` bigint(20) DEFAULT NULL,
   `data_devolucao_prevista` date DEFAULT NULL,
   `data_emprestimo` date DEFAULT NULL,
-  `estado_livro` varchar(255) DEFAULT NULL,
-  `observacao_devolucao` varchar(1000) DEFAULT NULL,
   `renovado` bit(1) NOT NULL,
   `status` varchar(255) DEFAULT NULL,
-  `cliente_id` bigint NOT NULL,
-  `livro_id` bigint NOT NULL,
-  `reserva_id` bigint DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `cliente_id` bigint(20) NOT NULL,
+  `livro_id` bigint(20) NOT NULL,
+  `reserva_id` bigint(20) DEFAULT NULL,
+  `estado_livro` varchar(255) DEFAULT NULL,
+  `observacao_devolucao` varchar(1000) DEFAULT NULL,
+  `historico_contato` varchar(2000) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKm0bg8i8ap68cpdg4w5egaqys3` (`cliente_id`),
+  KEY `FKljc60fwmihjgdsn2ee23yka0k` (`livro_id`),
+  KEY `FKpqasbmodp9xrq0v7f8n2c5tfw` (`reserva_id`),
+  CONSTRAINT `FKljc60fwmihjgdsn2ee23yka0k` FOREIGN KEY (`livro_id`) REFERENCES `livros` (`id`),
+  CONSTRAINT `FKm0bg8i8ap68cpdg4w5egaqys3` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `FKpqasbmodp9xrq0v7f8n2c5tfw` FOREIGN KEY (`reserva_id`) REFERENCES `reservas` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Extraindo dados da tabela `emprestimos`
+-- Dumping data for table `emprestimos`
 --
 
-INSERT INTO `emprestimos` (`id`, `administrador_id`, `data_devolucao_prevista`, `data_emprestimo`, `estado_livro`, `observacao_devolucao`, `renovado`, `status`, `cliente_id`, `livro_id`, `reserva_id`) VALUES
-(1, 1, '2026-04-22', '2026-04-08', 'EMPRESTADO', NULL, b'0', 'ATRASADO', 1, 3, NULL);
-
--- --------------------------------------------------------
+LOCK TABLES `emprestimos` WRITE;
+/*!40000 ALTER TABLE `emprestimos` DISABLE KEYS */;
+INSERT INTO `emprestimos` VALUES (1,1,'2026-04-22','2026-04-08','\0','ATRASADO',1,3,NULL,NULL,NULL,'2026-05-24 - TELEFONE - Não atende\n2026-05-24 - E-MAIL - Não responde'),(2,1,'2026-06-02','2026-05-19','\0','ATRASADO',6,4,20,'EMPRESTADO',NULL,NULL),(4,1,'2026-06-06','2026-05-23','\0','ATRASADO',7,4,25,'EMPRESTADO',NULL,NULL),(5,1,'2026-06-13','2026-05-23','','DEVOLVIDO',7,5,26,'BOM','Em ótimo estado.',NULL),(6,1,'2026-06-07','2026-05-24','\0','DEVOLVIDO',7,3,28,'BOM','',NULL),(7,1,'2026-06-09','2026-05-26','\0','DEVOLVIDO',11,3,29,'AVARIADO','',NULL),(8,1,'2026-06-09','2026-05-26','\0','ATIVO',10,4,30,'EMPRESTADO',NULL,NULL),(9,1,'2026-06-09','2026-05-26','\0','ATIVO',10,13,34,'EMPRESTADO',NULL,NULL),(10,1,'2026-06-09','2026-05-26','\0','ATIVO',10,58,35,'EMPRESTADO',NULL,NULL),(11,1,'2026-06-09','2026-05-26','\0','ATIVO',11,65,36,'EMPRESTADO',NULL,NULL),(12,1,'2026-06-09','2026-05-26','\0','ATIVO',11,72,37,'EMPRESTADO',NULL,NULL);
+/*!40000 ALTER TABLE `emprestimos` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estrutura da tabela `livros`
+-- Table structure for table `livros`
 --
 
+DROP TABLE IF EXISTS `livros`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `livros` (
-  `id` bigint NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `autor` varchar(255) NOT NULL,
   `categoria` varchar(255) NOT NULL,
   `descricao` varchar(2000) NOT NULL,
   `imagem_url` varchar(255) NOT NULL,
   `isbn` varchar(255) NOT NULL,
-  `quantidade_disponivel` int NOT NULL,
-  `quantidade_total` int NOT NULL,
-  `titulo` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `quantidade_disponivel` int(11) NOT NULL,
+  `quantidade_total` int(11) NOT NULL,
+  `titulo` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Extraindo dados da tabela `livros`
+-- Dumping data for table `livros`
 --
 
-INSERT INTO `livros` (`id`, `autor`, `categoria`, `descricao`, `imagem_url`, `isbn`, `quantidade_disponivel`, `quantidade_total`, `titulo`) VALUES
-(3, 'Suzanne Collins', 'Ficção científica', 'Primeiro volume da saga em que Katniss Everdeen entra nos Jogos Vorazes para sobreviver e desafiar Panem.', 'https://covers.openlibrary.org/b/id/12646537-L.jpg', 'ISBN-PENDENTE', 15, 15, 'Jogos Vorazes'),
-(4, 'J.K. Rowling', 'Fantasia', 'Primeiro livro da série, em que Harry descobre o mundo da magia e inicia sua jornada em Hogwarts.', 'https://covers.openlibrary.org/b/id/15155833-L.jpg', 'ISBN-PENDENTE', 3, 3, 'Harry Potter e a Pedra Filosofal'),
-(5, 'J.K. Rowling', 'Fantasia', 'Segundo volume da saga, em que Harry retorna a Hogwarts e enfrenta os segredos da Câmara Secreta.', 'https://covers.openlibrary.org/b/id/15158664-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Harry Potter e a Câmara Secreta'),
-(6, 'J.K. Rowling', 'Fantasia', 'Terceiro livro da série, marcado pela fuga de Sirius Black e por novas revelações sobre o passado de Harry.', 'https://covers.openlibrary.org/b/id/10580435-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Harry Potter e o Prisioneiro de Azkaban'),
-(7, 'J.K. Rowling', 'Fantasia', 'No Torneio Tribruxo, Harry é escolhido inesperadamente e enfrenta provas perigosas em Hogwarts.', 'https://covers.openlibrary.org/b/id/12059372-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Harry Potter e o Cálice de Fogo'),
-(8, 'J.K. Rowling', 'Fantasia', 'Harry enfrenta a negação do retorno de Voldemort enquanto a Ordem da Fênix organiza a resistência.', 'https://covers.openlibrary.org/b/id/15158666-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Harry Potter e a Ordem da Fênix'),
-(9, 'J.K. Rowling', 'Fantasia', 'Dumbledore conduz Harry por memórias decisivas sobre Voldemort e seus horcruxes.', 'https://covers.openlibrary.org/b/id/10716273-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Harry Potter e o Enigma do Príncipe'),
-(10, 'J.K. Rowling', 'Fantasia', 'No desfecho da saga, Harry, Rony e Hermione deixam Hogwarts em busca dos horcruxes finais.', 'https://covers.openlibrary.org/b/id/15158660-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Harry Potter e as Relíquias da Morte'),
-(11, 'Suzanne Collins', 'Ficção científica', 'Katniss e Peeta retornam à arena no Massacre Quaternário, enquanto a rebelião cresce em Panem.', 'https://covers.openlibrary.org/b/id/12646539-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Em Chamas'),
-(12, 'Suzanne Collins', 'Ficção científica', 'Katniss se torna o símbolo da revolução contra a Capital no encerramento da trilogia original.', 'https://covers.openlibrary.org/b/id/12646459-L.jpg', 'ISBN-PENDENTE', 5, 5, 'A Esperança'),
-(13, 'Suzanne Collins', 'Ficção científica', 'Prelúdio da saga que acompanha o jovem Coriolanus Snow antes de se tornar o tirano de Panem.', 'https://covers.openlibrary.org/b/id/14421833-L.jpg', 'ISBN-PENDENTE', 5, 5, 'A Cantiga dos Pássaros e das Serpentes'),
-(14, 'Suzanne Collins', 'Ficção científica', 'Quinto livro da série Jogos Vorazes, centrado em Haymitch Abernathy durante o 50º Jogos Vorazes.', 'https://covers.openlibrary.org/b/id/15169776-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Amanhecer na Colheita'),
-(15, 'Stephenie Meyer', 'Romance fantástico', 'Bella Swan se muda para Forks e conhece Edward Cullen, iniciando a saga Crepúsculo.', 'https://covers.openlibrary.org/b/id/12641977-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Crepúsculo'),
-(16, 'Stephenie Meyer', 'Romance fantástico', 'No segundo livro da saga, Bella enfrenta a ausência de Edward e se aproxima ainda mais de Jacob.', 'https://covers.openlibrary.org/b/id/12643406-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Lua Nova'),
-(17, 'Stephenie Meyer', 'Romance fantástico', 'Bella precisa escolher seu futuro enquanto vampiros e lobisomens enfrentam uma nova ameaça.', 'https://covers.openlibrary.org/b/id/12643410-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Eclipse'),
-(18, 'Stephenie Meyer', 'Romance fantástico', 'Último volume da saga principal, acompanhando o casamento de Bella e Edward e suas consequências.', 'https://covers.openlibrary.org/b/id/12643419-L.jpg', 'ISBN-PENDENTE', 5, 5, 'Amanhecer'),
-(19, 'Autor Teste', 'Teste', 'Livro criado apenas para validar o cadastro no painel administrativo.', 'https://covers.openlibrary.org/b/id/12646537-L.jpg', 'ISBN-PENDENTE', 2, 2, 'Livro Teste Cadastro');
-
--- --------------------------------------------------------
+LOCK TABLES `livros` WRITE;
+/*!40000 ALTER TABLE `livros` DISABLE KEYS */;
+INSERT INTO `livros` VALUES (3,'Suzanne Collins','Ficção científica','Na abertura dos Jogos Vorazes, a organização não recolhe os corpos dos combatentes caídos e dá tiros de canhão até o final. Cada tiro, um morto. Onze tiros no primeiro dia. Treze jovens restaram, entre eles, Katniss. Para quem os tiros de canhão serão no dia seguinte?...\n\nApós o fim da América do Norte, uma nova nação chamada Panem surge. Formada por doze distritos, é comandada com mão de ferro pela Capital. Uma das formas com que demonstra seu poder sobre o resto do carente país é com Jogos Vorazes, uma competição anual transmitida ao vivo pela televisão, em que um garoto e uma garota de doze a dezoito anos de cada distrito são selecionados e obrigados a lutar até a morte!\n\nPara evitar que sua irmã seja a mais nova vítima do programa, Katniss se oferece para participar em seu lugar. Vinda do empobrecido Distrito 12, ela sabe como sobreviver em um ambiente hostil. Peeta, um garoto que ajudou sua família no passado, também foi selecionado. Caso vença, terá fama e fortuna. Se perder, morre. Mas para ganhar a competição, será preciso muito mais do que habilidade. Até onde Katniss estará disposta a ir para ser vitoriosa nos Jogos Vorazes?\n\nJogos Vorazes é o primeiro livro da trilogia Jogos Vorazes que foi adaptada para o cinema e estrelada por Jennifer Lawrence.','https://m.media-amazon.com/images/I/71WOkspHbOL._SY466_.jpg','ISBN-PENDENTE',15,15,'Jogos Vorazes'),(4,'J.K. Rowling','Fantasia','Harry Potter é um garoto cujos pais, feiticeiros, foram assassinados por um poderosíssimo bruxo quando ele ainda era um bebê. Ele foi levado, então, para a casa dos tios que nada tinham a ver com o sobrenatural. Pelo contrário. Até os 10 anos, Harry foi uma espécie de gata borralheira: maltratado pelos tios, herdava roupas velhas do primo gorducho, tinha óculos remendados e era tratado como um estorvo. No dia de seu aniversário de 11 anos, entretanto, ele parece deslizar por um buraco sem fundo, como o de Alice no país das maravilhas, que o conduz a um mundo mágico. Descobre sua verdadeira história e seu destino: ser um aprendiz de feiticeiro até o dia em que terá que enfrentar a pior força do mal, o homem que assassinou seus pais. O menino de olhos verde, magricela e desengonçado, tão habituado à rejeição, descobre, também, que é um herói no universo dos magos. Potter fica sabendo que é a única pessoa a ter sobrevivido a um ataque do tal bruxo do mal e essa é a causa da marca em forma de raio que ele carrega na testa. Ele não é um garoto qualquer, ele sequer é um feiticeiro qualquer ele é Harry Potter, símbolo de poder, resistência e um líder natural entre os sobrenaturais. A fábula, recheada de fantasmas, paredes que falam, caldeirões, sapos, unicórnios, dragões e gigantes, não é, entretanto, apenas um passatempo.','https://m.media-amazon.com/images/I/81ibfYk4qmL._SY342_.jpg','ISBN-PENDENTE',7,10,'Harry Potter e a Pedra Filosofal'),(5,'J.K. Rowling','Fantasia','Depois de férias aborrecidas na casa dos tios trouxas, está na hora de Harry Potter voltar a estudar. Coisas acontecem, no entanto, para dificultar o regresso de Harry. Persistente e astuto, o herói não se deixa intimidar pelos obstáculos e, com a ajuda dos fiéis amigos Weasley, começa o ano letivo na Escola de Magia e Bruxaria de Hogwarts. As novidades não são poucas. Novos colegas, novos professores, muitas e boas descobertas e um grande e perigosos desafio. Alguém ou alguma coisa ameaça a segurança e a tranquilidade dos membros de Hogwarts.','https://m.media-amazon.com/images/I/81jbivNEVML._SY425_.jpg','ISBN-PENDENTE',5,5,'Harry Potter e a Câmara Secreta'),(6,'J.K. Rowling','Fantasia','As aulas estão de volta à Hogwarts e Harry Potter não vê a hora de embarcar no expresso a vapor que o levará de volta à escola de bruxaria. Mais uma vez suas férias na rua dos Alfeneiros foi triste e solitária. Com muita ação, humor e magia, \'Harry Potter e o prisioneiro de Azkaban\' traz de volta o gigante atrapalhado Rúbeo Hagrid, o sábio diretor Alvo Dumbledore, a exigente professora de transformação Minerva MacGonagall e o novo mestre Lupin, que guarda grandes surpresas para Harry.','https://m.media-amazon.com/images/I/81u+ljPVifL._SY425_.jpg','ISBN-PENDENTE',5,5,'Harry Potter e o Prisioneiro de Azkaban'),(7,'J.K. Rowling','Fantasia','Nesta aventura, o feiticeiro cresceu e está com 14 anos. O início do ano letivo de Harry Potter reserva muitas emoções, mágicas, e acontecimentos inesperados, além de um novo torneio em que os alunos de Hogwarts terão de demonstrar todas as habilidade mágicas e nãomágicas que vêm adquirindo ao longo de suas vidas. Harry é escolhido pelo Cálice de Fogo para competir como um dos campeões de Hogwarts, tendo ao lado seus fiéis amigos. Muitos desafios, feitiços, poções e confusões estão reservados para Harry. Além disso, ele terá que lidar ainda com os problemas comuns da adolescência amor, amizade, aceitação e rejeição.','https://m.media-amazon.com/images/I/81nTLN-kz7L._SY425_.jpg','ISBN-PENDENTE',5,5,'Harry Potter e o Cálice de Fogo'),(8,'J.K. Rowling','Fantasia','Harry não é mais um garoto. Aos 15 anos, continua sofrendo a rejeição dos Dursdley, sua estranha família no mundo dos \'trouxas\'. Também continua contando com Rony Weasley e Hermione Granger, seus melhores amigos em Hogwarts, para levar adiante suas investigações e aventuras. Mas o bruxinho começa a sentir e descobrir coisas novas, como o primeiro amor e a sexualidade. Nos volumes anteriores, J. K. Rowling mostrou como Harry foi transformado em celebridade no mundo da magia por ter derrotado, ainda bebê, Voldemort, o todopoderoso bruxo das trevas que assassinou seus pais. Neste quinto livro da saga, o protagonista, numa crise típica da adolescência, tem ataques de mau humor com a perseguição da imprensa, que o segue por todos os lugares e chega a inventar declarações que nunca deu. Harry vai enfrentar as investidas de Voldemort sem a proteção de Dumbledore, já que o diretor de Hogwarts é afastado da escola. E vai ser sem a ajuda de seu protetor que o jovem herói enfrentará descobertas sobre a personalidade controversa de seu pai, Tiago Potter, e a morte de alguém muito próximo.','https://m.media-amazon.com/images/I/81d6ESyPZwL._SY425_.jpg','ISBN-PENDENTE',5,5,'Harry Potter e a Ordem da Fênix'),(9,'J.K. Rowling','Fantasia','Harry Potter e o enigma do príncipe\' dá continuidade à saga do jovem bruxo Harry Potter a partir do ponto em que o livro anterior parou o momento em que fica provado que o poder de Voldemort e dos Comensais da Morte, seus seguidores, cresce mais a cada dia, em meio à batalha entre o bem e o mal. A onda de terror provocada pelo Lorde das Trevas estaria afetando, até mesmo, o mundo dos trouxas (nãobruxos), e sendo agravada pela ação dos dementadores, criaturas mágicas aterrorizantes que \'sugam\' a esperança e a felicidade das pessoas. Harry, que acabou de completar 16 anos, parte rumo ao sexto ano na Escola de Magia e Bruxaria de Hogwarts, animado e ao mesmo tempo apreensivo com a perspectiva de ter aulas particulares com o professor Dumbledore, o diretor da escola e o bruxo mais respeitado em toda comunidade mágica. Harry, longe de ser aquele menino magricela que vivia no quarto debaixo da escada na casa dos tios trouxas, é um dos principais nomes entre aqueles que lutam contra Voldemort, e se vê cada vez mais isolado à medida que os rumores de que ele é O Eleito o único capaz de derrotar o Lorde das Trevas, se espalham pelo mundo dos bruxos. Dois atentados contra a vida de estudantes, a certeza de Harry quanto ao envolvimento de Draco Malfoy com os Comensais da Morte e o comportamento de Snape, suspeito como sempre, adicionam ainda mais tensão ao já inquietante período. Apesar de tudo isso, Harry e os amigos são adolescentes típicos dividem tarefas escolares e dormitórios bagunçados, correm das aulas para os treinos de quadribol, e namoram.','https://m.media-amazon.com/images/I/81yFIh1yoZL._SY425_.jpg','ISBN-PENDENTE',5,5,'Harry Potter e o Enigma do Príncipe'),(10,'J.K. Rowling','Fantasia','Harry Potter e as relíquias da morte\', de J.K. Rowling, é o sétimo e último livro da série. Voldemorte está cada vez mais forte e Harry Potter precisa encontrar e aniquilar as Horcruxes para enfraquecer o lorde e poder enfrentálo. Nessa busca desenfreada, contando apenas com os amigos Rony e Hermione, Harry descobre as Relíquias da Morte, que serão úteis na batalha do bem contra o mal.','https://m.media-amazon.com/images/I/81rvO7xcJOL._SY425_.jpg','ISBN-PENDENTE',5,5,'Harry Potter e as Relíquias da Morte'),(12,'Machado de Assis','Romance','Em Dom Casmurro, o narrador Bento Santiago retoma a infância que passou na Rua de Matacavalos e conta a história do amor e das desventuras que viveu com Capitu, uma das personagens mais enigmáticas e intrigantes da literatura brasileira. Nas páginas deste romance, encontra-se a versão de um homem perturbado pelo ciúme, que revela aos poucos sua psicologia complexa e enreda o leitor em sua narrativa ambígua acerca do acontecimento ou não do adultério da mulher com olhos de ressaca, uma das maiores polêmicas da literatura brasileira.','https://static.estantevirtual.com.br/book/00/000-0431-000/000-0431-000_detail1.jpg?ts=1712764011603&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Dom Casmurro'),(13,'Stephen King','Terror','Nesse clássico que inspirou os filmes da Warner, um grupo de amigos conhecido como Clube dos Otários aprende o real sentido da amizade, do amor, da confiança... e do medo. O mais profundo e tenebroso medo. Durante as férias de 1958, em uma pacata cidadezinha chamada Derry, um grupo de sete amigos começa a ver coisas estranhas. Um conta que viu um palhaço, outro que viu uma múmia. Finalmente, acabam descobrindo que estavam todos vendo a mesma coisa: um ser sobrenatural e maligno que pode assumir várias formas. É assim que Bill, Beverly, Eddie, Ben, Richie, Mike e Stan enfrentam a Coisa pela primeira vez. Quase trinta anos depois, o grupo volta a se encontrar. Mike, o único que permaneceu em Derry, dá o sinal — uma nova onda de terror tomou a pequena cidade. É preciso unir forças novamente. Só eles têm a chave do enigma. Só eles sabem o que se esconde nas entranhas de Derry. Só eles podem vencer a Coisa. “Mesmo depois de tantos anos, o público continua obcecado por IT. Ficamos obcecados porque todos temos medos. Todos temos algo que nos assusta, sejam palhaços e aranhas ou coisas que se escondem em um lugar muito mais profundo de nossa mente. Este livro fala com todo mundo. É o romance mais assustador de King, e duvido que isso vá mudar” — The Guardian','https://static.estantevirtual.com.br/book/00/00V-7944-000/00V-7944-000_detail1.jpg?ts=1777223235310&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',4,5,'It: A coisa'),(14,'Stephen King','Terror','O romance, magistralmente levado ao cinema por Stanley Kubrick, continua apaixonando (e aterrorizando) novas gerações de leitores. A luta assustadora entre dois mundos. Um menino e o desejo assassino de poderosas forças malignas. Uma família refém do mal. Nesta guerra sem testemunhas, vencerá o mais forte. Danny Torrance não é um menino comum. É capaz de ouvir pensamentos e transportar-se no tempo. Danny é iluminado. Será uma maldição ou uma bênção? A resposta pode estar guardada na imponência assustadora do hotel Overlook. Em O iluminado, quando Jack Torrance consegue o emprego de zelador no velho hotel, todos os problemas da família parecem estar solucionados. Não mais o desemprego e as noites de bebedeiras. Não mais o sofrimento da esposa, Wendy. Tranquilidade e ar puro para o pequeno Danny livrar-se das convulsões que assustam a família. Só que o Overlook não é um hotel comum. O tempo esqueceu-se de enterrar velhos ódios e de cicatrizar antigas feridas, e espíritos malignos ainda residem nos corredores. O hotel é uma chaga aberta de ressentimento e desejo de vingança. É uma sentença de morte. E somente os poderes de Danny podem fazer frente à disseminação do mal.','https://static.estantevirtual.com.br/book/00/03A-8461-000/03A-8461-000_detail1.jpg?ts=1738275177879&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'O iluminado'),(16,'Stephenie Meyer','Romance fantástico','No segundo livro da saga, Bella enfrenta a ausência de Edward e se aproxima ainda mais de Jacob.','https://covers.openlibrary.org/b/id/12643406-L.jpg','ISBN-PENDENTE',5,5,'Lua Nova'),(17,'Stephenie Meyer','Romance fantástico','Bella precisa escolher seu futuro enquanto vampiros e lobisomens enfrentam uma nova ameaça.','https://covers.openlibrary.org/b/id/12643410-L.jpg','ISBN-PENDENTE',5,5,'Eclipse'),(18,'Stephenie Meyer','Romance fantástico','Estar irrevogavelmente apaixonada por um vampiro é tanto uma fantasia como um pesadelo, costurados em uma perigosa realidade para Bella Swan.Empurrada em uma direção por sua intensa paixão por Edward Cullen, e em outra por sua profunda ligação com o lobisomem Jacob Black, ela resistiu a um tumultuado ano de tentação, perda e conflito até o momento da decisão definitiva. A escolha entre fazer parte do obscuro, mas sedutor, mundo dos imortais ou permanecer vivendo como humana se tornou o marco que poderá transformar o destino dos dois clãs: vampiros e lobisomens.Agora que Bella tomou sua decisão, uma corrente de acontecimentos sem precedentes se desdobrará, com consequências devastadoras. No momento em que as feridas parecem prontas para ser cicatrizadas, e os desgastantes confrontos da vida de Bella, resolvidos, isso pode significar a destruição. Para todos. Para sempre.','https://static.estantevirtual.com.br/book/00/000-1931-000/000-1931-000_detail1.jpg?ts=1775519698810&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',1,1,'Amanhecer'),(21,'Suzanne Collins','Ficção científica','Depois da improvável e inusitada vitória de Katniss Everdeen e Peeta Mellark nos últimos Jogos Vorazes, algo parece ter mudado para sempre em Panem. Aqui e ali, distúrbios e agitações nos distritos dão sinais de que uma revolta é iminente. Katniss e Peeta, representantes do paupérrimo Distrito 12, não apenas venceram os Jogos, mas ridicularizaram o governo e conseguiram fazer todos – incluindo o próprio Peeta – acreditarem que são um casal apaixonado. A confusão na cabeça de Katniss não é menor do que a das ruas. Em meio ao turbilhão, ela pensa cada vez mais em seu melhor amigo, o jovem caçador Gale, mas é obrigada a fingir que o romance com Peeta é real. Já o governo parece especialmente preocupado com a influência que os dois adolescente vitoriosos – transformados em verdadeiros ídolos nacionais – podem ter na população. Por isso, existem planos especiais para mantê-los sob controle, mesmo que isso signifique forçá-los a lutar novamente.','https://m.media-amazon.com/images/I/71hX09mm4rL._SY466_.jpg','ISBN-PENDENTE',10,10,'Jogos Vorazes - Em chamas'),(22,'Suzanne Collins','Ficção científica','Depois de sobreviver duas vezes à crueldade de uma arena projetada para destruí-la, Katniss acreditava que não precisaria mais lutar. Mas as regras do jogo mudaram: com a chegada dos rebeldes do lendário Distrito 13, enfim é possível organizar uma resistência. Começou a revolução.\n\nA coragem de Katniss nos jogos fez nascer a esperança em um país disposto a fazer de tudo para se livrar da opressão. E agora, contra a própria vontade, ela precisa assumir seu lugar como símbolo da causa rebelde. Ela precisa virar o Tordo.\n\nO sucesso da revolução dependerá de Katniss aceitar ou não essa responsabilidade. Será que vale a pena colocar sua família em risco novamente? Será que as vidas de Peeta e Gale serão os tributos exigidos nessa nova guerra?\n\nAcompanhe Katniss até o fim deste thriller, numa jornada ao lado mais obscuro da alma humana, em uma luta contra a opressão e a favor da esperança.\n\nA esperança é o último livro da trilogia Jogos Vorazes que foi adaptada para o cinema e estrelada por Jennifer Lawrence.','https://m.media-amazon.com/images/I/715ejknjS4L._SY466_.jpg','ISBN-PENDENTE',10,10,'Jogos Vorazes - A esperança'),(23,'Edgar Allan','Terror','O Gato Preto é um clássico do terror que expõe o lado mais soturno da mente humana. Escrito em 1843, traz uma narrativa intimista marcada por culpa, morte e mistério. Neste livro, o leitor ainda encontra outras quatro histórias de arrepiar, escrita pelo mestre do suspense Edgar Allan Poe.','https://m.media-amazon.com/images/I/710HE3bafTL._SY466_.jpg','ISBN-PENDENTE',5,5,'O Gato Preto e Outras Histórias'),(24,'Clarice Lispector','Romance','Pouco antes de morrer, em 1977, Clarice Lispector decide se afastar da inflexão intimista que caracteriza sua escrita para desafiar a realidade. O resultado desse salto na extroversão é A hora da estrela, o livro mais surpreendente que escreveu. Se desde Perto do coração selvagem, seu romance de estreia, Clarice estava de corpo inteiro, todo o tempo, no centro de seus relatos, agora a cena é ocupada por personagens que em nada se parecem com ela. A nordestina Macabéa, a protagonista de A hora da estrela, é uma mulher miserável, que mal tem consciência de existir. Depois de perder seu único elo com o mundo, uma velha tia, ela viaja para o Rio, onde aluga um quarto, se emprega como datilógrafa e gasta suas horas ouvindo a Rádio Relógio. Apaixona-se, então, por Olímpico de Jesus, um metalúrgico nordestino, que logo a trai com uma colega de trabalho. Desesperada, Macabéa consulta uma cartomante, que lhe prevê um futuro luminoso, bem diferente do que a espera. Clarice cria até um falso autor para seu livro, o narrador Rodrigo S.M., mas nem assim consegue se esconder. O desejo de desaparecimento, que a morte real logo depois consolidaria, se frustra. Entre a realidade e o delírio, buscando social enquanto sua alma a engolfava, Clarice escreveu um livro singular. A hora da estrela é um romance sobre o desamparo a que, apesar do consolo da linguagem, todos estamos entregues. — JOSÉ CASTELLO, Jornalista, escritor e Mestre em Comunicação pela UFRJ','https://static.estantevirtual.com.br/book/00/06C-1500-000/06C-1500-000_detail1.png?ts=1715021353277&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'A hora da estrela'),(25,'Chimamanda N. Adichie','Drama','O novo e arrebatador romance de Chimamanda Ngozi Adichie, a premiada autora best-seller de Americanah e Sejamos todos feministas. Uma história sobre quatro mulheres e seus amores, saudades e desejos. Chiamaka é escritora de livros de viagem e vive nos Estados Unidos. Sozinha durante a pandemia, ela relembra os relacionamentos do passado e pondera sobre suas escolhas e seus arrependimentos. Zikora, sua melhor amiga, é uma advogada que foi bem-sucedida em tudo, até que, após ter o coração partido, busca a ajuda de quem achou que menos precisava. Omelogor, prima de Chiamaka, é uma gênia das finanças na Nigéria que começa a questionar o quanto se conhece de verdade. E Kadiatou, empregada de Chiamaka, cria com orgulho a filha nos Estados Unidos — mas precisa lidar com uma provação inconcebível que ameaça tudo o que ela trabalhou para conseguir.Neste romance, Chimamanda Ngozi Adichie volta seu olhar arguto a essas mulheres, numa narrativa brilhante que discute a própria natureza do amor. A verdadeira felicidade é de fato alcançável? Ou é apenas um estado passageiro? E quão honestos devemos ser com nós mesmos para amar e ser amados?Uma reflexão incisiva sobre as escolhas que fazemos e aquelas feitas por nós, sobre filhas e mães, sobre nosso mundo interconectado, A contagem dos sonhos pulsa com urgência emocional e observações pungentes e inflexíveis sobre o coração humano, em uma linguagem que se eleva com beleza e poder. Isso confirma o status de Adichie como uma das escritoras mais fascinantes e dinâmicas da cena literária hoje.','https://static.estantevirtual.com.br/book/00/GRF-1666-000/GRF-1666-000_detail1.jpg?ts=1738778166824&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'A Contagem dos Sonhos'),(26,'Stephen King','Terror','O clássico que deu origem à série The Stand — ao apresentar os sobreviventes da “supergripe” que organizam um mundo pós-apocalíptico, Stephen King constrói uma história épica sobre o fim da civilização e a eterna batalha entre o bem e o mal. Após um erro de computação no Departamento de Defesa, um vírus é liberado, dando origem à doença que ficará conhecida como Capitão Viajante, ou “supergripe”. Não demora muito para que um milhão de contatos casuais formem uma cadeia de morte, e é assim que o mundo como o conhecemos acaba. O que surge no lugar é um mundo árido, sem instituições e esvaziado de 99% da população. Um mundo onde sobreviventes em pânico escolhem seus lados — ou são escolhidos. Os bons se apoiam nos ombros frágeis de Mãe Abigail, com seus cento e oito anos de idade, enquanto todo o mal é incorporado por um indivíduo de poderes indizíveis: Randall Flagg, o homem escuro. Com sua complexidade moral, precisão de ritmo e brilhante construção de personagens, A dança da morte tem um lugar garantido entre os clássicos da literatura contemporânea. “A dança da morte é uma obra-prima, e não uso essa definição de forma leviana.” — The Guardian \"\"Uma mistura de fantasia épica, terror e distopia que, até hoje, é uma das obras mais importantes dos gêneros e a mais amada pela legião de fãs de Stephen King\"\" — Fantasy Book Review','https://static.estantevirtual.com.br/book/00/06A-1104-000/06A-1104-000_detail1.jpg?ts=1712764815672&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'A dança da morte'),(27,'George R. R. Martin','Fantasia','A guerra dos tronos é o primeiro livro da série best-seller internacional As Crônicas de Gelo e Fogo, que deu origem à adaptação de sucesso da HBO, Game of Thrones.\nO verão pode durar décadas. O inverno, toda uma vida. E a guerra dos tronos começou. Como Guardião do Norte, lorde Eddard Stark não fica feliz quando o rei Robert o proclama a nova Mão do Rei. Sua honra o obriga a aceitar o cargo e deixar seu posto em Winterfell para rumar para a corte, onde os homens fazem o que lhes convém, não o que devem... e onde um inimigo morto é algo a ser admirado.\n\nLonge de casa e com a família dividida, Eddard se vê cada vez mais enredado nas intrigas mortais de Porto Real, sem saber que perigos ainda maiores espreitam a distância.\n\nNas florestas ao norte de Winterfell, forças sobrenaturais se espalham por trás da Muralha que protege a região. E, nas Cidades Livres, o jovem Rei Dragão exilado na Rebelião de Robert planeja sua vingança e deseja recuperar sua herança de família: o Trono de Ferro de Westero','https://m.media-amazon.com/images/I/91+1SUO3vUL._SY425_.jpg','ISBN-PENDENTE',5,5,'A Guerra dos Tronos : As Crônicas de Gelo e Fogo'),(28,'George R.R. Martin','Fantasia','Um cometa da cor de fogo e sangue corta os céus. E, da antiga cidadela de Pedra do Dragão às costas áridas de Winterfell, reina o caos.\nEm A fúria dos reis , seis facções disputam o controle de uma terra dividida e o direito de ocupar o Trono de Ferro de Westeros – e estão dispostos a encarar tempestades, levantes e guerras para isso.\nNesta história, irmão trama contra irmão e os mortos se levantam para caminhar pela noite. Aqui, uma princesa se disfarça de menino órfão, um cavaleiro se prepara para encarar uma pérfida feiticeira e bárbaros descem das Montanhas da Lua para saquear os campos.\nEm um contexto de incesto e fratricídio, alquimia e assassinato, a vitória será dos homens e mulheres que possuírem o mais frio aço... e o mais frio coração. Pois, quando se desperta a fúria dos reis, a terra inteira treme.','https://m.media-amazon.com/images/I/91PglZzF9kL._SY425_.jpg','ISBN-PENDENTE',6,6,'A fúria dos reis: As Crônicas de Gelo e Fogo'),(30,'George R. R. Martin','Fantasia','Séculos antes dos eventos de A guerra dos tronos, a Casa Targaryen – única família de senhores dos dragões a sobreviver à Destruição de Valíria – tomou residência em Pedra do Dragão. A história de Fogo & Sangue começa com o lendário Aegon, o Conquistador, criador do Trono de Ferro, e segue narrando as gerações de Targaryen que lutaram para manter o assento, até a guerra civil que quase destruiu sua dinastia.\nO que realmente aconteceu durante a Dança dos Dragões? Por que era tão perigoso visitar Valíria depois da Destruição? Quais foram os piores crimes de Maegor, o Cruel? Essas são algumas das questões respondidas neste livro essencial, relatadas por um sábio meistre da Cidadela.\nRicamente ilustrado com mais de oitenta imagens assinadas pelo artista Doug Wheatley, Fogo & Sangue dará aos leitores uma nova e completa visão da fascinante história de Westeros – um livro imperdível para os fãs do autor.','https://m.media-amazon.com/images/I/81j1UaQEcDL._SY425_.jpg','ISBN-PENDENTE',5,5,'Fogo & Sangue'),(31,'George R. R. Martin','Fantasia','É outono em Westeros, e a Guerra dos Cinco Reis parece finalmente entrar na reta final. Stannis Baratheon se instala no Norte e jura conquistar o apoio dos senhores da região para continuar sua luta pelo trono, embora seja atrapalhado pela invasão de homens de ferro em grande parte da costa.\nNa Muralha, Jon Snow é eleito o 998º Senhor Comandante da Patrulha da Noite, mas inimigos o cercam de todos os lados, tanto na Patrulha quanto para além da Muralha. Enquanto isso, Tyrion Lannister atravessa o Mar Estreito rumo a Pentos, sem objetivos definidos, sem aliados e cada vez mais sem opções.\nNa Baía dos Escravos, Daenerys Targaryen conquista a cidade de Meereen e decide ficar e governá-la, praticando as habilidades de liderança que serão tão necessárias quando partir para Westeros. No entanto, sua presença já foi notada por muitos senhores nos Sete Reinos, e das Ilhas de Ferro e de Dorne, de Vilavelha e das Cidades Livres, emissários estão a caminho, querendo se unir à sua causa e, se possível, usá-la para os próprios fins.\nEm todos os cantos conflitos ganham vida e traições vêm daqueles mais próximos. Guerreiros, selvagens, nobres e escravos – todos têm pela frente um longo inverno, enquanto destino, ambição e política ditam o ritmo da dança mais perigosa de todas.','https://m.media-amazon.com/images/I/91DisjRjFxL._SY425_.jpg','ISBN-PENDENTE',5,5,'A dança dos dragões: As Crônicas de Gelo e Fogo'),(32,'Frank Herbert','Ficção Científica','Uma estonteante mistura de aventura e misticismo, ecologia e política, este romance ganhador dos prêmios Hugo e Nebula deu início a uma das mais épicas histórias de toda a ficção científica. Duna é um triunfo da imaginação, que influenciará a literatura para sempre.Esta edição inédita, com introdução de Neil Gaiman, apresenta ao leitor o universo fantástico criado por Herbert e que será adaptado ao cinema por Denis Villeneuve, diretor de A chegada e de Blade Runner 2049.','https://m.media-amazon.com/images/I/81zN7udGRUL._SY425_.jpg','ISBN-PENDENTE',5,5,'Duna'),(34,'Frank Herbert','Ficção Científica','O Imperium vive um interregno após Paul Atreides abdicar de seu título de imperador e entregar-se ao deserto. Sua irmã, Alia, ascende ao poder como regente enquanto os filhos de Muad\'Dib não são capazes de assumir o Trono do Leão. Herdeiros não só do poder político e econômico de seu pai, os gêmeos também carregam em suas veias toda a carga genética manipulada por séculos pela Irmandade Bene Gesserit. Mas a hegemonia dos Atreides está ameaçada. De seu exílio em Salusa Secundus, os membros da despojada Casa Corrino tramam uma complexa teia para retomar as rédeas do Imperium e se vingar de todos os envolvidos em sua queda. Filhos de Duna fecha com brilhantismo o arco de história iniciado com Paul Atreides no épico Duna e em sua sequência, Messias de Duna, retomando os temas políticos e existenciais com a mesma maestria dos livros que o precederam.','https://m.media-amazon.com/images/I/51mqUvezh2L._SY445_SX342_ML2_.jpg','ISBN-PENDENTE',5,5,'Filhos de Duna'),(38,'Frank Herbert','Ficção Científica','Doze anos se passaram desde que Paul Atreides ascendeu ao trono e acumulou os títulos de imperador e messias. Líder do maior império que a humanidade já viu, Paul está terrivelmente consciente do peso de suas decisões. Arrakis tornou-se o centro do Imperium, de onde os fremen se propagaram a fim de levar sua filosofia e forma de governar aos planetas por eles conquistados. Os inevitáveis conflitos gerados por essa expansão fazem importantes facções contrárias ao imperador reunirem forças para detê-lo. Uma grande disputa está prestes a ter início nos bastidores do poder, e apenas Muad’Dib pode decidir o destino de todos. Messias de Duna é o segundo volume da série criada por frank herbert. Ele revela um lado mais humano de seus personagens, além de aprofundar e estender o universo de Duna, aliando discussões políticas, filosóficas e religiosas à épica história de poder, vingança e redenção.','https://m.media-amazon.com/images/I/91iLyWRwmRL._SY466_.jpg','ISBN-PENDENTE',5,5,'Messias de Duna'),(40,'Frank Herbert','Ficção Científica','\"Uma peça monumental de arquitetura imaginativa... indiscutivelmente mágico.\" Los Angeles Herald Examiner \"Cativante... Detalhes fascinantes, envoltos em mistério e misticismo.\" Milwaukee Journal Mais de mil anos após a liderança do Imperador Deus Leto II, o planeta Rakis está em ruínas. Do deserto ao verde fértil e de volta à aridez, o mundo completou um ciclo e foi abandonado por milhões de habitantes, que por milênios tiveram suas ambições destruídas. Agora, o povo da Dispersão está retornando dos lugares mais distantes do universo, dividido em facções que buscam poder sobre o que restou do Império. Em meio a essas mudanças, as Bene Gesserit encontram uma garota chamada Sheeana, que possui as habilidades dos Fremen. Essa garota, que causa furor religioso e pode realizar uma antiga profecia, tem o potencial de ser uma peça-chave para o destino da humanidade.','https://static.estantevirtual.com.br/book/00/05C-1353-000/05C-1353-000_detail1.jpg?ts=1731354493830&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Hereges de Duna'),(41,'Frank Herbert','Ficção Científica','Milênios se passaram em Arrakis desde os eventos narrados em Duna, e o planeta, que antes era desértico, agora está verdejante e vigoroso. O Imperador Deus de Duna, que garantiu uma paz forçada em todos os planetas, consegue entender o futuro, e sabe, com uma terrível certeza, que sua raça será extinta a menos que ele crie novas qualidades para a espécie. As regras do Imperador não são benevolentes. Sua transformação não deixou apenas sua aparência desumana, mas também seu senso de moral. Nasce então uma rebelião para se opor ao déspota, liderada por Siona, da família Atreides. Mas Siona não sabe que a visão do Imperador para o Caminho Dourado exige que ela aceite um destino que nunca quis ou que algum dia poderia conceber. Narrado sob uma ótica particular, Imperador Deus de Duna inicia um novo arco de história na saga. Neste quarto volume, Frank Herbert apresenta um de seus personagens mais marcantes e discute temas como política, religião, amor e os rumos tomados pela sociedade.','https://m.media-amazon.com/images/I/91XCwEX5fiL._SY425_.jpg','ISBN-PENDENTE',5,5,'Imperador Deus de Duna'),(42,'Rick Riordan','Ficção Científica','O Mar de Monstros é o segundo volume da série Percy Jackson e os olimpianos, best-seller do The New York Times.Nessa nova aventura, Percy e seus amigos estão em busca do Velocino de Ouro, único artefato mágico capaz de proteger da destruição seu lugar predileto e, até então, o mais seguro do mundo: o Acampamento Meio-Sangue. Com o envenenamento da árvore de Thalia por um inimigo misterioso, as fronteiras mágicas que protegem o Acampamento estão ameaçadas, e é preciso buscar o antídoto.Assim, nossos heróis partem em uma arriscada e incrível viagem pelo Mar de Monstros, localizado nas coordenadas 30-31-75-12: uma referência ao Triângulo das Bermudas. Lá, enfrentam seres fantásticos e muitos perigos e situações inusitadas, que põem à prova seu heroísmo e sua herança – quando Percy irá questionar se ser filho de Poseidon é uma honra ou uma terrível maldição. Combinando fatos contemporâneos com mitologia, fantasia com erudição, O Mar de Monstros diverte, encanta e ensina pais e filhos.Best-seller da Veja','https://static.estantevirtual.com.br/book/00/0PC-8045-000/0PC-8045-000_detail1.jpg?ts=1777233696081&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'O Mar de Monstros - Percy Jackson e os Olimpianos'),(43,'Mary Shelley','Terror','Victor Frankenstein desde muito jovem se dedicou aos estudos da filosofia e das ciências naturais. Até que, em uma experiência bem-sucedida (que lhe sugou a energia e o afastou do convívio dos seus entes queridos), ele foi capaz de dar vida a um ser de feições e trejeitos assustadores. A partir de então, criador e criatura passam a viver um jogo de perseguição repleto de sangue e horror – a primeira obra de ficção científica da literatura e um clássico do terror.','https://m.media-amazon.com/images/I/81U2-l8XCOL._SY425_.jpg','ISBN-PENDENTE',5,5,'Frankenstein'),(44,'Charlie Donlea','Terror','Summit Lake, uma pequena cidade entre montanhas, é esse tipo de lugar, bucólico e com encantadoras casas dispostas à beira de um longo trecho de água intocada.Duas semanas atrás, a estudante de direito Becca Eckersley foi brutalmente assassinada em uma dessas casas. Filha de um poderoso advogado, Becca estava no auge de sua vida. Atraída instintivamente pela notícia, a repórter Kelsey Castle vai até a cidade para investigar o caso. ...E LOGO SE ESTABELECE UMA CONEXÃO ÍNTIMA QUANDO UM VIVO CAMINHA NAS MESMAS PEGADAS DOS MORTOS...E enquanto descobre sobre as amizades de Becca, sua vida amorosa e os segredos que ela guardava, a repórter fica cada vez mais convencida de que a verdade sobre o que aconteceu com Becca pode ser a chave para superar as marcas sombrias de seu próprio passado.','https://m.media-amazon.com/images/I/81LRk6+p1HL._SY466_.jpg','ISBN-PENDENTE',6,6,'A garota do lago'),(45,'Bram Stoker','Terror','Drácula é um clássico da literatura de terror e apresenta por meio de cartas, diários e notícias os ataques do vampiro Conde Drácula a moradores de Londres e da Transilvânia. O romance epistolar marcou o gênero e, mesmo não sendo a primeira obra a retratar esse mito literário, definiu o que conhecemos hoje como vampiro, influenciando a literatura, cinema e teatro.','https://static.estantevirtual.com.br/book/00/07D-7150-000/07D-7150-000_detail1.jpg?ts=1712762787016&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Drácula'),(46,'Nilo N. C. Menezes','Educação','Este livro se destina ao iniciante em programação e foi escrito para ajudar o leitor autodidata a aprender a programar. Também pode ser utilizado em cursos de introdução à computação e mesmo em cursos mais avançados, nos quais o domínio das técnicas básicas de programação e da linguagem Python sejam requeridos. Aborda os conceitos básicos de programação, como expressões, variáveis, repetições, decisões, listas, dicionários, conjuntos, funções, arquivos, classes, objetos, SQL, banco de dados (SQLite 3), expressões regulares e interfaces gráficas com Tkinter, com exemplos e exercícios. Conceitos matemáticos necessários à programação são incluídos para facilitar a compreensão dos exercícios. Recursos mais avançados da computação são mencionados, permitindo ao leitor continuar a aprender conceitos mais complexos em outros textos. Embora o livro pretenda ensinar a linguagem Python (versão 3.12 ou superior), a prioridade maior é ensinar a programar, com muitos exercícios de lógica de programação, fornecendo uma preparação mais ampla ao leitor, independente de linguagem. O objetivo é mostrar os conceitos, muitas vezes sem usar todos os recursos modernos e poderosos do Python. No fim de cada capítulo são apresentados códigos que usam progressivamente cada vez mais os recursos de Python. O site que acompanha o livro traz vídeos, listagens, exercícios resolvidos e dúvidas frequentes, que podem ser utilizados como material suplementar. O software utilizado no livro pode ser baixado gratuitamente, sendo compatível com Windows, Linux e Mac OS X.','https://m.media-amazon.com/images/I/61OKqJ+8AzL._SY425_.jpg','ISBN-PENDENTE',5,5,'Introdução à Programação com Python'),(54,'Suzanne Collins','Ficção científica','Katniss e Peeta retornam à arena no Massacre Quaternário, enquanto a rebelião cresce em Panem.','https://covers.openlibrary.org/b/id/12646539-L.jpg','ISBN-PENDENTE',5,5,'Em Chamas'),(55,'Suzanne Collins','Ficção científica','Katniss se torna o símbolo da revolução contra a Capital no encerramento da trilogia original.','https://covers.openlibrary.org/b/id/12646459-L.jpg','ISBN-PENDENTE',5,5,'A Esperança'),(56,'Suzanne Collins','Ficção científica','Prelúdio da saga que acompanha o jovem Coriolanus Snow antes de se tornar o tirano de Panem.','https://covers.openlibrary.org/b/id/14421833-L.jpg','ISBN-PENDENTE',5,5,'A Cantiga dos Pássaros e das Serpentes'),(57,'Suzanne Collins','Ficção científica','Quinto livro da série Jogos Vorazes, centrado em Haymitch Abernathy durante o 50º Jogos Vorazes.','https://covers.openlibrary.org/b/id/15169776-L.jpg','ISBN-PENDENTE',5,5,'Amanhecer na Colheita'),(58,'Stephenie Meyer','Romance fantástico','Bella Swan se muda para Forks e conhece Edward Cullen, iniciando a saga Crepúsculo.','https://covers.openlibrary.org/b/id/12641977-L.jpg','ISBN-PENDENTE',4,5,'Crepúsculo'),(59,'Autor Teste','Teste','Livro criado apenas para validar o cadastro no painel administrativo.','https://covers.openlibrary.org/b/id/12646537-L.jpg','ISBN-PENDENTE',2,2,'Livro Teste Cadastro'),(61,'Stephen King','Terror','Nesse clássico do gênero terror, os mortos podem até voltar... mas não voltam iguais. Um dos mais aclamados de Stephen King, O cemitério é o livro que inspirou os filmes Cemitério Maldito (1989 e 2019) e Cemitério Maldito: A Origem, da Paramount+. Às vezes, a morte é melhor. Esse é o conselho que chega aos ouvidos de Louis Creed, um jovem médico que se muda para uma pequena cidade do Maine. Com sua nova casa, seu trabalho na universidade e sua família feliz, Louis acredita que finalmente encontrou seu lugar, e a finitude da vida é a última coisa a passar pela sua cabeça. Até que, caminhando pelo bosque da vizinhança, ele encontra um terreno onde gerações de crianças enterraram seus animais de estimação. Para além desses pequenos túmulos, há outro cemitério. Um que acabará se tornando irresistível, com suas forças sedutoras, capazes de tornar real o que sempre pareceu impossível. Uma premissa assustadora, uma narrativa tensa e um toque de drama e reflexão — essa é a mistura que fez de O cemitério um dos maiores clássicos do gênero. Ao mesmo tempo em que constrói uma narrativa aterrorizante, Stephen King levanta questões sobre a vida, a morte, o luto, o sobrenatural e os limites da intervenção humana. Em busca dessas respostas, o leitor é levado por uma trama impossível de largar, e quando descobre a verdade, percebe que ela é pior que a própria morte — e infinitamente mais poderosa. \"Outros livros podem até ser assustadores, mas O cemitério é terror de verdade.\" — The Guardian','https://static.estantevirtual.com.br/book/00/00W-2050-000/00W-2050-000_detail1.jpg?ts=1712760944759&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'O cemitério'),(62,'Stephen King','Terror','Carrie é uma adolescente tímida e solitária. Aos 16 anos, é completamente dominada pela mãe, uma fanática religiosa que reprime todas as vontades e descobertas normais aos jovens de sua idade. Para Carrie, tudo é pecado. Viver é enfrentar todo dia o terrível peso da culpa. Para os colegas de escola, e até para os professores, Carrie é uma garota estranha, incapaz de conviver com os outros. Cada vez mais isolada, ela sofre com o sarcasmo e o deboche dos colegas. No entanto, há um segredo por trás de sua aparência frágil: Carrie tem poderes sobrenaturais, é capaz de mover objetos com a mente. No dia de sua formatura, Carrie é surpreendida pelo convite de Tommy para a festa - algo que lhe dá a chance de se enxergar de outra forma pela primeira vez. O ato de crueldade que acontece naquele salão, porém, dá início a uma reviravolta cheia de terror e destruição. Chegou a hora do acerto de contas. Carrie, a estranha é um dos maiores clássicos de terror da literatura contemporânea e um dos livros mais aclamados de Stephen King.','https://static.estantevirtual.com.br/book/00/01I-6071-000/01I-6071-000_detail1.jpg?ts=1712761642991&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Carrie, a estranha'),(63,'Robert Kirkman','Terror','A franquia de zumbis mais celebrada da década acaba de conquistar um novo universo. Inspirado na série de quadrinhos best-seller do New York Times - publicada desde 2003 e vencedora do Eisner Award -, que originou o bem-sucedido seriado de TV homônimo, The walking dead: A ascensão do Governador, primeiro volume de uma trilogia, narra a origem de um mais perversos personagens da ficção. Criador dos quadrinhos e um dos produtores do seriado que já','https://static.estantevirtual.com.br/book/00/000-0705-000/000-0705-000_detail1.jpg?ts=1712765992962&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'The Walking Dead: A ascensão do Governador'),(64,'Robert Kirkman','Terror','O segundo volume da série de livros que explora o universo assustador do bem-sucedido programa de TV The Walking Dead. Há alguns meses que Philip Blake, o temido e ao mesmo tempo adorado Governador, organizou Woodbury para que a cidade murada fosse um local seguro no qual as pessoas pudessem viver em paz em meio ao apocalipse zumbi. E paz e segurança é tudo que Lilly Caul, que tenta desesperadamente sobreviver a cada dia que nasce, quer. Porém, mal sabe ela que seguir em direção a Woodbury é estar a um passo do perigo. Uma horda de errantes famintos não é nada perto do que se pode encontrar por lá.','https://static.estantevirtual.com.br/book/00/000-1486-000/000-1486-000_detail1.jpg?ts=1712765290370&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'The Walking Dead: O caminho para Woodbury'),(65,'Robert Kirkman','Terror','Terceiro volume da série que já vendeu mais de 320 mil exemplares no Brasil Após conquistar milhões de fãs ao redor do mundo, a franquia de zumbis mais celebrada da década está de volta. O terceiro livro, The Walking Dead: A queda do Governador – Parte Um, conta em detalhes o destino desse que é o personagem mais controvertido em um mundo dominado por mortos-vivos. No primeiro volume, A ascensão do Governador, descobrimos como ele se tornou esse homem e qual a origem de suas atitudes extremas. Já no segundo, O caminho para Woodbury, acompanhamos suas interações com os moradores. E do que ele foi capaz para que a cidade murada fosse um local seguro no qual as pessoas pudessem viver em paz em meio ao apocalipse zumbi. E do que um grupo de humanos errantes é capaz para alcançar esse aparente paraíso. The Walking Dead: A queda do Governador – Parte Um dá continuação à história de ação e horror. Personagens icônicos das tirinhas que deram origem à série de TV, como Rick, Michonne e Glenn vão finalmente fazer sua estreia no palco do pesadelo zumbi. E fãs poderão vê-los sob uma nova e assustadora luz. • Em fevereiro, estreiam os novos episódios da 4ª temporada da série de TV, exibido no Brasil pela Fox.','https://static.estantevirtual.com.br/book/00/05P-3174-000/05P-3174-000_detail1.jpg?ts=1712762638152&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',4,5,'The Walking Dead: A queda do governador'),(66,'Robert Kirkman','Terror','O quarto livro da série The Walking Dead Michonne finalmente conseguiu sua vingança. E parece que dessa vez nem o Governador será capaz de se recuperar. Ao encontrá-lo espancado, mutilado e com um fio de vida, Bruce e Gabe acham que Woodbury perdeu de vez seu líder. Mas o ódio e a vontade de retaliação podem gerar forças que ninguém imagina. Depois de uma semana em um estado de semicoma, o Governador está de volta. Perdeu um olho e um braço, mas sua sede de vingança continua inabalável; Philip Blake irá até o inferno se for preciso para acabar com todos os habitantes da prisão, principalmente aquela que quase o destruiu. The Walking Dead: A queda do Governador - Parte Dois conta em detalhes o destino deste que é o personagem mais controvertido em um mundo dominado por mortos-vivos.','https://static.estantevirtual.com.br/book/00/0A2-2639-000/0A2-2639-000_detail1.jpg?ts=1715027176373&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'The Walking Dead: A queda do Governador - Parte Dois'),(67,'Robert Kirkman','Terror','Quinto volume da série que já vendeu mais de 550 mil exemplares no Brasil Após o chocante fim do ex-tirano Phillip Blake, o Governador, Woodbury se torna um oásis de tranquilidade em meio à praga dos errantes. Mas Lilly Caul e seu grupo de sobreviventes deverão superar seu passado traumático. Quando uma família surge nos portões da cidade quase morrendo de inanição, Lilly não pensa duas vezes antes de acolhê-la. Muito religioso, Calvin Dupree, pai das três crianças, imediatamente aceita o convite, mas Meredith, sua esposa, se recusa a aceitar a hospitalidade. Lilly acaba os convencendo a ficar, sem fazer ideia de que o misterioso problema de Meredith ainda traria consequências para todos. Enquanto isso, parte da população sai para resgatar um grupo de pessoas em perigo. Liderado por um reverendo chamado Jeremiah, o grupo religioso chega a Woodbury querendo fazer de tudo para ajudar. Isso faz Lilly pensar que enfim pode relaxar e sonhar com uma vida estável. O que ela não imaginava é que seus planos não poderiam ser mais diferentes dos ideais do grupo recém-chegado. As piores ameaças são as que não podem ser vistas...','https://static.estantevirtual.com.br/book/00/0CX-1905-000/0CX-1905-000_detail1.jpg?ts=1712770986193&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'The Walking Dead: Declínio'),(68,'Robert Kirkman','Terror','O sexto volume da série que é sucesso na TV, nos livros e nas HQs Das cinzas de uma devastada Woodbury, dois grupos de sobreviventes surgem, cada um com os próprios interesses em vista. No subterrâneo, nos labirintos de túneis antigos, Lilly Caul e seu grupo de idosos, desajustados e crianças tentam construir uma nova vida. Mas um desejo secreto ainda queima no coração e na alma de Lilly: ela quer sua amada cidade Woodbury de volta. Já o psicótico Reverendo Jeremiah Garlitz reconstrói seu exército de seguidores, com uma diabólica arma secreta. Ele planeja acabar com Lilly e seu grupo — os responsáveis pelo fim de seu culto — e agora, pela primeira vez, tem como enviar uma amostra do inferno diretamente aos habitantes dos túneis. O confronto final entre estas duas facções libera uma arma inimaginável, forjada a partir de monstruosas hordas de mortos-vivos, aperfeiçoadas por um lunático e banhadas no sangue de inocentes.','https://static.estantevirtual.com.br/book/00/0A2-2766-000/0A2-2766-000_detail1.jpg?ts=1712765980061&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'The Walking Dead: Invasão'),(69,'J. R. R. Tolkien','Fantasia','As Duas Torres´ é a segunda parte da obra de ficção de J. R. R. Tolkien, ´O Senhor dos Anéis´. É impossível transmitir ao novo leitor todas as qualidades e o alcance do livro. Alternadamente cômica, singela, épica, monstruosa, diabólica, a narrativa desenvolve-se em meio a inúmeras mudanças de cenários e de personagens, num mundo imaginário absolutamente convincente em seus detalhes.','https://static.estantevirtual.com.br/book/00/FW2-0228-000/FW2-0228-000_detail1.jpg?ts=1763615373798&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'O senhor dos anéis: as duas torres'),(70,'J. R. R. Tolkien','Fantasia','Numa cidadezinha indolente do Condado, um jovem hobbit é encarregado de uma imensa tarefa. Deve empreender uma perigosa viagem através da Terra-média até as Fendas da Perdição, e lá destruir o Anel do Poder - a única coisa que impede o domínio maléfico do Senhor do Escuro. A Sociedade do Anel é a primeira parte da grande obra de ficção fantástica de J. R. R. Tolkien, O Senhor dos Anéis. É impossível transmitir ao novo leitor todas as qualidades e o alcance do livro. Alternadamente cômica, singela, épica, monstruosa e diabólica, a narrativa desenvolve-se em meio a inúmeras mudanças de cenários e de personagens, num mundo imaginário absolutamente convincente em seus detalhes. Nas palavras do romancista Richard Hughes, “quanto à amplitude imaginativa, a obra praticamente não tem paralelos e é quase igualmente notável na sua vividez e na habilidade narrativa, que mantêm o leitor preso página após página”. Tolkien criou em O Senhor dos Anéis uma nova mitologia num mundo inventado que demonstrou possuir um poder de atração atemporal.','https://static.estantevirtual.com.br/book/00/FW2-0194-000/FW2-0194-000_detail1.jpg?ts=1763615389138&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'O senhor dos anéis: A Sociedade do anel'),(71,'J. R. R. Tolkien','Fantasia','A sombra dos exércitos do Senhor do Escuro cresce cada vez mais. Homens, anões e elfos unem-se para lutar contra a Escuridão. Enquanto isso, Frodo e Sam penetram na terra de Mordor, em sua empreitada heroica para destruir o Anel.\nO Retorno do Rei é a terceira parte da grande obra de ficção fantástica de J. R. R. Tolkien, O Senhor dos Anéis.\nÉ impossível transmitir ao novo leitor todas as qualidades e o alcance do livro. Alternadamente cômica, singela, épica, monstruosa e diabólica, a narrativa desenvolve-se em meio a inúmeras mudanças de cenários e de personagens, num mundo imaginário absolutamente convincente em seus detalhes. Nas palavras do romancista Richard Hughes, “quanto à amplitude imaginativa, a obra praticamente não tem paralelos e é quase igualmente notável na sua vividez e na habilidade narrativa, que mantêm o leitor preso página após página”.\nTolkien criou em O Senhor dos Anéis uma nova mitologia num mundo inventado que demonstrou possuir um poder de atração atemporal.','https://static.estantevirtual.com.br/book/00/FW2-0209-000/FW2-0209-000_detail1.jpg?ts=1763615354751&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'O senhor dos aneis: o retorno do rei'),(72,'Anne Frank','Drama','A edição brochura de O diário de Anne Frank está de roupa nova. O depoimento da pequena Anne Frank, morta pelos nazistas após passar anos escondida no sótão de uma casa em Amsterdã, ainda hoje emociona leitores no mundo inteiro. Seu diário narra os sentimentos, os medos e as pequenas alegrias de uma menina judia que, como sua família, lutou em vão para sobreviver ao Holocausto. Lançado em 1947, O diário de Anne Frank tornou-se um dos livros mais lidos do mundo. O relato tocante e impressionante das atrocidades e dos horrores cometidos contra os judeus faz deste livro um precioso documento e uma das obras mais importantes do século XX.','https://static.estantevirtual.com.br/book/00/FW0-3615-000/FW0-3615-000_detail1.jpg?ts=1734537047974&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',4,5,'O diário de anne frank'),(73,'Stephen King','Drama','Bem-vindos à Penitenciária Cold Mountain, lar de um grupo de assassinos que esperam sua vez de andar pelo corredor da morte rumo à cadeira elétrica. Ambientado nos anos 1930, durante a Depressão da economia americana, em um cenário de desespero, À espera de um milagre traz a história do condenado John Coffrey e sua relação com o guarda penitenciário Paul Edgecombe. Edgecombe já viu muitas coisas bizarras durante a carreira, mas John Coffrey – um gigante com mente de criança – é uma das figuras mais estranhas que já conheceu. Acusado de estuprar e matar brutalmente duas garotas, seria o homem a encarnação do mal? Ou algo completamente diferente? O guarda está prestes a descobrir verdades terríveis e assombrosas que desafiarão todas as suas crenças. Originalmente publicado em seis partes, com o título de O corredor da morte, o romance é agora lançado em volume único À espera de um milagre. Nas telas, o diretor Frank Darabont recriou a história magistral de King, com Tom Hanks interpretando o guarda Edgecombe.','https://static.estantevirtual.com.br/book/00/08N-9640-000/08N-9640-000_detail1.jpg?ts=1712767656158&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'À espera de um milagre'),(74,'John Boyne','Drama','Fábula de guerra poderosa e encantadora, O menino do pijama listradofoi publicado em mais de vinte países e teve mais de 6 milhões de cópias vendidas em todo o mundo. Bruno tem nove anos e não sabe nada sobre o Holocausto e a Solução Final contra os judeus. Também não faz idéia que seu país está em guerra com boa parte da Europa, e muito menos que sua família está envolvida no conflito. Na verdade, Bruno sabe apenas que foi obrigado a abandonar a espaçosa casa em que vivia em Berlim e a mudar-se para uma região desolada, onde ele não tem ninguém para brincar nem nada para fazer. Da janela do quarto, Bruno pode ver uma cerca, e para além dela centenas de pessoas de pijama, que sempre o deixam com frio na barriga.Em uma de suas andanças Bruno conhece Shmuel, um garoto do outro lado da cerca que curiosamente nasceu no mesmo dia que ele. Conforme a amizade dos dois se intensifica, Bruno vai aos poucos tentando elucidar o mistério que ronda as atividades de seu pai. O menino do pijama listrado é uma fábula sobre amizade em tempos de guerra, e sobre o que acontece quando a inocência é colocada diante de um monstro terrível e inimaginável.* Leitura obrigatória do vestibular daUERJ. \"Um livro maravilhoso.\" - The Guardian\"Intenso e perturbador [...] pode-se tornar uma introdução tão memorável ao tema como O diário de Anne Frank foi em sua época.\" - USA Today\"Um livro tão simples e tão bem escrito que beira a perfeição.\" - The Irish Independent','https://static.estantevirtual.com.br/book/00/03A-1880-000/03A-1880-000_detail1.jpg?ts=1712761413482&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'O menino do pijama listrado'),(75,'John Green','Drama','Hazel é uma paciente terminal. Ainda que, por um milagre da medicina, seu tumor tenha encolhido bastante — o que lhe dá a promessa de viver mais alguns anos —, o último capítulo de sua história foi escrito no momento do diagnóstico. Mas em todo bom enredo há uma reviravolta, e a de Hazel se chama Augustus Waters, um garoto bonito que certo dia aparece no Grupo de Apoio a Crianças com Câncer. Juntos, os dois vão preencher o pequeno infinito das páginas em branco de suas vidas.Inspirador, corajoso, irreverente e brutal, A culpa é das estrelas é a obra mais ambiciosa e emocionante de John Green, sobre a alegria e a tragédia que é viver e amar.Best-seller da Veja','https://static.estantevirtual.com.br/book/00/0L5-6549-000/0L5-6549-000_detail1.jpg?ts=1712774378129&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'A Culpa E Das Estrelas'),(76,'Markus Zusak','Drama','A trajetória de Liesel Meminger é contada por uma narradora mórbida, surpreendentemente simpática. Ao perceber que a pequena ladra de livros lhe escapa, a Morte afeiçoa-se à menina e rastreia suas pegadas de 1939 a 1943.Traços de uma sobrevivente: a mãe comunista, perseguida pelo nazismo, envia Liesel e o irmão para o subúrbio pobre de uma cidade alemã, onde um casal se dispõe a adotá-los por dinheiro. O garoto morre no trajeto e é enterrado por um coveiro que deixa cair um livro na neve. É o primeiro de uma série que a menina vai surrupiar ao longo dos anos. O único vínculo com a família é esta obra, que ela ainda não sabe ler.Assombrada por pesadelos, ela compensa o medo e a solidão das noites com a conivência do pai adotivo, um pintor de parede bonachão que lhe dá lições de leitura. Alfabetizada sob vistas grossas da madrasta, Liesel canaliza urgências para a literatura. Em tempos de livros incendiados, ela os furta, ou os lê na biblioteca do prefeito da cidade.A vida ao redor é a pseudo-realidade criada em torno do culto a Hitler na Segunda Guerra. Ela assiste à eufórica celebração do aniversário do Führer pela vizinhança. Teme a dona da loja da esquina, colaboradora do Terceiro Reich. Faz amizade com um garoto obrigado a integrar a Juventude Hitlerista. E ajuda o pai a esconder no porão um judeu que escreve livros artesanais para contar a sua parte naquela História. A Morte, perplexa diante da violência humana, dá um tom leve e divertido à narrativa deste duro confronto entre a infância perdida e a crueldade do mundo adulto, um sucesso absoluto - e raro - de crítica e público.Best-seller da Veja','https://static.estantevirtual.com.br/book/00/08X-4118-000/08X-4118-000_detail1.jpg?ts=1712764097017&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'A menina que roubava livros'),(77,'Colleen Hoover','Romance','Será que todos merecem uma segunda chance? É o que mais deseja Kenna Rowan, na luta para recuperar os pedaços estilhaçados de sua antiga vida após um trágico acidente ter colocado tudo a perder. Uma segunda chance é o tão esperado novo romance de Colleen Hoover, CoHo para os íntimos, autora fenômeno de vendas, que já ultrapassou a marca de 1 milhão de exemplares vendidos no Brasil. Depois de passar cinco anos na prisão após um trágico acidente, Kenna Rowan retorna à cidade onde tudo deu errado, esperando poder viver ao lado da filha pequena. Mas agora os abismos criados por Kenna parecem instransponíveis. Todos ao redor da sua filha estão determinados a rejeitar Kenna, não importa o quanto ela tente provar que mudou. A única pessoa que não a ignora é Ledger Ward, dono de um bar e um dos poucos elos que ainda lhe resta com a criança. Porém, se os moradores da cidade desconfiarem de que Ledger vem se tornando importante na vida de Kenna, ambos correrão o risco de perder tudo o que mais importa para eles. Com pontos de vista alternados entre os dois personagens, Uma segunda chance explora o quanto julgamentos apressados baseados em informações que podem não ser verdadeiras tem o potencial de acabar com a vida das pessoas. “Como sempre, a autora criou personagens fascinantes que são magnéticos e atraem o leitor. Além da questão do luto, a história também explora com inteligência assuntos como culpa, redenção e perdão.” - Kirkus Reviews “Uma obra-prima tocante sobre perda e esperança, luto e redenção, e da cura através do poder do amor.” - Pop Sugar “Hoover vai fundo na questão do luto e da culpa para criar uma história multifacetada de redenção com personagens que brigam tão intensamente quanto amam.” - Publishers Weekly','https://static.estantevirtual.com.br/book/00/09U-6453-000/09U-6453-000_detail1.jpg?ts=1712768884192&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Uma segunda chance'),(78,'Christina Lauren','Romance','Olive se sente como a gêmea azarada da casa: dos acidentes estranhamente inexplicáveis ao fracasso na vida profissional e amorosa — nada dá certo para ela. Porém, parece que o jogo vira quando sua alergia a frutos do mar a protege de um desastre, já que todos os convidados da festa de casamento da irmã sofrem com intoxicação alimentar. Na verdade... nem todos. Ethan, o irmão do noivo, também ficou de fora desse pesadelo. Então, a irmã de Olive, sempre muito prática, propõe a eles que aproveitem a viagem de lua-de-mel, que não é reembolsável, para uma ilha do Havaí. Mas há um “pequeno” problema: Olive e Ethan são inimigos mortais. Há um passado entre eles que tornou a convivência impossível. Mas quem vai dizer não para essa viagem? Ainda mais de graça? Nem pensar! A ideia de ambos era ficar bem longe um do outro, mas a situação muda quando uma mentirinha boba vai crescendo e não podem voltar atrás. E dividindo a mesma suíte, entre farpas e sarcasmos, já se pode desconfiar.... onde tem raiva tem fogo? Com diálogos inteligentes e divertidos, dois personagens cativantes, e cenários de tirar o fôlego, Imperfeitos é o livro ideal para rir sem parar e ainda ver uma história de amor nascer no lugar mais improvável.','https://static.estantevirtual.com.br/book/00/061-7778-000/061-7778-000_detail1.jpg?ts=1712764574914&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Imperfeitos'),(79,'Marca: Record','Romance','Eleanor&Grey, um dos maiores sucessos de Brittainy Cherry, e os dois volumes de seu spin-off Landon&Shay agora reunidos nesse kit indispensável para quem gosta de uma grande história de amor e superação. Eleanor&Grey Eleanor é uma adolescente introvertida que prefere a companhia de seus amados livros a interagir socialmente. Quando a prima a arrasta para uma festa, Ellie se surpreende ao ser abordada por Grey, um rapaz muito popular. Com o tempo, a amizade entre eles surge de forma natural; uma ligação tão forte e intensa que logo se transforma em amor. Mas nem sempre a força do amor é o bastante para deter o curso da vida: Ellie e Grey se veem forçados a se separar depois de um trágico acontecimento. Anos mais tarde, o caminho dos dois volta a se cruzar. E, dessa vez, quem precisa de ajuda é Greyson. Mas ele já não é mais o garoto doce de suas lembranças, e sim um homem frio, insensível. Será que a chama dessa paixão, ainda viva no coração de Eleanor, será suficiente para derreter o coração de pedra de Grey? Landon&Shay (Vol. 1) Landon Harrison é obad boyda cidade de Raine, Illinois. Ele está no último ano do ensino médio e é o cara mais popular da escola. Todos acham que ele tem o mundo a seus pés. Mas, sob essa superfície, a verdade é completamente diferente. Landon é um rapaz triste, melancólico e luta contra seus demônios. Shay Gable é uma adolescente encantadora. Sensível e simpática, ela faz parte da realeza da escola. Não tem quem não goste da dona perfeitinha, a não ser Landon.','https://m.media-amazon.com/images/I/91CC0CiT+cL._AC_SY879_.jpg','ISBN-PENDENTE',5,5,'Eleanor & Grey'),(80,'Jane Austen','Romance','A história de Orgulho e Preconceito gira em torno das cinco irmãs Bennet, que viviam na área rural do interior da Inglaterra, no século XVIII. Aborda a questão da sucessão em uma família sem homens, dentro de uma sociedade patriarcal, onde o casamento era fundamental para as mulheres. Assim, quando um homem rico e solteiro se muda para os arredores, a vida pacata da família entra em ebulição.','https://static.estantevirtual.com.br/book/00/016-7776-000/016-7776-000_detail1.jpg?ts=1712761410331&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Orgulho e preconceito'),(81,'Matteo Bandello','Drama','Anterior à versão teatral de Shakespeare, o Romeu e Julieta de Matteo Bandello já colocava perguntas cruciais, envolvida no sacrifício dos jovens \"amantes de Verona\": deve o amor submeter-se às regras de incompreensão, da intolerância, do rancor desmedidos? Devem os jovens apaixonados sufocar seus sonhos de felicidade em nome de princípios, leis, padrões cujas bases são a mesquinhez, o ódio, a violência? Sempre atual, a história de Romeu e Julieta propões instigantes questões a jovens de tempos problemáticos como os nossos.','https://static.estantevirtual.com.br/book/00/FWJ-7166-000/FWJ-7166-000_detail1.jpg?ts=1747332050229&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'Romeu e Julieta'),(82,'C. S. Lewis','Fantasia','Viagens ao fim do mundo, criaturas fantásticas e batalhas épicas entre o bem e o mal - o que mais um leitor poderia querer de um livro? O livro que tem tudo isso é \'O leão, a feiticeira e o guarda-roupa\', escrito em 1949 por Clive Staples Lewis. MasLewis não parou por aí. Seis outros livros vieram depois e, juntos, ficaram conhecidos como \'As crônicas de Nárnia\'. Nos últimos cinqüenta anos, \'As crônicas de Nárnia\' transcenderam o gênero da fantasia para se tornar parte do cânone da literaturaclássica. Cada um dos sete livros é uma obra-prima, atraindo o leitor para um mundo em que a magia encontra a realidade, e o resultado é um mundo ficcional que tem fascinado gerações. Esta edição apresenta todas as sete crônicas integralmente, num único volume. Os livros são apresentados de acordo com a ordem de preferência de Lewis, cada capítulo com uma ilustração do artista original, Pauline Baynes. Enganosamente simples e direta, \'As crônicas de Nárnia\' continuam cativando os leitores com aventuras, personagens e fatos que falam a pessoas de todas as idades.','https://static.estantevirtual.com.br/book/00/0LF-5989-000/0LF-5989-000_detail1.jpg?ts=1777237248921&ims=fit-in/600x800/filters:fill(fff):quality(100)','ISBN-PENDENTE',5,5,'As crônicas de Nárnia');
+/*!40000 ALTER TABLE `livros` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estrutura da tabela `reservas`
+-- Table structure for table `recuperacao_senha`
 --
 
+DROP TABLE IF EXISTS `recuperacao_senha`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `recuperacao_senha` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `codigo` varchar(6) NOT NULL,
+  `expiracao` datetime(6) NOT NULL,
+  `tentativas` int(11) NOT NULL,
+  `utilizado` bit(1) NOT NULL,
+  `usuario_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKna5bj2lg85a8494div1kuqvhq` (`usuario_id`),
+  CONSTRAINT `FKna5bj2lg85a8494div1kuqvhq` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `recuperacao_senha`
+--
+
+LOCK TABLES `recuperacao_senha` WRITE;
+/*!40000 ALTER TABLE `recuperacao_senha` DISABLE KEYS */;
+-- Sem dados iniciais: codigos de recuperacao sao temporarios.
+/*!40000 ALTER TABLE `recuperacao_senha` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `reservas`
+--
+
+DROP TABLE IF EXISTS `reservas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `reservas` (
-  `id` bigint NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `data_reserva` date DEFAULT NULL,
   `prazo_retirada` date DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
-  `cliente_id` bigint NOT NULL,
-  `livro_id` bigint NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `cliente_id` bigint(20) NOT NULL,
+  `livro_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_reserva_cliente_status` (`cliente_id`,`status`),
+  KEY `idx_reserva_livro_status` (`livro_id`,`status`),
+  KEY `idx_reserva_prazo_retirada` (`prazo_retirada`),
+  CONSTRAINT `FK9ga67qjqyhc60u0f10tf7ssgo` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `FKm8r0gnqkusl5tloh2cfhig2fy` FOREIGN KEY (`livro_id`) REFERENCES `livros` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Extraindo dados da tabela `reservas`
+-- Dumping data for table `reservas`
 --
 
-INSERT INTO `reservas` (`id`, `data_reserva`, `prazo_retirada`, `status`, `cliente_id`, `livro_id`) VALUES
-(2, '2026-05-04', '2026-05-07', 'PENDENTE', 3, 9);
-
--- --------------------------------------------------------
+LOCK TABLES `reservas` WRITE;
+/*!40000 ALTER TABLE `reservas` DISABLE KEYS */;
+INSERT INTO `reservas` VALUES (2,'2026-05-04','2026-05-07','EXPIRADA',3,9),(3,'2026-05-16','2026-05-17','CANCELADA',6,4),(4,'2026-05-16','2026-05-17','CANCELADA',6,5),(5,'2026-05-17','2026-05-18','CANCELADA',6,6),(6,'2026-05-17','2026-05-18','CANCELADA',6,17),(7,'2026-05-17','2026-05-18','CANCELADA',6,6),(8,'2026-05-17','2026-05-18','CANCELADA',6,5),(9,'2026-05-17','2026-05-18','CANCELADA',6,8),(10,'2026-05-17','2026-05-18','CANCELADA',6,5),(11,'2026-05-17','2026-05-18','CANCELADA',6,13),(12,'2026-05-17','2026-05-18','CANCELADA',6,4),(13,'2026-05-17','2026-05-18','CANCELADA',6,6),(14,'2026-05-17','2026-05-18','CANCELADA',6,3),(15,'2026-05-17','2026-05-18','CANCELADA',6,12),(16,'2026-05-17','2026-05-18','EXPIRADA',6,4),(17,'2026-05-17','2026-05-18','EXPIRADA',6,3),(18,'2026-05-17','2026-05-18','CANCELADA',6,5),(19,'2026-05-17','2026-05-18','EXPIRADA',6,6),(20,'2026-05-19','2026-05-20','RETIRADA_CONFIRMADA',6,4),(21,'2026-05-22','2026-05-23','CANCELADA',7,4),(22,'2026-05-22','2026-05-23','CANCELADA',7,6),(23,'2026-05-22','2026-05-23','CANCELADA',7,9),(25,'2026-05-23','2026-05-24','RETIRADA_CONFIRMADA',7,4),(26,'2026-05-23','2026-05-24','RETIRADA_CONFIRMADA',7,5),(27,'2026-05-24','2026-05-25','CANCELADA',7,28),(28,'2026-05-24','2026-05-25','RETIRADA_CONFIRMADA',7,3),(29,'2026-05-26','2026-05-27','RETIRADA_CONFIRMADA',11,3),(30,'2026-05-26','2026-05-27','RETIRADA_CONFIRMADA',10,4),(31,'2026-05-18','2026-05-19','CANCELADA',9,4),(32,'2026-05-26','2026-05-27','CANCELADA',11,5),(33,'2026-05-04','2026-05-07','CANCELADA',3,9),(34,'2026-05-26','2026-05-27','RETIRADA_CONFIRMADA',10,13),(35,'2026-05-26','2026-05-27','RETIRADA_CONFIRMADA',10,58),(36,'2026-05-26','2026-05-27','RETIRADA_CONFIRMADA',11,65),(37,'2026-05-26','2026-05-27','RETIRADA_CONFIRMADA',11,72);
+/*!40000 ALTER TABLE `reservas` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estrutura da tabela `usuarios`
+-- Table structure for table `usuarios`
 --
 
+DROP TABLE IF EXISTS `usuarios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `usuarios` (
-  `id` bigint NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `cpf` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `nome` varchar(255) NOT NULL,
   `telefone` varchar(255) NOT NULL,
-  `senha_hash` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `senha_hash` varchar(255) DEFAULT NULL,
+  `token_sessao` varchar(100) DEFAULT NULL,
+  `bloqueado` bit(1) DEFAULT NULL,
+  `motivo_bloqueio` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK2et2smpfrtsohr7w9fe1v8a5e` (`cpf`),
+  UNIQUE KEY `UKkfsp0s1tflm1cwlj8idhqsad0` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Extraindo dados da tabela `usuarios`
+-- Dumping data for table `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `cpf`, `email`, `nome`, `telefone`, `senha_hash`) VALUES
-(1, '11122233344', 'edino@techbook.local', 'Edino', '(11) 99999-6969', '$2a$10$97UerRhTrUprEhgqk.xIJu3UnJuHt.ivYEEZZIFEMdENw.cXCk7om'),
-(2, '99988877766', 'cliente.teste.cadastro@techbook.local', 'Cliente Teste Cadastro', '(11) 98888-7766', '$2a$10$97UerRhTrUprEhgqk.xIJu3UnJuHt.ivYEEZZIFEMdENw.cXCk7om'),
-(3, '44466319855', 'fillipecorrea07@gmail.com', 'Fillipe Correa', '11944490799', '$2a$10$97UerRhTrUprEhgqk.xIJu3UnJuHt.ivYEEZZIFEMdENw.cXCk7om');
+LOCK TABLES `usuarios` WRITE;
+/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'00000000001','edino@techbook.local','Edino Demo','11999990001','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'1','Pendencia de devolucao no emprestimo #1.'),(2,'00000000002','cliente.demo.02@techbook.local','Cliente Demo 02','11999990002','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(3,'00000000003','cliente.demo.03@techbook.local','Cliente Demo 03','11999990003','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(4,'00000000004','cliente.demo.04@techbook.local','Cliente Demo 04','11999990004','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(5,'00000000005','cliente.demo.05@techbook.local','Cliente Demo 05','11999990005','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(6,'00000000006','cliente.demo.06@techbook.local','Cliente Demo 06','11999990006','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(7,'00000000007','cliente.demo.07@techbook.local','Cliente Demo 07','11999990007','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(9,'00000000009','cliente.demo.09@techbook.local','Cliente Demo 09','11999990009','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(10,'00000000010','cliente.demo.10@techbook.local','Cliente Demo 10','11999990010','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0',''),(11,'00000000011','cliente.demo.11@techbook.local','Cliente Demo 11','11999990011','$2a$10$SqFMw4xxultHYOFwrbrHeeNFY4iUyvN2sSdMe19gGn4J7DPYT1iQG',NULL,b'0','');
+/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `trg_usuarios_bloqueia_delete_com_vinculo`
+BEFORE DELETE ON `usuarios`
+FOR EACH ROW
+BEGIN
+  IF (
+    (SELECT COUNT(*) FROM `reservas` WHERE `cliente_id` = OLD.`id`) > 0
+    OR (SELECT COUNT(*) FROM `emprestimos` WHERE `cliente_id` = OLD.`id`) > 0
+    OR (SELECT COUNT(*) FROM `devolucoes` WHERE `cliente_id` = OLD.`id`) > 0
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'Nao exclua este usuario pelo banco: ele possui reservas, emprestimos ou devolucoes vinculadas. Use bloquear/desativar no painel ADM. Exclusao manual somente para usuario sem pendencias ou historico.';
+  END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
---
--- Índices para tabelas despejadas
---
-
---
--- Índices para tabela `devolucoes`
---
-ALTER TABLE `devolucoes`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_devolucao_emprestimo` (`emprestimo_id`),
-  ADD KEY `idx_devolucao_cliente` (`cliente_id`),
-  ADD KEY `idx_devolucao_livro` (`livro_id`);
-
---
--- Índices para tabela `emprestimos`
---
-ALTER TABLE `emprestimos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `FKm0bg8i8ap68cpdg4w5egaqys3` (`cliente_id`),
-  ADD KEY `FKljc60fwmihjgdsn2ee23yka0k` (`livro_id`),
-  ADD KEY `FKpqasbmodp9xrq0v7f8n2c5tfw` (`reserva_id`);
-
---
--- Índices para tabela `livros`
---
-ALTER TABLE `livros`
-  ADD PRIMARY KEY (`id`);
-
---
--- Índices para tabela `reservas`
---
-ALTER TABLE `reservas`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_reserva_cliente_status` (`cliente_id`,`status`),
-  ADD KEY `idx_reserva_livro_status` (`livro_id`,`status`),
-  ADD KEY `idx_reserva_prazo_retirada` (`prazo_retirada`);
-
---
--- Índices para tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `UK2et2smpfrtsohr7w9fe1v8a5e` (`cpf`),
-  ADD UNIQUE KEY `UKkfsp0s1tflm1cwlj8idhqsad0` (`email`);
-
---
--- AUTO_INCREMENT de tabelas despejadas
---
-
---
--- AUTO_INCREMENT de tabela `devolucoes`
---
-ALTER TABLE `devolucoes`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `emprestimos`
---
-ALTER TABLE `emprestimos`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de tabela `livros`
---
-ALTER TABLE `livros`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
---
--- AUTO_INCREMENT de tabela `reservas`
---
-ALTER TABLE `reservas`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- Restrições para despejos de tabelas
---
-
---
--- Limitadores para a tabela `devolucoes`
---
-ALTER TABLE `devolucoes`
-  ADD CONSTRAINT `FK_devolucao_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`),
-  ADD CONSTRAINT `FK_devolucao_emprestimo` FOREIGN KEY (`emprestimo_id`) REFERENCES `emprestimos` (`id`),
-  ADD CONSTRAINT `FK_devolucao_livro` FOREIGN KEY (`livro_id`) REFERENCES `livros` (`id`);
-
---
--- Limitadores para a tabela `emprestimos`
---
-ALTER TABLE `emprestimos`
-  ADD CONSTRAINT `FKljc60fwmihjgdsn2ee23yka0k` FOREIGN KEY (`livro_id`) REFERENCES `livros` (`id`),
-  ADD CONSTRAINT `FKm0bg8i8ap68cpdg4w5egaqys3` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`),
-  ADD CONSTRAINT `FKpqasbmodp9xrq0v7f8n2c5tfw` FOREIGN KEY (`reserva_id`) REFERENCES `reservas` (`id`);
-
---
--- Limitadores para a tabela `reservas`
---
-ALTER TABLE `reservas`
-  ADD CONSTRAINT `FK9ga67qjqyhc60u0f10tf7ssgo` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`),
-  ADD CONSTRAINT `FKm8r0gnqkusl5tloh2cfhig2fy` FOREIGN KEY (`livro_id`) REFERENCES `livros` (`id`);
-COMMIT;
-
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-06-07 19:56:35
