@@ -14,6 +14,14 @@ A demonstração apresenta o layout, a identidade visual e os principais fluxos 
 
 ---
 
+## 🎨 Protótipo no Figma
+
+Antes da implementação, todas as telas do sistema foram planejadas e prototipadas no Figma.
+
+👉 **[Visualizar protótipo no Figma](**SEU_LINK_DO_FIGMA**https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1)**
+
+---
+
 ## 📖 Sobre o Projeto
 
 O **TechBook** nasceu da dificuldade de acesso a determinadas obras e do alto custo dos livros, especialmente para estudantes e leitores frequentes.
@@ -84,16 +92,13 @@ O sistema possui dois perfis de acesso:
 
 # 🛠 Tecnologias
 
-| Frontend   | Backend          | Banco de Dados       | Ferramentas   |
-| ---------- | ---------------- | -------------------- | ------------- |
-| HTML5      | Java 17          | MySQL                | Git           |
-| CSS3       | Spring Boot      | Modelagem Relacional | GitHub        |
-| JavaScript | Spring Data JPA  | Scripts SQL          | Figma         |
-|            | REST API         |                      | Photoshop     |
-|            | BCrypt           |                      | Illustrator   |
-|            | DTO Pattern      |                      | Draw.io       |
-|            | Tokens de Sessão |                      | IntelliJ IDEA |
-|            |                  |                      | VS Code       |
+| Frontend   | Backend         | Banco de Dados       | Design            | Ferramentas   |
+| ---------- | --------------- | -------------------- | ----------------- | ------------- |
+| HTML5      | Java 17         | MySQL                | Figma             | Git           |
+| CSS3       | Spring Boot     | Modelagem Relacional | Adobe Photoshop   | GitHub        |
+| JavaScript | Spring Data JPA | Scripts SQL          | Adobe Illustrator | IntelliJ IDEA |
+|            | REST API        |                      | Adobe InDesign    | VS Code       |
+|            | BCrypt          |                      | Draw.io           |               |
 
 ---
 
