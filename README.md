@@ -2,13 +2,15 @@
 
 TechBook e uma plataforma web criada para aproximar estudantes e leitores do acesso a livros de forma simples, organizada e digital.
 
-## Vitrine Online
+## Previa Visual Do Projeto
 
-A versao visual do projeto esta disponivel no GitHub Pages:
+Conheca uma previa visual do TECHBOOK pelo GitHub Pages:
 
-[Abrir TECHBOOK Vitrine](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)
+[Acessar previa do TECHBOOK](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)
 
-Esta vitrine apresenta o layout, a proposta, o catalogo e os principais fluxos visuais. A versao completa do sistema, com backend Java, banco MySQL e regras de negocio reais, permanece neste repositorio.
+Essa versao foi criada para apresentar o layout, a identidade visual, a proposta do sistema e os principais fluxos de navegacao. Ela funciona como uma demonstracao visual para quem deseja conhecer o projeto rapidamente.
+
+A versao completa, com backend em Java, banco MySQL, autenticacao, regras de negocio e integracao real, permanece neste repositorio.
 
 A ideia do projeto nasceu da dificuldade de acesso a determinadas obras e do alto custo dos livros, especialmente para quem estuda ou le com frequencia. A proposta e permitir que o usuario consulte o acervo, reserve exemplares e acompanhe suas movimentacoes pela tela, enquanto a retirada e a devolucao continuam presenciais para manter o controle fisico dos livros.
 
