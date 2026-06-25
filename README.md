@@ -2,19 +2,14 @@
 
 > Plataforma web desenvolvida para facilitar a consulta, reserva e gerenciamento de livros, oferecendo uma experiência intuitiva para leitores e um controle completo do acervo para administradores.
 
-<p align="center">
+**🔗 Links rápidos**
 
-<a href="https://gaabriellr415.github.io/PROJETO-TECHBOOK/">
-🌐 <strong>Demonstração Online</strong>
-</a>
+- 🌐 **[Demonstração Online](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)**
+- 🎨 **[Protótipo no Figma](https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1)**
 
-&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
+> A demonstração apresenta o layout, a identidade visual e os principais fluxos da aplicação. A implementação completa, desenvolvida com **Java**, **Spring Boot**, **MySQL**, autenticação e regras de negócio, permanece neste repositório.
 
-<a href="https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1">
-🎨 <strong>Protótipo no Figma</strong>
-</a>
-
-</p>
+---
 
 ## 📖 Sobre o Projeto
 
