@@ -14,30 +14,13 @@ A demonstração apresenta o layout, a identidade visual e os principais fluxos 
 
 ---
 
-## 🎨 Protótipo no Figma
-
-Antes da implementação, todas as telas do sistema foram planejadas e prototipadas no Figma.
-
-👉 **[Visualizar protótipo no Figma](**SEU_LINK_DO_FIGMA**https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1)**
-
-
-# 📚 TECHBOOK - Sistema de Gerenciamento
-
-> Plataforma web desenvolvida para facilitar a consulta, reserva e gerenciamento de livros, oferecendo uma experiência intuitiva para leitores e um controle completo do acervo para administradores.
-
----
-
 ## 🔗 Links do Projeto
 
-| Recurso | Acessar |
-|---------|---------|
-| 🌐 Demonstração | **[GitHub Pages](SEU_LINK)** |
-| 🎨 Protótipo | **[Figma](SEU_LINK_DO_FIGMA)** |
-| 📄 Documentação | **[`docs/`](docs/)** |
+🌐 **[Demonstração Online](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)**
 
-> A demonstração apresenta o layout, a identidade visual e os principais fluxos da aplicação. A versão completa, desenvolvida com **Java, Spring Boot e MySQL**, permanece neste repositório.
+🎨 **[Protótipo no Figma](https://figma.com/...)**
 
----
+📄 **[Documentação](docs/)**
 
 
 ---
