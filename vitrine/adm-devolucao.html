@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHBOOK | Registrar Devolução ADM</title>
+  
+  <!-- LINKS DO SITE -->
+  <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/adm.css?v=return-meta-space-1">
+</head>
+
+<body data-page="admin">
+  
+  <!-- IDENTIFICACAO DA PAGINA -->
+  <div class="admin-layout">
+
+    <!-- MENU LATERAL -->
+    <aside class="admin-sidebar">
+
+      <!-- LOGO DO PAINEL -->
+      <div class="sidebar-brand"><img src="img/LOGOMARCA.svg" alt="" class="admin-brand-logo"></div>
+      
+      <!-- MENU ADMIN -->
+      <nav class="admin-nav">
+        <a href="adm.html">Visão geral</a>
+        <a href="adm-reservas.html">Confirmar retirada</a>
+        <a href="adm-emprestimo.html">Empréstimos ativos</a>
+        <a href="adm-devolucao.html">Registrar devolução</a>
+        <a href="adm-atrasos.html">Empréstimos atrasados</a>
+        <a href="adm-livros.html">Livros e estoque</a>
+        <a href="adm-usuarios.html">Clientes</a>
+        <a href="adm-livros.html#gestao">Cadastrar livro</a>
+      </nav>
+      <div class="sidebar-user"><div><strong>Administrador</strong><span>Controle de Acervo</span></div></div>
+    </aside>
+  
+    <!-- CONTEUDO PRINCIPAL -->
+    <main class="admin-main">
+      
+      <!-- DEVOLUCAO -->
+      <!-- DEVOLUCOES -->
+      <section class="admin-screen form-screen" id="devolucoes">
+        <div class="screen-topbar">
+          <div class="screen-heading">
+            <h2>Registrar devolução</h2>
+            <p>Selecione um empréstimo ativo e registre a devolução com o estado físico do livro.</p>
+          </div>
+          <a class="button ghost" href="adm.html">Voltar ao painel</a>
+        </div>
+        
+        <!-- FLUXO DE DEVOLUCAO -->
+        <div class="return-workflow">
+          <div class="history-panel return-picker-panel">
+            <div class="return-panel-heading">
+              <span class="step-pill">1</span>
+              <div>
+                <h3>Escolha o empréstimo</h3>
+                <p>Localize pelo nome, livro ou número do empréstimo.</p>
+              </div>
+            </div>
+            <div class="summary-strip" id="returnPickerSummary"></div>
+            <div class="filter-bar compact-filter return-filter">
+              <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="returnLoanSearchInput" placeholder="Buscar por cliente, livro ou ID do empréstimo"></div>
+              <select id="returnLoanStatusFilter" aria-label="Filtrar empréstimos para devolução">
+                <option value="">Todos os status</option>
+                <option value="ATIVO">Ativos</option>
+                <option value="ATRASADO">Atrasados</option>
+                <option value="EXTRAVIADO">Extraviados</option>
+              </select>
+            </div>
+            
+            <!-- LISTA DE EMPRESTIMOS -->
+            <div id="returnLoanList" class="return-loan-picker"></div>
+          </div>
+          
+          <!-- MENU LATERAL -->
+          <aside class="return-register-panel">
+            <div class="return-panel-heading">
+              <span class="step-pill">2</span>
+              <div>
+                <h3>Registre a devolução</h3>
+                <p>Confira o resumo e informe o estado do livro.</p>
+              </div>
+            </div>
+            <div id="selectedReturnCard" class="selection-card return-selection-card empty">
+              <span class="selection-kicker">Aguardando seleção</span>
+              <strong>Nenhum empréstimo selecionado</strong>
+              <p>Escolha um item da lista ao lado para preencher esta etapa.</p>
+            </div>
+            
+            <!-- FORMULARIO DE DEVOLUCAO -->
+            <form id="returnForm" class="admin-form-grid return-form-grid">
+              <input type="hidden" id="returnClientName">
+              <input type="hidden" id="returnBookTitle">
+              <input type="hidden" id="returnStartDate" value="Selecione um empréstimo">
+              <input type="hidden" id="returnAdminId" value="1">
+              <input type="hidden" id="returnLoanId" required>
+              <label class="field-block"><span>Estado do livro</span><select id="returnBookState"><option value="BOM">Livro em bom estado</option><option value="AVARIADO">Livro com avaria</option></select></label>
+              <label class="field-block"><span>Observação da devolução</span><textarea id="returnObservation" placeholder="Ex: Sem avarias ou descreva o problema encontrado"></textarea></label>
+              <div class="helper-text" id="returnHelperText">Selecione um empréstimo ativo para liberar o registro.</div>
+              <div class="form-submit-row"><button class="button primary large" id="returnSubmitButton" type="submit" disabled>Registrar Devolução</button></div>
+            </form>
+          </aside>
+        </div>
+        
+        <!-- FILTROS -->
+        <div class="history-panel">
+          <h3>Histórico de devoluções</h3>
+          <div class="summary-strip" id="returnHistorySummary"></div>
+          <div class="filter-bar compact-filter return-history-filter">
+            <div class="search-input"><span class="search-icon" aria-hidden="true"></span><input type="text" id="returnSearchInput" placeholder="Buscar por cliente, livro ou observação"></div>
+            <select id="returnHistoryStateFilter" aria-label="Filtrar histórico por estado do livro">
+              <option value="">Todos os estados</option>
+              <option value="BOM">Bom estado</option>
+              <option value="AVARIADO">Com avaria</option>
+            </select>
+            <select id="returnHistoryMonthFilter" aria-label="Filtrar histórico por mês">
+              <option value="">Todos os meses</option>
+            </select>
+            <select id="returnHistoryYearFilter" aria-label="Filtrar histórico por ano">
+              <option value="">Todos os anos</option>
+            </select>
+            <select id="returnHistoryPageSize" aria-label="Itens por página">
+              <option value="5">5 por página</option>
+              <option value="10">10 por página</option>
+              <option value="20">20 por página</option>
+            </select>
+            <button class="button primary search-button" id="returnSearchButton" type="button">Buscar</button>
+          </div>
+          <div id="returnHistory" class="status-list"></div>
+          
+          <!-- PAGINACAO -->
+          <div id="returnHistoryPagination" class="pagination-bar"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <!-- JAVASCRIPT DA PAGINA -->
+  <script src="js/app.js?v=anti-trava-1"></script>
+  <script src="js/adm.js?v=admin-performance-1"></script>
+</body>
+</html>

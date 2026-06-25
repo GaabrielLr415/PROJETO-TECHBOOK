@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHBOOK | Recuperar senha</title>
+
+
+  <!-- LINKS DO SITE -->
+  <link rel="icon" type="image/svg+xml" href="img/Favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/global.css?v=fredoka-titulos-1">
+  <link rel="stylesheet" href="css/index.css?v=fredoka-titulos-1">
+</head>
+
+<body data-page="recover">
+  <!-- IDENTIFICACAO DA PAGINA -->
+
+  <!-- CABECALHO -->
+  <header class="login-header">
+    <a href="index.html">
+      <!-- LOGO DO SITE -->
+      <img src="img/LOGO TECHBOOK.svg" alt="TechBook" class="login-logo">
+    </a>
+  </header>
+
+  <!-- CORPO DO SITE -->
+  <!-- CONTEUDO PRINCIPAL -->
+  <main class="auth-shell recover-shell">
+
+    <!-- CARD DE RECUPERAR SENHA -->
+    <!-- RECUPERAR SENHA -->
+    <section class="auth-card recover-card">
+      <h1>Recuperar senha</h1>
+
+      <p class="recover-text" id="recoverStepText">
+        Informe o e-mail cadastrado para receber o código de recuperação.
+      </p>
+
+      <!-- FORMULARIO DE RECUPERACAO -->
+      <form id="recoverForm">
+
+        <div class="input-group">
+          <input type="email" id="recoverEmail" required>
+          <label for="recoverEmail">E-mail</label>
+        </div>
+
+        <div id="recoverCodeFields" hidden>
+          <div class="input-group">
+            <input type="text" id="recoverCode" maxlength="6" inputmode="numeric" pattern="[0-9]{6}">
+            <label for="recoverCode">Código recebido</label>
+          </div>
+        </div>
+
+        <div id="recoverPasswordFields" hidden>
+          <div class="input-group">
+            <input type="password" id="recoverNewPassword" minlength="6">
+            <label for="recoverNewPassword">Nova senha</label>
+          </div>
+
+          <div class="input-group">
+            <input type="password" id="recoverConfirmPassword" minlength="6">
+            <label for="recoverConfirmPassword">Confirmar nova senha</label>
+          </div>
+        </div>
+
+        <div class="recover-actions">
+          <button class="button primary" id="recoverSubmitButton" type="submit">Enviar código</button>
+          <button class="button ghost" id="recoverResendButton" type="button" hidden>Reenviar código</button>
+        </div>
+
+        <p class="feedback" id="recoverFeedback"></p>
+      </form>
+
+      <a href="login.html" class="back-login-link">Voltar para o login</a>
+    </section>
+
+  </main>
+  <!-- JAVASCRIPT DA PAGINA -->
+
+  <script src="js/app.js?v=anti-trava-1"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

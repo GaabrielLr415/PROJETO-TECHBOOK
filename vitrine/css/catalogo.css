@@ -1,0 +1,1894 @@
+/* CSS: CATALOGO */
+
+body {
+  margin: 0;
+}
+
+.catalog-view-page {
+  background: #ffffff;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.catalog-top-wrap {
+  background: #0293F2;
+  width: 100%;
+}
+
+.catalog-header {
+  position: relative;
+  z-index: 3;
+  width: calc(100% - 112px);
+  height: 90px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.catalog-brand {
+  display: inline-flex;
+  align-items: center;
+}
+
+.catalog-brand .brand-logo-icon {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+/* Menu principal do site */
+.catalog-nav {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+
+  text-transform: uppercase;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.catalog-nav a {
+  color: #ffffff;
+  font-size: 1.1rem;
+}
+
+.catalog-actions a,
+.catalog-actions button {
+  color: #ffffff;
+}
+
+.catalog-nav a.active,
+.catalog-nav a:hover {
+  color: #fef4d7;
+}
+
+.catalog-actions {
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.catalog-actions .primary {
+  display: none;
+}
+
+.catalog-actions .perfil {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.login-icon {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+/* =========================
+   ESTRUTURA PRINCIPAL
+========================= */
+
+.catalog-page {
+  padding: 0 0 12px;
+  width: 100%;
+}
+
+.book-detail,
+.reservation-layout {
+  padding: 0 0 12px;
+}
+
+.catalog-filter-band {
+  margin-top: 0;
+  background: #0293F1;
+  padding: 32px 0;
+  width: 100%;
+}
+
+.catalog-toolbar {
+  width: min(880px, calc(100% - 48px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 34px;
+  align-items: center;
+  background: transparent;
+}
+
+/* =========================
+   BARRA DE FILTRO E BUSCA
+   Área onde o usuário filtra por título/autor e pesquisa livros
+========================= */
+.catalog-toolbar select {
+  width: 100%;
+  height: 46px;
+  border: 0;
+  outline: none;
+
+  padding: 0 50px 0 22px;
+
+  color: #666666;
+  font-size: 0.95rem;
+  cursor: pointer;
+
+  background: #ffffff;
+  border-radius: 14px;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("../img/seta.svg");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px;
+}
+
+/* Campo de busca do catálogo */
+.search-box {
+  height: 46px;
+  display: grid;
+  grid-template-columns: 1fr 70px;
+  gap: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.search-box input {
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0 22px;
+  color: #666666;
+  font-size: 0.95rem;
+}
+
+/* ==== PESQUISA === */
+.search-box button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.search-box button img {
+  width: 20px;
+  height: 20px;
+}
+
+/* =========================
+   RESULTADOS DO CATÁLOGO
+   Área onde aparecem o contador e os cards dos livros
+========================= */
+
+.catalog-results {
+  width: min(1120px, calc(100% - 40px));
+  margin: 30px auto 0;
+}
+
+/* MAIS RESERVADOS */
+.popular-books {
+  width: min(1120px, calc(100% - 40px));
+  margin: 34px auto 0;
+}
+
+.popular-books[hidden] {
+  display: none;
+}
+
+.popular-books-header {
+  margin-bottom: 24px;
+}
+
+.popular-books-header h2 {
+  margin: 0;
+  color: #666666;
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.popular-carousel {
+  position: relative;
+}
+
+/* MAIS RESERVADOS */
+.popular-book-list {
+  display: grid;
+  grid-auto-columns: calc((100% - 96px) / 5);
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  padding: 0;
+  scroll-padding-left: 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.popular-book-list::-webkit-scrollbar {
+  display: none;
+}
+
+.popular-book-list.dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.popular-book-card {
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+  padding: 14px 14px 18px;
+  border: 1px solid #eeeeee;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #111827;
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.popular-book-card:hover {
+  transform: translateY(-2px);
+  border-color: #d7eaff;
+  box-shadow: 0 16px 34px rgba(2, 147, 241, 0.12);
+}
+
+.popular-book-card img {
+  width: 100%;
+  height: 260px;
+  margin: 0 0 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  object-fit: contain;
+  object-position: center;
+}
+
+.popular-book-info {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popular-book-card strong {
+  display: -webkit-box;
+  min-height: 42px;
+  overflow: hidden;
+  color: #5f5f5f;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.18;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.popular-book-card small,
+.popular-book-card span {
+  overflow: hidden;
+  color: #5c5c5c;
+  font-size: 0.9rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popular-book-card em {
+  margin-top: auto;
+  color: #1f2f2f;
+  font-size: 0.83rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.popular-carousel-button {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1f7bf2;
+  font-size: 2.2rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  transform: translateY(-50%);
+}
+
+.popular-carousel-button.prev {
+  left: -58px;
+}
+
+.popular-carousel-button.next {
+  right: -58px;
+}
+
+.popular-carousel-button:disabled {
+  cursor: default;
+  opacity: 0.2;
+}
+
+.popular-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  min-height: 14px;
+  margin-top: 16px;
+}
+
+.popular-carousel-dots button {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #cfcfcf;
+  cursor: pointer;
+  padding: 0;
+}
+
+.popular-carousel-dots button.active {
+  background: #3b8ff2;
+}
+
+.catalog-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.catalog-invite {
+  margin: 0;
+  color: #666666;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.catalog-count {
+  color: #7c7c7c;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* GRADE DO CATALOGO */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 42px 24px;
+}
+
+.catalog-grid .book-card {
+  min-height: 430px;
+  padding: 14px 14px 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #ededed;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.04),
+              0 8px 14px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-grid .book-cover {
+  width: 100%;
+  height: 260px;
+
+  background: #ffffff;
+  object-fit: contain;
+  object-position: center;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  display: block;
+}
+
+.catalog-grid .book-card h3 {
+  margin: 14px 0 4px;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.catalog-grid .book-card p {
+  margin: 0;
+  color: #5c5c5c;
+  font-size: 0.9rem;
+}
+
+.catalog-grid .book-card p:nth-of-type(2),
+.catalog-grid .book-card p:nth-of-type(3) {
+  display: none;
+}
+
+.catalog-grid .button.primary {
+  min-height: 38px;
+  padding: 0 18px;
+
+  margin-top: auto;
+
+  background: #0293F1;
+  box-shadow: none;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+
+  align-self: center;
+}
+
+.catalog-grid .button.primary[href] {
+  width: fit-content;
+}
+
+.catalog-grid .button.primary.disabled {
+  display: inline-flex;
+  width: fit-content;
+  pointer-events: none;
+}
+
+/* =========================
+   DETALHE DO LIVRO
+   Layout usado quando o usuário acessa um livro específico
+========================= */
+
+.book-detail {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+  padding-top: 16px;
+}
+
+/* DETALHE DO LIVRO */
+.book-panel {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 30px;
+  padding: 32px;
+}
+
+.book-panel .book-cover {
+
+  width: 100%;
+
+  height: 520px;
+
+  background: #ffffff;
+
+  object-fit: contain;
+
+  object-position: center;
+
+  border-radius: 18px;
+
+  display: block;
+}
+
+.book-panel .description p {
+
+  margin-top: 6px;
+
+  max-width: 760px;
+
+  line-height: 1.8;
+
+  color: #4b5563;
+
+  font-size: 1.02rem;
+}
+
+.book-panel h1 {
+  font-family: var(--font-display);
+  margin: 0 0 14px;
+
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+
+  line-height: 1.08;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.book-panel .book-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0 22px;
+}
+
+.book-panel .description {
+  color: var(--ink-700);
+  line-height: 1.8;
+}
+
+.book-category {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  width: fit-content;
+
+  padding: 7px 12px;
+
+  border-radius: 999px;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 0.82rem;
+
+  font-weight: 800;
+
+  letter-spacing: 0.04em;
+
+  text-transform: uppercase;
+}
+
+.book-category-icon {
+
+  width: 16px;
+  height: 16px;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+/* =========================
+   ÁREA DE RESERVAS / PERFIL
+   Usada nas páginas ligadas à reserva do usuário
+========================= */
+
+.reservation-layout {
+  width: min(1400px, calc(100% - 48px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 980px);
+  justify-content: center;
+  gap: 28px;
+  padding-top: 28px;
+}
+
+body[data-page="account"] .reservation-layout {
+  width: min(1400px, calc(100% - 48px));
+  grid-template-columns: 260px minmax(0, 980px);
+}
+
+.profile-menu {
+  min-height: 378px;
+  padding: 42px 18px;
+  height: fit-content;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  border-radius: 12px;
+}
+
+.profile-menu a,
+.profile-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 8px;
+  text-align: left;
+  color: var(--ink-700);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-menu .active {
+  color: #0a4e9d;
+  background: linear-gradient(180deg, rgba(22, 142, 234, 0.18), rgba(22, 142, 234, 0.1));
+  border: 1px solid rgba(22, 142, 234, 0.24);
+  box-shadow: 0 8px 18px rgba(22, 142, 234, 0.12);
+}
+
+.profile-menu img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.profile-menu img[src$="emprestimo.svg"] {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  transform: none;
+}
+
+/* PAINEL DO CLIENTE */
+.reservation-panel {
+  padding: 30px 38px 34px;
+  border-radius: 18px;
+}
+
+.stack-list {
+  display: grid;
+  gap: 18px;
+}
+
+/* HISTORICO DO CLIENTE */
+.history-summary {
+  margin-bottom: 18px;
+}
+
+.history-summary span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.client-history-card {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(480px, auto);
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #f9fbfe;
+}
+
+.client-history-card h3 {
+  margin: 8px 0 6px;
+  color: var(--ink-900);
+  line-height: 1.2;
+}
+
+.client-history-card p {
+  margin: 0;
+}
+
+.client-history-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.client-history-meta > span:not(.status-chip) {
+  display: grid;
+  gap: 4px;
+  min-width: 132px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--ink-700);
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.client-history-meta strong {
+  color: var(--ink-500);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.history-pagination {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(17, 24, 39, 0.1);
+}
+
+.history-pagination > span {
+  color: var(--ink-500);
+  font-weight: 800;
+}
+
+.compact-pagination {
+  margin: 0;
+}
+
+.compact-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+/* RESERVAS ENCERRADAS */
+.closed-reservations {
+  display: grid;
+  gap: 14px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(17, 24, 39, 0.1);
+}
+
+.closed-reservations h2 {
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--ink-900);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.closed-reservations-note {
+  margin: 0;
+  color: var(--ink-500);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.closed-reservations .reservation-card {
+  background: #fffaf3;
+  border-color: rgba(217, 119, 6, 0.22);
+}
+
+.closed-reservations-more {
+  display: grid;
+  gap: 14px;
+}
+
+.closed-reservations-more summary {
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #eef6ff;
+  color: #2563eb;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.closed-reservations-more[open] summary {
+  margin-bottom: 14px;
+}
+
+/* CARD DE RESERVA E EMPRESTIMO */
+.reservation-card {
+
+  display: grid;
+
+  grid-template-columns: 120px 1fr;
+
+  gap: 20px;
+
+  padding: 18px;
+
+  border-radius: 22px;
+
+  background: #f9fbfe;
+
+  border: 1px solid var(--line);
+
+  align-items: center;
+}
+
+.reservation-card img {
+  width: 100%;
+  border-radius: 14px;
+  background: #ffffff;
+  object-fit: contain;
+}
+
+.reservation-card h3 {
+
+  margin: 12px 0 6px;
+
+  line-height: 1.2;
+}
+
+.reservation-card p {
+
+  margin: 0;
+}
+
+.account-data-form {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.account-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 24px;
+  align-items: stretch;
+}
+
+.account-group {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-height: 100%;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 14px 36px rgba(17, 24, 39, 0.08);
+}
+
+.account-group h2 {
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--ink-900);
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.access-group {
+  min-height: 100%;
+}
+
+.access-helper {
+  max-width: 360px;
+  margin: -2px 0 0;
+  padding: 10px 12px;
+  color: #1e3a8a;
+  background: #eff6ff;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.account-overview > .button.primary {
+  justify-self: start;
+}
+
+.account-overview > .button.secondary {
+  justify-self: start;
+}
+
+.account-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.account-overview .personal-fields,
+.account-overview .access-fields {
+  grid-template-columns: 1fr;
+}
+
+.account-fields label {
+  display: grid;
+  gap: 2px;
+  color: var(--ink-700);
+  font-weight: 700;
+}
+
+.account-fields input {
+  width: 100%;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: #ffffff;
+  color: var(--ink-900);
+  box-shadow: none;
+}
+
+.account-field-card {
+  position: relative;
+  min-height: 70px;
+  min-width: 0;
+  width: 100%;
+  padding: 13px 16px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(17, 24, 39, 0.08);
+}
+
+.email-display-card,
+.password-display-card {
+  max-width: none;
+}
+
+.email-display-card input,
+.password-display-card input {
+  color: var(--ink-900);
+  cursor: not-allowed;
+}
+
+.account-overview .personal-fields .account-field-card,
+.account-overview .access-fields .account-field-card {
+  width: 100%;
+}
+
+.account-field-card span {
+  color: #2788e5;
+  white-space: nowrap;
+}
+
+.hidden-confirm-email {
+  display: none;
+}
+
+.personal-group > .button.primary {
+  justify-self: center;
+  min-height: 38px;
+  margin-top: 2px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.profile-actions-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-actions-row .button {
+  min-height: 38px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.edit-profile-button {
+  justify-self: flex-start;
+  min-height: 38px;
+  border-radius: 10px;
+}
+
+.cancel-profile-button {
+  justify-self: flex-start;
+  min-height: 38px;
+  border-radius: 10px;
+}
+
+.hidden-action {
+  display: none !important;
+}
+
+.access-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.access-actions-row .button {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.modal-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modal-actions-row .button {
+  min-height: 38px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.account-fields input:focus {
+  outline: none;
+  border-color: var(--blue-700);
+  box-shadow: 0 0 0 4px rgba(22, 142, 234, 0.12);
+}
+
+.account-data-form .button {
+  justify-self: start;
+}
+
+.feedback {
+  margin: 0;
+  font-weight: 700;
+}
+
+.feedback.success-feedback {
+  color: var(--success);
+}
+
+.status-chip {
+  display: inline-flex;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  min-width: 190px;
+  justify-content: center;
+}
+
+.reservation-card .status-chip,
+.reservation-card .button.cancel {
+  width: 190px;
+}
+
+.reservation-card .button.cancel {
+  height: auto;
+  min-height: 0;
+  padding: 10px 16px;
+}
+
+.status-chip.success {
+  color: white;
+  background: var(--success);
+}
+
+.status-chip.reserved {
+  color: white;
+  background: var(--success);
+}
+
+.status-chip.active {
+  color: white;
+  background: #2563eb;
+}
+
+.status-chip.progress {
+  color: #3f2f00;
+  background: #facc15;
+}
+
+.status-chip.neutral {
+  color: white;
+  background: #7b7f89;
+}
+
+.status-chip.alert {
+  color: white;
+  background: #d97706;
+}
+
+/* =========================
+   PAGINAÇÃO
+========================= */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  margin: 50px 0 20px;
+}
+
+.pagination button {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #0293F1;
+
+  font-size: 1rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.08);
+}
+
+.pagination button:hover {
+  transform: translateY(-2px);
+  background: #0293F1;
+  color: white;
+}
+
+.pagination button.active {
+  background: #0293F1;
+  color: #ffffff;
+}
+
+
+
+/* FUNDO ESCURO */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 17, 34, 0.48);
+  backdrop-filter: blur(2px);
+  z-index: 9998;
+}
+
+/* POPUP CENTRAL */
+.modal-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: min(430px, calc(100% - 32px));
+  padding: 30px 28px 26px;
+
+  background: #fff;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(8, 17, 34, 0.28);
+
+  z-index: 9999;
+  display: grid;
+  gap: 16px;
+}
+
+.modal-form h3 {
+  margin: 0 0 4px;
+  color: var(--ink-900);
+  font-size: 1.18rem;
+  font-weight: 800;
+}
+
+.modal-form label {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid rgba(37, 99, 235, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+  font-weight: 700;
+}
+
+.modal-form label span {
+  color: #2788e5;
+  font-size: 0.9rem;
+}
+
+.modal-form input {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 14px;
+  background: #f8fbff;
+  font: inherit;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.modal-form input:focus {
+  outline: none;
+  border-color: var(--blue-700);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(22, 142, 234, 0.12);
+}
+
+.modal-password-group input {
+  padding-right: 52px;
+}
+
+.modal-toggle-password {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.modal-toggle-password:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.modal-toggle-password img {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
+.modal-feedback {
+  min-height: 18px;
+  margin: -2px 0 0;
+  color: #b91c1c;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.modal-actions-row {
+  padding-top: 2px;
+}
+
+/* ESCONDE */
+.modal-form.hidden-action,
+.modal-overlay.hidden-action {
+  display: none !important;
+}
+
+/* =========================
+   RODAPÉ
+========================= */
+
+.about-footer {
+  background: #0099ff;
+  color: #ffffff;
+}
+
+.about-footer-inner {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 44px 0 46px;
+
+  display: grid;
+  grid-template-columns: 1.4fr 0.7fr 0.8fr 0.8fr;
+  align-items: flex-start;
+}
+
+.footer-brand-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.footer-logo {
+  width: 340px;
+  height: auto;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.footer-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 26px;
+  color: #ffffff;
+}
+
+.footer-location-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-address h3 {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.footer-address p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.25;
+}
+
+.footer-column h3 {
+  margin: 0 0 16px;
+  color: #fff8ea;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.footer-column ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.footer-column li {
+  margin: 7px 0;
+}
+
+.footer-column a {
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.footer-socials a {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+}
+
+.footer-social-icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.footer-legal {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 18px 0 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+/* =========================
+   BANNER DO CATÁLOGO
+========================= */
+
+.catalog-hero {
+  width: 100%;
+  height: 690px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* IMAGEM DE FUNDO */
+.hero-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: -30px center;
+  display: block;
+}
+
+/* TEXTO SVG */
+.hero-text {
+  position: absolute;
+
+  left: 65px;
+  top: 160px;
+
+  width: 45%;
+  height: auto;
+
+  z-index: 3;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #4b5563;
+}
+
+.empty-state h2 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.back-catalog-link {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin: 24px 0 18px;
+
+  color: #0293F1;
+
+  font-weight: 800;
+
+  font-size: 1.28rem;
+
+  text-decoration: none;
+}
+
+.back-icon {
+
+  width: 34px;
+  height: 34px;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+.book-info-grid {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  margin: 0 0 28px;
+}
+
+.book-info-chip {
+
+  background: #f3f8ff;
+
+  border: 1px solid #dbeafe;
+
+  border-radius: 14px;
+
+  padding: 12px 16px;
+
+  font-weight: 700;
+
+  color: #1e3a8a;
+}
+
+.book-info-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.book-info-icon {
+
+  width: 24px;
+
+  height: 24px;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+.book-info-chip.available {
+  color: #166534;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.book-info-chip.unavailable {
+  color: #991b1b;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.description {
+
+  margin-top: 24px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+.description h2 {
+  font-family: var(--font-display);
+  margin-bottom: 8px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* SUGESTOES SEMELHANTES */
+.similar-books {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.similar-books.unavailable-suggestions {
+  padding: 18px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+
+.similar-kicker {
+  display: block;
+  margin-bottom: 5px;
+  color: #2f6fcf;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.similar-books h2 {
+  font-family: var(--font-display);
+  margin: 0 0 14px;
+  color: #111827;
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.similar-book-list {
+  /* CARDS DOS LIVROS SEMELHANTES */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.similar-book-card {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: #f8fbff;
+  color: #111827;
+  text-decoration: none;
+}
+
+.similar-book-card img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: #ffffff;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.similar-book-card span {
+  color: #2f6fcf;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.similar-book-card strong {
+  color: #111827;
+  font-size: 0.86rem;
+  line-height: 1.25;
+}
+
+.similar-book-card small {
+  color: #6b7280;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+/* CONTADOR DO CATALOGO */
+.catalog-count {
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.catalog-count-icon {
+
+  width: 22px;
+  height: 22px;
+
+  object-fit: contain;
+}
+
+/* SINOPSE DO LIVRO */
+.description-text {
+  position: relative;
+  max-width: 760px;
+  overflow: hidden;
+}
+
+.description-text.collapsed {
+  max-height: 170px;
+}
+
+.description-text.collapsed::after {
+  content: "";
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 55px;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    #ffffff
+  );
+}
+
+.read-more-button {
+  margin-top: 10px;
+
+  border: none;
+  background: transparent;
+
+  color: #2563eb;
+
+  font-weight: 800;
+  font-size: 0.95rem;
+
+  cursor: pointer;
+  padding: 0;
+}
+
+/* INFORMACOES DE RETIRADA E DEVOLUCAO */
+.pickup-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 22px;
+}
+
+.pickup-info img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+}
+
+.pickup-info img.date-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.pickup-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pickup-text strong {
+  font-size: 1rem;
+  color: #111827;
+}
+
+.pickup-text span {
+  font-size: 0.92rem;
+  color: #6b7280;
+}
+
+.pickup-text small {
+  color: #2f6fcf;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+/* EFEITO DOS CARDS DO CLIENTE */
+.reservation-card {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.reservation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.10);
+}
+
+
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media (max-width: 980px) {
+  .about-footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .popular-books {
+    width: min(1120px, calc(100% - 40px));
+  }
+
+  .popular-book-list {
+    grid-auto-columns: calc((100% - 48px) / 3);
+  }
+
+  .popular-carousel-button.prev {
+    left: -18px;
+  }
+
+  .popular-carousel-button.next {
+    right: -18px;
+  }
+
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .catalog-toolbar,
+  .book-panel,
+  .reservation-layout,
+  .reservation-card,
+  .client-history-card,
+  .similar-book-list,
+  .account-fields,
+  .account-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .client-history-meta {
+    justify-content: flex-start;
+  }
+
+  .access-group {
+    padding-left: 0;
+    padding-top: 22px;
+    border-left: 1px solid rgba(37, 99, 235, 0.1);
+    border-top: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .about-footer-inner {
+    grid-template-columns: 1fr;
+    width: min(100%, calc(100% - 32px));
+  }
+
+  .popular-books {
+    width: min(100%, calc(100% - 32px));
+    margin-top: 28px;
+  }
+
+  .popular-books-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .popular-book-list {
+    grid-auto-columns: calc((100% - 16px) / 2);
+    gap: 16px;
+  }
+
+  .popular-carousel-button {
+    width: 38px;
+    height: 38px;
+    font-size: 1.8rem;
+  }
+
+  .popular-carousel-button.prev {
+    left: -6px;
+  }
+
+  .popular-carousel-button.next {
+    right: -6px;
+  }
+
+  .popular-book-card {
+    min-height: 410px;
+    padding: 14px 14px 16px;
+  }
+
+  .popular-book-card img {
+    width: 100%;
+    height: 250px;
+    margin-bottom: 14px;
+  }
+
+  .popular-book-card strong {
+    font-size: 0.88rem;
+  }
+
+  .catalog-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-invite {
+    font-size: 1.15rem;
+  }
+
+  .footer-logo {
+    width: 220px;
+  }
+
+  .catalog-nav {
+    gap: 14px;
+    font-size: 0.8rem;
+  }
+
+  .catalog-filter-band {
+    margin-top: 0;
+    padding: 14px 0;
+  }
+
+  .catalog-toolbar {
+    width: min(100%, calc(100% - 24px));
+    gap: 12px;
+  }
+
+  .catalog-results {
+    width: min(100%, calc(100% - 24px));
+  }
+
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .footer-column h3 {
+    font-size: 1.2rem;
+  }
+
+  .footer-column a {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 760px) {
+
+  .catalog-hero {
+    height: 300px;
+  }
+
+  .hero-text {
+    width: 75%;
+    left: 20px;
+    top: 90px;
+  }
+
+}
