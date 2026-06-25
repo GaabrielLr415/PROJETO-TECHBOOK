@@ -7,7 +7,7 @@ O TechBook permite pesquisar livros, realizar reservas, controlar empréstimos e
 ## 🔗 Links
 
 - 🌐 **[Demonstração Online](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)**
-- 🎨 **[Protótipo no Figma](COLE_AQUI_O_LINK_DO_FIGMA)**
+- 🎨 **[Protótipo no Figma]([COLE_AQUI_O_LINK_DO_FIGMA](https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1))**
 - 📄 **[Documentação](docs/)**
 
 > A demonstração apresenta a interface, a identidade visual e os principais fluxos de navegação da aplicação.  
