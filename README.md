@@ -1,18 +1,20 @@
 # 📚 TECHBOOK - Sistema de Gerenciamento
 
-> Sistema web para gerenciamento de bibliotecas desenvolvido com **Java**, **Spring Boot** e **MySQL**.
+> Plataforma web desenvolvida para facilitar a consulta, reserva e gerenciamento de livros, oferecendo uma experiência intuitiva para leitores e um controle completo do acervo para administradores.
 
-O TechBook permite pesquisar livros, realizar reservas, controlar empréstimos e devoluções, além de oferecer um painel administrativo para gerenciamento do acervo.
+<p align="center">
 
-## 🔗 Links
+<a href="https://gaabriellr415.github.io/PROJETO-TECHBOOK/">
+🌐 <strong>Demonstração Online</strong>
+</a>
 
-- 🌐 **[Demonstração Online](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)**
-- 🎨 **[Protótipo no Figma]([COLE_AQUI_O_LINK_DO_FIGMA](https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1))**
-- 📄 **[Documentação](docs/)**
+&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
 
-> A demonstração apresenta a interface, a identidade visual e os principais fluxos de navegação da aplicação.  
-> A versão completa, com **backend em Java**, **banco MySQL**, **autenticação**, **regras de negócio** e **integração real**, permanece neste repositório.
----
+<a href="https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1">
+🎨 <strong>Protótipo no Figma</strong>
+</a>
+
+</p>
 
 ## 📖 Sobre o Projeto
 
