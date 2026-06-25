@@ -1,163 +1,177 @@
-````markdown
-# TECHBOOK - SISTEMA DE GERENCIAMENTO
+# 📚 TECHBOOK - Sistema de Gerenciamento
 
-TechBook é uma plataforma web desenvolvida para facilitar a consulta, reserva e gerenciamento de livros, oferecendo uma experiência simples para leitores e um controle completo do acervo para administradores.
+> Plataforma web desenvolvida para facilitar a consulta, reserva e gerenciamento de livros, oferecendo uma experiência intuitiva para leitores e um controle completo do acervo para administradores.
+
+---
 
 ## 🌐 Demonstração
 
-### 👉 [Acessar demonstração do TECHBOOK](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)
+### 🚀 **[Acesse a demonstração do TECHBOOK](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)**
 
-A demonstração apresenta a interface, a identidade visual e os principais fluxos de navegação da aplicação.
+A demonstração apresenta o layout, a identidade visual e os principais fluxos de navegação da aplicação.
 
-A versão completa, desenvolvida em Java, Spring Boot e MySQL, permanece neste repositório.
+> **Observação:** esta versão foi criada para demonstrar a interface e a experiência do usuário. A versão completa, desenvolvida com **Java, Spring Boot, MySQL, autenticação, regras de negócio e integração com banco de dados**, permanece neste repositório.
 
-## Sobre o Projeto
+---
 
-O TechBook nasceu da dificuldade de acesso a determinadas obras e do alto custo dos livros, especialmente para estudantes e leitores frequentes.
+## 📖 Sobre o Projeto
 
-A plataforma permite que os clientes consultem o acervo, reservem livros e acompanhem suas movimentações, enquanto administradores controlam o acervo, confirmam retiradas, registram devoluções e gerenciam pendências.
+O **TechBook** nasceu da dificuldade de acesso a determinadas obras e do alto custo dos livros, especialmente para estudantes e leitores frequentes.
 
-Mais do que um sistema de biblioteca, o TechBook busca incentivar a leitura, apoiar o reaproveitamento de livros e tornar o acesso ao conhecimento mais prático.
+A plataforma permite que os usuários consultem o acervo, reservem exemplares e acompanhem suas movimentações de forma simples e organizada, enquanto administradores controlam empréstimos, devoluções, atrasos e demais processos do acervo.
 
-## Para Quem Foi Feito
+Mais do que um sistema de biblioteca, o TechBook busca incentivar a leitura, promover o reaproveitamento de livros e tornar o acesso ao conhecimento mais prático.
 
-### Cliente
+---
 
-- Pesquisar livros
-- Consultar disponibilidade
-- Reservar exemplares
-- Acompanhar reservas e empréstimos
-- Consultar histórico
+## 🎯 Objetivo
 
-### Administrador
+O projeto foi desenvolvido para solucionar um problema comum em bibliotecas e acervos físicos: facilitar o acesso aos livros e melhorar o controle de disponibilidade, reservas, empréstimos, devoluções, atrasos e histórico de movimentações.
 
-- Gerenciar livros e usuários
-- Confirmar retiradas
-- Registrar empréstimos e devoluções
-- Controlar atrasos, bloqueios e extravios
-- Acompanhar indicadores do acervo
+O sistema possui dois perfis de acesso:
 
-## Principais Funcionalidades
+### 👤 Cliente
 
-- ✅ Cadastro e login de clientes
-- ✅ Catálogo de livros com busca por título, autor e categoria
-- ✅ Reserva de livros disponíveis
-- ✅ Controle de prazo para retirada da reserva
-- ✅ Registro de empréstimos e devoluções
-- ✅ Renovação de empréstimo conforme regra do sistema
-- ✅ Histórico do cliente com reservas, empréstimos e devoluções
-- ✅ Painel administrativo com indicadores do acervo
-- ✅ Controle de atrasos, bloqueios de clientes e extravio de livros
-- ✅ Sugestão de livros semelhantes
-- ✅ Listagem de livros mais reservados
-- ✅ Recuperação de senha por e-mail quando o SMTP estiver configurado
+* Pesquisar livros
+* Consultar disponibilidade
+* Reservar exemplares
+* Acompanhar reservas
+* Consultar empréstimos
+* Visualizar histórico
 
-## Regras de Negócio
+### 👨‍💼 Administrador
 
-- A reserva fica disponível para retirada por 1 dia
-- O empréstimo tem prazo inicial de 14 dias
-- Cada cliente pode ter até 3 itens simultâneos entre reservas pendentes e empréstimos ativos
-- O empréstimo pode ser renovado uma única vez
-- Clientes com atraso, bloqueio ou extravio ficam impedidos de realizar novas reservas
-- O administrador registra a retirada e a devolução presencialmente
-- O sistema preserva o histórico de reservas, empréstimos e devoluções
+* Gerenciar usuários
+* Gerenciar livros
+* Registrar empréstimos
+* Registrar devoluções
+* Controlar atrasos
+* Bloquear clientes
+* Registrar extravios
+* Acompanhar indicadores do sistema
 
-## Tecnologias Utilizadas
+---
 
-### Frontend
+## ✨ Principais Funcionalidades
 
-- HTML5
-- CSS3
-- JavaScript
+* Cadastro e autenticação de usuários
+* Catálogo de livros com busca por título, autor e categoria
+* Reserva de livros disponíveis
+* Controle do prazo para retirada
+* Registro de empréstimos e devoluções
+* Renovação de empréstimos
+* Histórico completo de movimentações
+* Dashboard administrativo
+* Controle de atrasos e bloqueios
+* Registro de extravio de livros
+* Sugestão de livros semelhantes
+* Listagem de livros mais reservados
+* Recuperação de senha por e-mail
 
-### Backend
+---
 
-- Java 17
-- Spring Boot
-- Spring Data JPA
-- API REST
-- BCrypt
+## 📋 Regras de Negócio
 
-### Banco de Dados
+* Reserva disponível por **1 dia**
+* Empréstimos com prazo inicial de **14 dias**
+* Limite de **3 itens simultâneos** entre reservas e empréstimos
+* Renovação permitida apenas **uma única vez**
+* Clientes com atraso, bloqueio ou extravio não podem realizar novas reservas
+* Retirada e devolução registradas presencialmente pelo administrador
+* Histórico completo de reservas, empréstimos e devoluções
 
-- MySQL
-- Modelagem relacional
-- Scripts SQL
+---
 
-### Ferramentas de Apoio
+# 🛠 Tecnologias
 
-- Git
-- GitHub
-- Figma
-- Adobe Photoshop
-- Adobe Illustrator
-- Draw.io
-- Visual Studio Code
-- IntelliJ IDEA
+| Frontend   | Backend          | Banco de Dados       | Ferramentas   |
+| ---------- | ---------------- | -------------------- | ------------- |
+| HTML5      | Java 17          | MySQL                | Git           |
+| CSS3       | Spring Boot      | Modelagem Relacional | GitHub        |
+| JavaScript | Spring Data JPA  | Scripts SQL          | Figma         |
+|            | REST API         |                      | Photoshop     |
+|            | BCrypt           |                      | Illustrator   |
+|            | DTO Pattern      |                      | Draw.io       |
+|            | Tokens de Sessão |                      | IntelliJ IDEA |
+|            |                  |                      | VS Code       |
 
-## Arquitetura
+---
 
-- Arquitetura em camadas
-- API REST
-- DTOs para entrada e saída de dados
-- Regras de negócio centralizadas em camada de serviço
-- Spring Data JPA para persistência
-- BCrypt para proteção de senhas
-- Tokens de sessão para rotas protegidas
-- Banco de dados relacional com MySQL
+## 🏗 Arquitetura
 
-## Design e Experiência do Usuário
+O projeto foi desenvolvido utilizando uma arquitetura em camadas, separando responsabilidades entre apresentação, regras de negócio e persistência de dados.
 
-A interface foi planejada para ser simples, organizada e fácil de navegar. O design utiliza uma identidade visual voltada para tecnologia, confiabilidade e leitura.
+Principais conceitos aplicados:
 
-Entre os principais pontos da interface estão:
+* Arquitetura em Camadas
+* API REST
+* Spring Data JPA
+* DTO Pattern
+* Camada de Serviço
+* BCrypt para criptografia de senhas
+* Tokens de autenticação
+* Banco de dados relacional
 
-- Catálogo com capas dos livros
-- Cards com informações resumidas
-- Indicadores de disponibilidade
-- Menus separados para cliente e administrador
-- Formulários objetivos
-- Painel administrativo com dados importantes para gestão
-- Padronização visual entre as telas
+---
 
-O processo de design também fez parte da construção do projeto. O Figma foi utilizado para estruturar o protótipo e organizar as telas antes da implementação. O Photoshop apoiou o tratamento das imagens, enquanto o Illustrator foi utilizado na vetorização de elementos gráficos da identidade visual.
+## 🎨 Design e Experiência do Usuário
 
-## Estrutura do Projeto
+A interface foi planejada para ser simples, organizada e intuitiva.
+
+Entre os principais elementos da experiência do usuário estão:
+
+* Catálogo com capas dos livros
+* Cards informativos
+* Indicadores de disponibilidade
+* Menus separados para clientes e administradores
+* Formulários objetivos
+* Dashboard administrativo
+* Padronização visual das telas
+
+Todo o protótipo foi desenvolvido inicialmente no **Figma**, enquanto **Photoshop** e **Illustrator** foram utilizados na criação da identidade visual.
+
+---
+
+## 📁 Estrutura do Projeto
 
 ```text
-backend/       API REST em Java Spring Boot
-frontend/      Interface da aplicação
-database/      Scripts SQL e modelagem do banco
-docs/          Documentação técnica do projeto
-````
+TECHBOOK
+│
+├── backend/          API REST em Java Spring Boot
+├── frontend/         Interface da aplicação
+├── database/         Scripts SQL e modelagem do banco
+├── docs/             Diagramas, protótipos e documentação
+└── README.md
+```
 
-## Documentação
+---
 
-A documentação técnica está disponível na pasta `docs/`, incluindo:
+## 📚 Documentação
+
+A pasta **docs/** reúne toda a documentação técnica do projeto, incluindo:
 
 * Diagramas UML
 * DER e MER
-* Fluxos do sistema
-* Regras de negócio
-* Protótipos desenvolvidos no Figma
-* Plano de testes
-* Política de privacidade
-* Materiais de apoio
+* Casos de Uso
+* Fluxo de Empréstimos
+* Protótipos do Sistema
+* Plano de Testes
+* Política de Privacidade
+* Regras de Negócio
 
-## O Que Este Projeto Demonstra
+---
 
-Este projeto demonstra prática em:
+## 🚀 O que este projeto demonstra
+
+Durante o desenvolvimento foram aplicados conhecimentos de:
 
 * Desenvolvimento Full Stack
 * Java e Spring Boot
 * APIs REST
-* Modelagem de banco de dados
-* Regras de negócio
-* Arquitetura em camadas
+* Modelagem de Banco de Dados
+* Arquitetura em Camadas
 * HTML, CSS e JavaScript
-* Design de interface
-* Documentação técnica
+* Design de Interface
+* Regras de Negócio
+* Documentação Técnica
 * Versionamento com Git e GitHub
-
-```
-```
