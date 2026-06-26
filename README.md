@@ -150,17 +150,4 @@ A pasta **docs/** reúne toda a documentação técnica do projeto, incluindo:
 
 ---
 
-## 🚀 O que este projeto demonstra
-
-Durante o desenvolvimento foram aplicados conhecimentos de:
-
-* Desenvolvimento Full Stack
-* Java e Spring Boot
-* APIs REST
-* Modelagem de Banco de Dados
-* Arquitetura em Camadas
-* HTML, CSS e JavaScript
-* Design de Interface
-* Regras de Negócio
-* Documentação Técnica
 * Versionamento com Git e GitHub
