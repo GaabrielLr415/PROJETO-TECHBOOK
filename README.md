@@ -149,5 +149,3 @@ A pasta **docs/** reúne toda a documentação técnica do projeto, incluindo:
 * Regras de Negócio
 
 ---
-
-* Versionamento com Git e GitHub
