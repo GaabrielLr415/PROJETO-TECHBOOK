@@ -7,7 +7,8 @@
 - 🌐 **[Demonstração Online](https://gaabriellr415.github.io/PROJETO-TECHBOOK/)**
 - 🎨 **[Protótipo no Figma](https://www.figma.com/site/7iCM9ctJidk8yvNXhFxt7j/PROJETO---TECHBOOK?node-id=0-1&t=6PRVRA2CrZehJeaN-1)**
 
-> A demonstração apresenta o layout, a identidade visual e os principais fluxos da aplicação. A implementação completa, desenvolvida com **Java**, **Spring Boot**, **MySQL**, autenticação e regras de negócio, permanece neste repositório.
+> Protótipo completo desenvolvido durante a etapa de design, com o planejamento das telas e da identidade visual do projeto.
+> A versão completa do TechBook, incluindo backend, banco de dados e todas as funcionalidades, está disponível neste repositório.
 
 ---
 
