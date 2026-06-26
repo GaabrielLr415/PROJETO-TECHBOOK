@@ -14,11 +14,11 @@
 
 ## 📖 Sobre o Projeto
 
-O **Techbook** nasceu da dificuldade de acesso a determinadas obras e do alto custo dos livros, especialmente para estudantes e leitores frequentes.
+O **TECHBOOK** nasceu da dificuldade de acesso a determinadas obras e do alto custo dos livros, especialmente para estudantes e leitores frequentes.
 
 A plataforma permite que os usuários consultem o acervo, reservem exemplares e acompanhem suas movimentações de forma simples e organizada, enquanto administradores controlam empréstimos, devoluções, atrasos e demais processos do acervo.
 
-Mais do que um sistema de biblioteca, o TechBook busca incentivar a leitura, promover o reaproveitamento de livros e tornar o acesso ao conhecimento mais prático.
+Mais do que um sistema de biblioteca, o TECHBOOK busca incentivar a leitura, promover o reaproveitamento de livros e tornar o acesso ao conhecimento mais prático.
 
 O sistema foi desenvolvido para atender dois perfis de usuários:
 
