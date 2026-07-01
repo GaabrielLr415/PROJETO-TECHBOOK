@@ -1741,6 +1741,23 @@ body[data-page="account"] .reservation-layout {
     grid-template-columns: 1fr 1fr;
   }
 
+  .catalog-header {
+    width: min(100%, calc(100% - 32px));
+    height: auto;
+    min-height: 90px;
+    padding: 14px 0;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .catalog-brand .brand-logo-icon {
+    height: 44px;
+  }
+
+  .catalog-actions {
+    min-width: 0;
+  }
+
   .popular-books {
     width: min(1120px, calc(100% - 40px));
   }
@@ -1772,6 +1789,18 @@ body[data-page="account"] .reservation-layout {
     grid-template-columns: 1fr;
   }
 
+  .book-panel {
+    padding: 24px;
+  }
+
+  .book-panel .book-cover {
+    width: min(320px, 100%);
+    height: auto;
+    max-height: 460px;
+    justify-self: center;
+    aspect-ratio: 3 / 4;
+  }
+
   .client-history-meta {
     justify-content: flex-start;
   }
@@ -1788,6 +1817,43 @@ body[data-page="account"] .reservation-layout {
   .about-footer-inner {
     grid-template-columns: 1fr;
     width: min(100%, calc(100% - 32px));
+  }
+
+  .catalog-header {
+    width: min(100%, calc(100% - 24px));
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .catalog-brand,
+  .catalog-actions {
+    justify-content: center;
+  }
+
+  .catalog-nav {
+    width: 100%;
+    justify-content: center;
+    row-gap: 10px;
+  }
+
+  .catalog-actions {
+    width: 100%;
+  }
+
+  .catalog-actions .perfil,
+  .profile-button {
+    max-width: 100%;
+    justify-content: center;
+    white-space: normal;
+  }
+
+  .profile-dropdown {
+    left: 50%;
+    right: auto;
+    width: min(280px, calc(100vw - 32px));
+    transform: translateX(-50%);
   }
 
   .popular-books {
@@ -1870,12 +1936,152 @@ body[data-page="account"] .reservation-layout {
     gap: 16px;
   }
 
+  .book-detail {
+    width: min(100%, calc(100% - 24px));
+    padding-top: 10px;
+  }
+
+  .back-catalog-link {
+    margin: 14px 0 10px;
+    font-size: 1rem;
+    gap: 8px;
+  }
+
+  .back-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .book-panel {
+    padding: 18px;
+    gap: 20px;
+  }
+
+  .book-panel .book-cover {
+    width: min(240px, 100%);
+    max-height: 340px;
+    border-radius: 14px;
+  }
+
+  .book-panel h1 {
+    margin-top: 10px;
+    font-size: 1.75rem;
+    line-height: 1.14;
+    overflow-wrap: anywhere;
+  }
+
+  .book-panel .book-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin: 18px 0;
+  }
+
+  .book-panel .book-actions .button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .book-info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .book-info-chip,
+  .book-category,
+  .pickup-info,
+  .similar-book-card {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .book-info-chip {
+    align-items: flex-start;
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+
+  .pickup-info {
+    align-items: flex-start;
+  }
+
+  .description {
+    margin-top: 18px;
+    padding-top: 16px;
+  }
+
+  .book-panel .description p {
+    max-width: 100%;
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
+  .description-text {
+    max-width: 100%;
+  }
+
+  .similar-books {
+    margin-top: 20px;
+  }
+
+  .similar-books.unavailable-suggestions {
+    padding: 14px;
+  }
+
+  .similar-book-list {
+    grid-template-columns: 1fr;
+  }
+
   .footer-column h3 {
     font-size: 1.2rem;
   }
 
   .footer-column a {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .catalog-nav a {
+    font-size: 0.78rem;
+  }
+
+  .catalog-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .search-box {
+    grid-template-columns: minmax(0, 1fr) 52px;
+  }
+
+  .catalog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-grid .book-card {
+    min-height: 0;
+  }
+
+  .catalog-grid .book-cover {
+    height: 300px;
+  }
+
+  .popular-book-list {
+    grid-auto-columns: 82%;
+  }
+
+  .popular-book-card {
+    min-height: 0;
+  }
+
+  .book-panel {
+    padding: 16px;
+  }
+
+  .book-panel .book-cover {
+    width: min(220px, 100%);
+    max-height: 310px;
   }
 }
 
